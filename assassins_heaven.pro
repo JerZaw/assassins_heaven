@@ -15,8 +15,16 @@ SOURCES += \
         highscores.cpp \
         main.cpp \
         menu.cpp \
-        rules.cpp
+        movingplatform.cpp \
+        platform.cpp \
+        rules.cpp \
+        timedmovingplatform.cpp \
+        timedplatform.cpp
 
 HEADERS += \
-    animatedsprite.h
+    animatedsprite.h \
+    movingplatform.h \
+    platform.h \
+    timedmovingplatform.h \
+    timedplatform.h
 

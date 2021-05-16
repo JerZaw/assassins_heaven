@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <animatedsprite.h>
+#include <platform.h>
+#include <movingplatform.h>
+#include <timedplatform.h>
 
 int game_jumping()
 {
