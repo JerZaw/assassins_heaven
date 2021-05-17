@@ -6,6 +6,8 @@
 #include <platform.h>
 #include <movingplatform.h>
 #include <timedplatform.h>
+#include <timedmovingplatform.h>
+#include <memory>
 
 int game_jumping()
 {
@@ -49,31 +51,46 @@ int game_jumping()
         return 1;
     }
     texture2.setRepeated(true);
-    std::vector<sf::Sprite> mury;
-    sf::Sprite mur1;
-    mur1.setTexture(texture2);
-    mur1.setTextureRect(sf::IntRect(38,22,104,80));
-    mur1.setPosition(200,500);
-    mur1.setScale(1,1);
-    mury.emplace_back(mur1);
+    std::unique_ptr<Platform> ptr;
+    ptr = std::make_unique<Platform>();
 
-    mur1.setPosition(400,400);
-    mury.emplace_back(mur1);
+    std::vector<Platform *> platformpointers;
+    Platform *pointer;
 
-    mur1.setPosition(800,500);
-    mury.emplace_back(mur1);
+    pointer = new MovingPlatform(50,55);
+    platformpointers.emplace_back(pointer);
+    platformpointers[0]->setTexture(texture2);
+    platformpointers[0]->setPosition(200,500);
+    MovingPlatform *movtempfirst = dynamic_cast<MovingPlatform *>(platformpointers[0]);
+    movtempfirst->SetTextureRectAndMiddle(sf::IntRect(38,22,104,80));
+
+    pointer = new MovingPlatform(20,70);
+    platformpointers.emplace_back(pointer);
+    platformpointers[1]->setTexture(texture2);
+    platformpointers[1]->setPosition(400,400);
+    movtempfirst = dynamic_cast<MovingPlatform *>(platformpointers[1]);
+    movtempfirst->SetTextureRectAndMiddle(sf::IntRect(38,22,104,80));
+
+    pointer = new MovingPlatform(40,80);
+    platformpointers.emplace_back(pointer);
+    platformpointers[2]->setTexture(texture2);
+    platformpointers[2]->setPosition(800,500);
+    movtempfirst = dynamic_cast<MovingPlatform *>(platformpointers[2]);
+    movtempfirst->SetTextureRectAndMiddle(sf::IntRect(38,22,104,80));
 
     ludek.setTextureRect(sf::IntRect(14,6,19,31));
     // run the program as long as the window is open
     sf::Clock clock1;
     while (window.isOpen()) {
 
-        ludek.step(clock1);
-        for(auto &el : mury){
-            if(ludek.getGlobalBounds().intersects(el.getGlobalBounds())){
-                ludek.SetSpeed(-200);
+        for(auto &el : platformpointers){
+            MovingPlatform *movtemp = dynamic_cast<MovingPlatform *>(el);
+            movtemp->step(clock1.getElapsedTime());
+            if(ludek.getGlobalBounds().intersects(el->getGlobalBounds())){
+                ludek.SetSpeed(-400);
             }
         }
+        ludek.step(clock1);
         sf::Event event;
         // check all the window's events that were triggered since the last iteration of the loop
         while (window.pollEvent(event)) {
@@ -100,10 +117,10 @@ int game_jumping()
         window.clear(sf::Color::Black);
 
         // draw everything here...
-        window.draw(grass);
+        //window.draw(grass);
         window.draw(ludek);
-        for(auto &el : mury){
-            window.draw(el);
+        for(auto &el : platformpointers){
+            window.draw(*el);
         }
 
         // end the current frame

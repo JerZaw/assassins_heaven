@@ -8,8 +8,7 @@
 class Platform : public sf::Sprite
 {
 public:
-    Platform();
-    virtual void step(const sf::Time &elapsed){};
+    Platform(){};
 };
 
 #endif // PLATFORM_H

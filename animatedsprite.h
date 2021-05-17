@@ -13,7 +13,7 @@ private:
     int current=0;
     int my_fps;
     float speed=100;
-    float acceleration=100;
+    float acceleration=300;
     sf::Time dlugi_czas = sf::Time::Zero;
 public:
     AnimatedSprite(const int &fps=1){
