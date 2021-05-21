@@ -6,12 +6,12 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-class MovingPlatform : public Platform
+class MovingPlatform : public virtual Platform
 {
 private:
     int speed;
     int moving_boundary;
-    float x_srodka;
+    float x_srodka=600;
 public:
 
     MovingPlatform(int arg_speed, int arg_moving_boundary){
@@ -29,11 +29,9 @@ public:
         }
     }
 
-    void SetTextureRectAndMiddle(const sf::IntRect &rectangle){ //podczas ustawiania pozycji liczy środek X platformy, by potem w step przesuwać aż bok się zetknie z Xsr+-granica
-        this->setTextureRect(rectangle);
+    void SetMiddle(){ //podczas ustawiania pozycji liczy środek X platformy, by potem w step przesuwać aż bok się zetknie z Xsr+-granica
         this->x_srodka = (this->getPosition().x+this->getPosition().x+this->getGlobalBounds().width)/2;
         if(this->getGlobalBounds().width > 2*moving_boundary){ //granica musi mieścić w środku platformę, inaczej się nie rusza
-            std::cerr<<this->getGlobalBounds().width<<std::endl;
             std::cerr<<"uwaga ustawiam speed=0, za mala granica ruchu co do wielkosci platformy\n";
             this->speed=0;
         }
