@@ -1,1 +1,0 @@
-#include "timedmovingplatform.h"

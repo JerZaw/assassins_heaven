@@ -9,18 +9,21 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <animatedsprite.h>
+#include <cmath>
 
 class GameElements
 {
 private:
     std::vector<Platform *> platformpointers;
     int difficulty = 0;
-    float speed = 20;
+    float speed = 20, last_speed;
     sf::Texture current_platform_texture;
     sf::Texture current_hero_texture;
     sf::IntRect current_platform_texture_rect;
     AnimatedSprite ludek;
     bool hero_alive = true;
+    bool was_too_high = false;
+    sf::Time high_time;
 public:
     GameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture){
         this->current_hero_texture = hero_texture;
@@ -55,6 +58,7 @@ public:
         pom_ludek.setPosition(600,0);
 
         ludek = pom_ludek;
+        ludek.setPosition(600,500);
     }
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
@@ -66,7 +70,7 @@ public:
 
     }
 
-    void step(const sf::Time &elapsed){
+    void step(const sf::Time &elapsed, const sf::Window &okno){
         for(int i=0;i<int(platformpointers.size());i++){
             platformpointers[i]->step(elapsed);
             platformpointers[i]->move(0,speed*difficulty*elapsed.asSeconds());
@@ -83,32 +87,54 @@ public:
             if(platformpointers[i]->getGlobalBounds().top>1000/*window_size_y*/){
                 this->generate_new(i);
             }
+            else if(platformpointers[i]->getGlobalBounds().top > 0){
+                platformpointers[i]->ChangeWorkingState(true);
+            }
             if(ludek.getPosition().y>1000){
                 this->hero_alive=false;
             }
         }
         ludek.step(elapsed);
+        ludek.check_hero_move(okno);
+
+        if(ludek.getPosition().y < 100 && ludek.GetVerticalSpeed() < 0){
+            if(!this->was_too_high){
+                this->last_speed = this->speed;
+                this->was_too_high = true;
+            }
+            this->speed = fabs(ludek.GetVerticalSpeed());
+            this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed()+ 800*elapsed.asSeconds());
+        }
+        else if(this->was_too_high){
+            this->speed = this->last_speed;
+        }
+
+//        if(ludek.getPosition().y < 100 && !this->was_too_high){
+//            std::cerr<<"too high\n";
+//            this->last_speed = this->speed;
+//            this->speed = fabs(ludek.GetVerticalSpeed()-100);
+//            this->ludek.SetVerticalSpeed(0);
+//            this->was_too_high = true;
+//            high_time = sf::milliseconds(200);
+//        }
+//        else if (high_time > sf::Time::Zero){
+//        //else if (ludek.getPosition().y > 200 && this->was_too_high){
+//            //std::cerr<<"NOT## too high\n";
+//            //this->speed = this->last_speed;
+//            //this->was_too_high = false;
+//            high_time-=elapsed;
+//        }
+//        else if( this->was_too_high){
+//            this->speed = this->last_speed;
+//            this->was_too_high = false;
+//        }
     }
 
     bool Game_alive(){
         return this->hero_alive;
     }
 
-    void check_hero_move(const sf::Window &okno){
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
-            ludek.SetPress(1);
-            if (ludek.getGlobalBounds().left+ludek.getGlobalBounds().width > okno.getSize().x){
-                ludek.move(-(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width - okno.getSize().x),0);
-            }
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-            ludek.SetPress(2);
-            if (ludek.getGlobalBounds().left < 0){
-                ludek.move(-ludek.getGlobalBounds().left,0);
-            }
-        }
-        else ludek.SetPress(0);
-    }
+
 
     AnimatedSprite GetLudek(){
         return this->ludek;
@@ -116,7 +142,7 @@ public:
 
     float random_position_y(int iterator){
         float vec_y;
-        vec_y = rand()%130+50;
+        vec_y = rand()%50+50;
         if(iterator==0){
             vec_y+=platformpointers[platformpointers.size()-1]->getPosition().y;
         }

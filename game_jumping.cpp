@@ -52,7 +52,7 @@ int game_jumping()
         return 1;
     }
 
-    GameElements plansza(15,platform_texture,sf::IntRect(38,22,104,80),2,hero_texture);
+    GameElements plansza(30,platform_texture,sf::IntRect(38,22,104,80),2,hero_texture);
 
 
     // run the program as long as the window is open
@@ -60,17 +60,8 @@ int game_jumping()
     while (window.isOpen()) {
         while(plansza.Game_alive()){
 
-            plansza.step(chron1.reset(true));
+            plansza.step(chron1.reset(true),window);
 
-            sf::Event event;
-            // check all the window's events that were triggered since the last iteration of the loop
-            while (window.pollEvent(event)) {
-                // "close requested" event: we close the window
-                if (event.type == sf::Event::Closed)
-                    window.close();
-            }
-
-            plansza.check_hero_move(window);
 
             // clear the window with black color
             window.clear(sf::Color::Black);
@@ -86,6 +77,14 @@ int game_jumping()
             window.display();
         }
         chron1.pause();
+
+        sf::Event event;
+        // check all the window's events that were triggered since the last iteration of the loop
+        while (window.pollEvent(event)) {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
     }
 
     return 0;

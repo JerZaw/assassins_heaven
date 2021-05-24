@@ -8,7 +8,7 @@
 class Platform : public sf::Sprite
 {
 private:
-    bool working = true;
+    bool working = false;
 public:
     Platform(){};
     virtual void step(const sf::Time &elapsed){};

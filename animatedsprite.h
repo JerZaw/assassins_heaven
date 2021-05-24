@@ -26,7 +26,7 @@ public:
         rec_vec.emplace_back(rect);
     }
 
-    void step(const sf::Time &elapsed){ //restartuje zegar samo w sobie, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
+    void step(const sf::Time &elapsed){ //wymaga restartu zegara, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
         sf::Time pom(sf::milliseconds(1000/this->my_fps));
         this->dlugi_czas+=elapsed;
 
@@ -58,8 +58,20 @@ public:
         return this->verticalspeed;
     }
 
-    void SetPress(int change_to){
-        this->pressed=change_to;
+    void check_hero_move(const sf::Window &okno){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
+            this->pressed = 1;
+            if (this->getGlobalBounds().left+this->getGlobalBounds().width > okno.getSize().x){
+                this->move(-(this->getGlobalBounds().left + this->getGlobalBounds().width - okno.getSize().x),0);
+            }
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+            this->pressed = 2;
+            if (this->getGlobalBounds().left < 0){
+                this->move(-this->getGlobalBounds().left,0);
+            }
+        }
+        else this->pressed = 0;
     }
 };
 
