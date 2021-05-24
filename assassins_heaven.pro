@@ -14,7 +14,7 @@ SOURCES += \
         highscores.cpp \
         main.cpp \
         menu.cpp \
-        rules.cpp \
+        rules.cpp
 
 HEADERS += \
     Chronometer.hpp \
@@ -22,6 +22,7 @@ HEADERS += \
     game_elements.h \
     movingplatform.h \
     platform.h \
+    scoretable.h \
     timedmovingplatform.h \
     timedplatform.h
 

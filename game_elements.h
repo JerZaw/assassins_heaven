@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 #include <animatedsprite.h>
 #include <cmath>
+#include <scoretable.h>
 
 class GameElements
 {
@@ -17,23 +18,30 @@ private:
     std::vector<Platform *> platformpointers;
     int difficulty = 0;
     float speed = 20, last_speed;
-    sf::Texture current_platform_texture;
+    sf::Texture current_element_texture;
     sf::Texture current_hero_texture;
     sf::IntRect current_platform_texture_rect;
     AnimatedSprite ludek;
     bool hero_alive = true;
     bool was_too_high = false;
     sf::Time high_time;
+    int points = 0;
+    ScoreTable score_table;
 public:
-    GameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture){
+    GameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture,
+                 const sf::Font *arg_font){
         this->current_hero_texture = hero_texture;
         this->create_ludek();
         this->difficulty = arg_difficulty;
-        this->current_platform_texture = texture;
+        this->current_element_texture = texture;
+
+        ScoreTable pom_table(current_element_texture,arg_font);
+        score_table = pom_table;
+
         this->current_platform_texture_rect = texture_rect;
         for(int i=0;i<count;i++){
             this->platformpointers.emplace_back(this->random_platform(this->difficulty));
-            this->platformpointers[i]->setTexture(this->current_platform_texture);
+            this->platformpointers[i]->setTexture(this->current_element_texture);
             this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
             if(i==0){
                 this->platformpointers[i]->setPosition(600,850);
@@ -55,7 +63,6 @@ public:
         pom_ludek.add_animation_frame(sf::IntRect(317, 6, 20, 31)); // 7 frame
         pom_ludek.add_animation_frame(sf::IntRect(366, 6, 20, 30)); // 8 frame
         pom_ludek.setTextureRect(sf::IntRect(14,6,19,31));
-        pom_ludek.setPosition(600,0);
 
         ludek = pom_ludek;
         ludek.setPosition(600,500);
@@ -63,7 +70,7 @@ public:
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
         this->platformpointers[i] = this->random_platform(this->difficulty);
-        this->platformpointers[i]->setTexture(this->current_platform_texture);
+        this->platformpointers[i]->setTexture(this->current_element_texture);
         this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
         this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
         this->platformpointers[i]->SetMiddle();
@@ -71,9 +78,14 @@ public:
     }
 
     void step(const sf::Time &elapsed, const sf::Window &okno){
+
+        if(points>15)difficulty=1;
+        else if(points>30)difficulty=2;
+        else if(points>45)difficulty=3;
+
         for(int i=0;i<int(platformpointers.size());i++){
             platformpointers[i]->step(elapsed);
-            platformpointers[i]->move(0,speed*difficulty*elapsed.asSeconds());
+            platformpointers[i]->move(0,speed*((difficulty+1.0)*2.0)*elapsed.asSeconds());
             if(platformpointers[i]->Is_working()){
                 if(ludek.getGlobalBounds().intersects(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
                                                                     platformpointers[i]->getGlobalBounds().top,
@@ -84,60 +96,54 @@ public:
                     }
                 }
             }
-            if(platformpointers[i]->getGlobalBounds().top>1000/*window_size_y*/){
+            if(platformpointers[i]->getGlobalBounds().top>okno.getSize().y){
                 this->generate_new(i);
+                points++;
             }
             else if(platformpointers[i]->getGlobalBounds().top > 0){
                 platformpointers[i]->ChangeWorkingState(true);
             }
-            if(ludek.getPosition().y>1000){
+            if(ludek.getPosition().y>okno.getSize().y){
                 this->hero_alive=false;
             }
         }
         ludek.step(elapsed);
         ludek.check_hero_move(okno);
 
-        if(ludek.getPosition().y < 100 && ludek.GetVerticalSpeed() < 0){
+        if(ludek.getPosition().y < 250){//przesuwanie planszy gdy gracz wyskoczy ponad okno
             if(!this->was_too_high){
                 this->last_speed = this->speed;
                 this->was_too_high = true;
+                //this->speed = fabs(ludek.GetVerticalSpeed());
+                //this->ludek.SetVerticalSpeed(fabs(ludek.GetVerticalSpeed())*2);
             }
-            this->speed = fabs(ludek.GetVerticalSpeed());
-            this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed()+ 800*elapsed.asSeconds());
+            else{
+                this->speed+=500*elapsed.asSeconds();
+                this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed()+ 2000*elapsed.asSeconds());
+            }
         }
-        else if(this->was_too_high){
-            this->speed = this->last_speed;
+        else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
+            if(this->speed > this->last_speed){
+                this->speed -=1500*elapsed.asSeconds();
+            }
+            else {
+                this->was_too_high = false;
+                this->speed = this->last_speed;
+            }
         }
-
-//        if(ludek.getPosition().y < 100 && !this->was_too_high){
-//            std::cerr<<"too high\n";
-//            this->last_speed = this->speed;
-//            this->speed = fabs(ludek.GetVerticalSpeed()-100);
-//            this->ludek.SetVerticalSpeed(0);
-//            this->was_too_high = true;
-//            high_time = sf::milliseconds(200);
-//        }
-//        else if (high_time > sf::Time::Zero){
-//        //else if (ludek.getPosition().y > 200 && this->was_too_high){
-//            //std::cerr<<"NOT## too high\n";
-//            //this->speed = this->last_speed;
-//            //this->was_too_high = false;
-//            high_time-=elapsed;
-//        }
-//        else if( this->was_too_high){
-//            this->speed = this->last_speed;
-//            this->was_too_high = false;
-//        }
+        score_table.update(points);
     }
 
     bool Game_alive(){
         return this->hero_alive;
     }
 
-
-
     AnimatedSprite GetLudek(){
         return this->ludek;
+    }
+
+    ScoreTable GetScoreTable(){
+        return this->score_table;
     }
 
     float random_position_y(int iterator){
@@ -199,9 +205,9 @@ public:
     }
 
     void SetTexture (sf::Texture texture, sf::IntRect texture_rect){
-        this->current_platform_texture = texture;
+        this->current_element_texture = texture;
         for(auto &el : this->platformpointers){
-            el->setTexture(current_platform_texture);
+            el->setTexture(current_element_texture);
             el->setTextureRect(texture_rect);
             el->SetMiddle();
         }

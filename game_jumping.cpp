@@ -46,13 +46,19 @@ int game_jumping()
     }
 
 
-    sf::Texture platform_texture;
-    if (!platform_texture.loadFromFile("notexture.jpg")) {
+    sf::Texture elements_texture;
+    if (!elements_texture.loadFromFile("notexture.jpg")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
 
-    GameElements plansza(30,platform_texture,sf::IntRect(38,22,104,80),2,hero_texture);
+    sf::Font *points_font = new sf::Font;
+    if (!points_font->loadFromFile("arial.ttf")) {
+        std::cerr << "Could not load font" << std::endl;
+        return 1;
+    }
+
+    GameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font);
 
 
     // run the program as long as the window is open
@@ -61,7 +67,6 @@ int game_jumping()
         while(plansza.Game_alive()){
 
             plansza.step(chron1.reset(true),window);
-
 
             // clear the window with black color
             window.clear(sf::Color::Black);
@@ -72,6 +77,8 @@ int game_jumping()
             for(auto &el : plansza.GetPlatformsVec()){
                 window.draw(*el);
             }
+            window.draw(plansza.GetScoreTable().GetBackground());
+            window.draw(plansza.GetScoreTable().GetText());
 
             // end the current frame
             window.display();
