@@ -58,7 +58,7 @@ int game_jumping()
         return 1;
     }
 
-    GameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font);
+    GameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font, &window);
 
 
     // run the program as long as the window is open
@@ -73,12 +73,7 @@ int game_jumping()
 
             // draw everything here...
             window.draw(background);
-            window.draw(plansza.GetLudek());
-            for(auto &el : plansza.GetPlatformsVec()){
-                window.draw(*el);
-            }
-            window.draw(plansza.GetScoreTable().GetBackground());
-            window.draw(plansza.GetScoreTable().GetText());
+            plansza.draw();
 
             // end the current frame
             window.display();

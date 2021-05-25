@@ -9,15 +9,18 @@ class ScoreTable
 {
 private:
     sf::Sprite background_table;
-    sf::Texture texture;
     const sf::Font *font1;
     sf::Text points_text;
+    sf::RenderWindow *okno;
 public:
     ScoreTable(){};
-    ScoreTable(const sf::Texture &arg_texture, const sf::Font *arg_font){
+    ScoreTable(const sf::Texture &arg_texture, const sf::Font *arg_font, sf::RenderWindow *arg_okno,
+               const sf::IntRect &arg_rect, const sf::Vector2f &arg_position){
             background_table.setTexture(arg_texture);
-            background_table.setTextureRect(sf::IntRect(0,0,200,60));
+            background_table.setTextureRect(arg_rect);
             background_table.setPosition(600-background_table.getGlobalBounds().width/2,10);
+
+            this->okno = arg_okno;
 
             font1 = arg_font;
             points_text.setFont(*font1);
@@ -25,14 +28,12 @@ public:
             points_text.setStyle(sf::Text::Regular);
             points_text.setString("0");
             points_text.setFillColor(sf::Color::Black);
-            points_text.setPosition(600,15);
+            points_text.setPosition(arg_position);
     }
 
-    sf::Sprite GetBackground(){
-        return background_table;
-    }
-    sf::Text GetText(){
-        return points_text;
+    void draw(){
+        okno->draw(background_table);
+        okno->draw(points_text);
     }
 
     void update(int points){

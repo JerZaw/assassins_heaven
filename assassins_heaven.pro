@@ -23,6 +23,8 @@ HEADERS += \
     movingplatform.h \
     platform.h \
     scoretable.h \
+    smallelementcoin.h \
+    taskelement.h \
     timedmovingplatform.h \
     timedplatform.h
 

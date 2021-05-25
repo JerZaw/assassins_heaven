@@ -14,13 +14,14 @@ private:
     float x_srodka=600;
 public:
 
-    MovingPlatform(int arg_speed, int arg_moving_boundary){
+    MovingPlatform(int arg_speed, int arg_moving_boundary,const sf::Texture &arg_texture): Platform(arg_texture){
         this->speed = arg_speed;
         this->moving_boundary = arg_moving_boundary;
     }
 
     void step(const sf::Time &elapsed){ //przesuwa platformę w jedną stronę aż dotknie granicy, potem w drugą stronę itd, wymaga resetu zegara
         this->move(speed*elapsed.asSeconds(),0);
+        if(this->GetCoin()!=nullptr)this->GetCoin()->move(speed*elapsed.asSeconds(),0);
         if(this->getPosition().x+this->getGlobalBounds().width > x_srodka+moving_boundary){
             this->speed=-abs(this->speed);
         }

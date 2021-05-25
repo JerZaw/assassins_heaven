@@ -14,9 +14,13 @@ private:
     sf::Time currenttime = sf::Time::Zero;
     bool activated = false;
 public:
+    TimedPlatform(int arg_disappear_time,const sf::Texture &arg_texture): Platform(arg_texture){
+        this->disappear_time = arg_disappear_time;
+    }
     TimedPlatform(int arg_disappear_time){
         this->disappear_time = arg_disappear_time;
     }
+
     void step(const sf::Time &elapsed){
         if(activated){
             this->currenttime+=elapsed;

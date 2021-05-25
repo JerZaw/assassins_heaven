@@ -26,6 +26,10 @@ public:
         rec_vec.emplace_back(rect);
     }
 
+    void accelerate(float added_acceleration){
+        acceleration+=added_acceleration;
+    }
+
     void step(const sf::Time &elapsed){ //wymaga restartu zegara, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
         sf::Time pom(sf::milliseconds(1000/this->my_fps));
         this->dlugi_czas+=elapsed;

@@ -17,8 +17,8 @@ class GameElements
 private:
     std::vector<Platform *> platformpointers;
     int difficulty = 0;
-    float speed = 20, last_speed;
-    sf::Texture current_element_texture;
+    float speed = 30, last_speed;
+    sf::Texture elements_textures;
     sf::Texture current_hero_texture;
     sf::IntRect current_platform_texture_rect;
     AnimatedSprite ludek;
@@ -26,29 +26,45 @@ private:
     bool was_too_high = false;
     sf::Time high_time;
     int points = 0;
-    ScoreTable score_table;
+    int money = 0;
+    ScoreTable points_table, money_table;
+    sf::RenderWindow *okno;
 public:
     GameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture,
-                 const sf::Font *arg_font){
+                 const sf::Font *arg_font, sf::RenderWindow *arg_okno){
+        this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
         this->create_ludek();
         this->difficulty = arg_difficulty;
-        this->current_element_texture = texture;
+        this->elements_textures = texture;
 
-        ScoreTable pom_table(current_element_texture,arg_font);
-        score_table = pom_table;
+        ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(600,15));
+        points_table = pom_table;
+
+        ScoreTable pom2_table(elements_textures,arg_font,okno,sf::IntRect(0,0,100,60),sf::Vector2f(0,15));
+        money_table = pom2_table;
 
         this->current_platform_texture_rect = texture_rect;
         for(int i=0;i<count;i++){
             this->platformpointers.emplace_back(this->random_platform(this->difficulty));
-            this->platformpointers[i]->setTexture(this->current_element_texture);
+            this->platformpointers[i]->setTexture(this->elements_textures);
             this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
             if(i==0){
                 this->platformpointers[i]->setPosition(600,850);
             }
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
+            this->platformpointers[i]->random_coin();
         }
+    }
+
+    void draw(){
+        for(auto &el : platformpointers){
+            el->draw(okno);
+        }
+        points_table.draw();
+        money_table.draw();
+        okno->draw(ludek);
     }
 
     void create_ludek(){
@@ -70,39 +86,57 @@ public:
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
         this->platformpointers[i] = this->random_platform(this->difficulty);
-        this->platformpointers[i]->setTexture(this->current_element_texture);
+        this->platformpointers[i]->setTexture(this->elements_textures);
         this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
         this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
         this->platformpointers[i]->SetMiddle();
+        this->platformpointers[i]->random_coin();
 
     }
 
     void step(const sf::Time &elapsed, const sf::Window &okno){
 
-        if(points>15)difficulty=1;
-        else if(points>30)difficulty=2;
-        else if(points>45)difficulty=3;
+        if(points>45){
+            difficulty=3;
+        }
+        else if(points>30){
+            difficulty=2;;
+        }
+        else if(points>15){
+            difficulty=1;
+        }
+
+        speed+=elapsed.asSeconds()*3;  //przyspieszanie całości z biegiem czasu
+        last_speed+=elapsed.asSeconds()*3;
+        ludek.accelerate(elapsed.asSeconds()*3);
 
         for(int i=0;i<int(platformpointers.size());i++){
+            platformpointers[i]->step_y(elapsed,this->speed);
             platformpointers[i]->step(elapsed);
-            platformpointers[i]->move(0,speed*((difficulty+1.0)*2.0)*elapsed.asSeconds());
+
             if(platformpointers[i]->Is_working()){
                 if(ludek.getGlobalBounds().intersects(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
                                                                     platformpointers[i]->getGlobalBounds().top,
                                                                     platformpointers[i]->getGlobalBounds().width, 1))){ //zderzenie z górą platformy
-                    if(ludek.GetVerticalSpeed()>0){
+                    if(ludek.GetVerticalSpeed()>100){
                         ludek.SetVerticalSpeed(-600);
                         platformpointers[i]->activate();
+                        if(platformpointers[i]->GetCoin()!=nullptr){
+                            money+=platformpointers[i]->GetCoin()->picked();
+                            money_table.update(money);
+                        }
                     }
                 }
             }
-            if(platformpointers[i]->getGlobalBounds().top>okno.getSize().y){
+            if(platformpointers[i]->getPosition().y>okno.getSize().y){
                 this->generate_new(i);
                 points++;
+                points_table.update(points);
             }
             else if(platformpointers[i]->getGlobalBounds().top > 0){
                 platformpointers[i]->ChangeWorkingState(true);
             }
+
             if(ludek.getPosition().y>okno.getSize().y){
                 this->hero_alive=false;
             }
@@ -110,7 +144,12 @@ public:
         ludek.step(elapsed);
         ludek.check_hero_move(okno);
 
-        if(ludek.getPosition().y < 250){//przesuwanie planszy gdy gracz wyskoczy ponad okno
+        check_if_too_high(elapsed);
+    }
+
+    void check_if_too_high(const sf::Time &elapsed){
+
+        if(ludek.getPosition().y < 200){//przesuwanie planszy gdy gracz wyskoczy ponad okno
             if(!this->was_too_high){
                 this->last_speed = this->speed;
                 this->was_too_high = true;
@@ -118,96 +157,100 @@ public:
                 //this->ludek.SetVerticalSpeed(fabs(ludek.GetVerticalSpeed())*2);
             }
             else{
-                this->speed+=500*elapsed.asSeconds();
-                this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed()+ 2000*elapsed.asSeconds());
+                this->speed+=70*elapsed.asSeconds();
+                if(ludek.getPosition().y<0){
+                    ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() + 800*elapsed.asSeconds());
+                }//this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() - 75*elapsed.asSeconds());
             }
         }
         else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
             if(this->speed > this->last_speed){
-                this->speed -=1500*elapsed.asSeconds();
+                this->speed -=120*elapsed.asSeconds();
             }
             else {
                 this->was_too_high = false;
                 this->speed = this->last_speed;
             }
         }
-        score_table.update(points);
+
+        //        if(ludek.getPosition().y < 200){//przesuwanie planszy gdy gracz wyskoczy ponad okno
+        //            if(!this->was_too_high){
+        //                this->last_speed = this->speed;
+        //                this->was_too_high = true;
+        //                //this->speed = fabs(ludek.GetVerticalSpeed());
+        //                //this->ludek.SetVerticalSpeed(fabs(ludek.GetVerticalSpeed())*2);
+        //            }
+        //            else{
+        //                this->speed+=500*elapsed.asSeconds();
+        //                //this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed()+ 2000*elapsed.asSeconds());
+        //            }
+        //        }
+        //        else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
+        //            if(this->speed > this->last_speed){
+        //                this->speed -=1500*elapsed.asSeconds();
+        //            }
+        //            else {
+        //                this->was_too_high = false;
+        //                this->speed = this->last_speed;
+        //            }
+        //        }
     }
 
     bool Game_alive(){
         return this->hero_alive;
     }
 
-    AnimatedSprite GetLudek(){
-        return this->ludek;
-    }
-
-    ScoreTable GetScoreTable(){
-        return this->score_table;
-    }
-
     float random_position_y(int iterator){
         float vec_y;
-        vec_y = rand()%50+50;
+        switch (this->difficulty) {
+        case 0 :  vec_y = rand()%2;break;
+        case 1 :  vec_y = rand()%6;break;
+        case 2 :  vec_y = rand()%12;break;
+        case 3 :  vec_y = rand()%20;break;
+        default:  vec_y = rand()%2;break;
+        }
+
         if(iterator==0){
-            vec_y+=platformpointers[platformpointers.size()-1]->getPosition().y;
+            vec_y = platformpointers[platformpointers.size()-1]->getPosition().y - vec_y
+                    - platformpointers[platformpointers.size()-1]->getGlobalBounds().height;
         }
         else{
-            vec_y=platformpointers[iterator-1]->getPosition().y-vec_y;
+            vec_y = platformpointers[iterator-1]->getPosition().y - vec_y
+                    - platformpointers[platformpointers.size()-1]->getGlobalBounds().height;
         }
         return vec_y;
     }
 
     float random_position_x(int iterator){
         float vec_x;
-        float last_x;
+        float last_x,last_width;
         if(iterator==0){
             last_x = platformpointers[platformpointers.size()-1]->getPosition().x;
+            last_width = platformpointers[platformpointers.size()-1]->getGlobalBounds().width;
         }
         else{
             last_x = platformpointers[iterator-1]->getPosition().x;
+            last_width = platformpointers[iterator-1]->getGlobalBounds().width;
         }
 
         do{
             int pluspom = rand()%2;
             int pom = rand()%300+100;
             if(pluspom==0){
-                pom*=-1;
+                vec_x = last_x - pom - last_width;
             }
-            vec_x = last_x + pom;
+            else{
+                vec_x = last_x + pom + last_width;
+            }
         }
         while(vec_x + platformpointers[iterator]->getGlobalBounds().width > 1200-int(platformpointers[iterator]->getGlobalBounds().width+5)
               || vec_x < 5);
 
         return vec_x;
-
-
-
-
-        //        if(iterator==0){
-        //            do{
-        //            vec_x = rand()%(1200-int(platformpointers[iterator]->getGlobalBounds().width+1));
-        //            }
-        //            while(vec_x<(platformpointers[platformpointers.size()-1]->getPosition().x-60)
-        //                  ||vec_x>(platformpointers[platformpointers.size()-1]->getPosition().x +
-        //                  platformpointers[platformpointers.size()-1]->getGlobalBounds().width + 60));
-        //        }
-        //        else{
-        //            do{
-        //            vec_x = rand()%(1200-int(platformpointers[iterator]->getGlobalBounds().width+1));
-        //            }
-        //            while(vec_x>(platformpointers[iterator-1]->getPosition().x-60)
-        //                  &&vec_x<(platformpointers[iterator-1]->getPosition().x +
-        //                  platformpointers[iterator-1]->getGlobalBounds().width+60));
-        //        }
-
-        //        return vec_x;
     }
 
-    void SetTexture (sf::Texture texture, sf::IntRect texture_rect){
-        this->current_element_texture = texture;
+    void SetPlatformTextureRect (const sf::IntRect &texture_rect){
         for(auto &el : this->platformpointers){
-            el->setTexture(current_element_texture);
             el->setTextureRect(texture_rect);
             el->SetMiddle();
         }
@@ -248,16 +291,12 @@ public:
         else num=0;
         Platform* rand_plat;
         switch(num){
-        case 1: rand_plat = new MovingPlatform(speed,boundary);break;
-        case 2: rand_plat = new TimedPlatform(time_);break;
-        case 3: rand_plat = new TimedMovingPlatform(speed,boundary,time_);break;
-        default: rand_plat = new Platform;break;
+        case 1: rand_plat = new MovingPlatform(speed,boundary,elements_textures);break;
+        case 2: rand_plat = new TimedPlatform(time_,elements_textures);break;
+        case 3: rand_plat = new TimedMovingPlatform(speed,boundary,time_,elements_textures);break;
+        default: rand_plat = new Platform(elements_textures);break;
         }
         return rand_plat;
-    }
-
-    std::vector<Platform *> GetPlatformsVec(){
-        return this->platformpointers;
     }
 
 };
