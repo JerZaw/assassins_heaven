@@ -18,7 +18,7 @@ public:
                const sf::IntRect &arg_rect, const sf::Vector2f &arg_position){
             background_table.setTexture(arg_texture);
             background_table.setTextureRect(arg_rect);
-            background_table.setPosition(600-background_table.getGlobalBounds().width/2,10);
+            background_table.setPosition(arg_position);
 
             this->okno = arg_okno;
 

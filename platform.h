@@ -50,8 +50,10 @@ public:
         int pom = rand()%12;
         SmallElementCoin *pom_coin;
         switch (pom) {
-        case 0 : pom_coin = new SmallElementCoin(1,0,texture,sf::IntRect(0,0,15,15));break;
-        case 1 : pom_coin = new SmallElementCoin(2,0,texture,sf::IntRect(0,0,15,15));break;
+        case 1 : pom_coin = new SmallElementCoin(1,0,texture,sf::IntRect(0,0,15,15));break;
+        case 2 : pom_coin = new SmallElementCoin(2,0,texture,sf::IntRect(0,0,15,15));break;
+        case 4 : pom_coin = new SmallElementCoin(4,0,texture,sf::IntRect(0,0,15,15));break;
+        case 0 : pom_coin = new TaskElement(0,0,texture,sf::IntRect(0,0,25,25));break;
         default: pom_coin = nullptr;
         }
         if(pom_coin!=nullptr){

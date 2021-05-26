@@ -1,17 +1,8 @@
-#include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <vector>
-#include <animatedsprite.h>
-#include <platform.h>
-#include <movingplatform.h>
-#include <timedplatform.h>
-#include <timedmovingplatform.h>
-#include <memory>
 #include <cstdlib>
 #include <ctime>
-#include <windows.h>
-#include <game_elements.h>
+#include <jumping_game_elements.h>
 #include <Chronometer.hpp>
 
 
@@ -58,15 +49,15 @@ int game_jumping()
         return 1;
     }
 
-    GameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font, &window);
-
-
-    // run the program as long as the window is open
     sftools::Chronometer chron1;
+
+    JumpingGameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font, &window, &chron1);
+    chron1.reset(true);
+    // run the program as long as the window is open
     while (window.isOpen()) {
         while(plansza.Game_alive()){
 
-            plansza.step(chron1.reset(true),window);
+            plansza.step(chron1.reset_if(),window);
 
             // clear the window with black color
             window.clear(sf::Color::Black);

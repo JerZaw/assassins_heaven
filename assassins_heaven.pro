@@ -10,16 +10,19 @@ CONFIG(debug, debug|release){
     LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
 }
 SOURCES += \
+        fighting_game.cpp \
         game_jumping.cpp \
         highscores.cpp \
         main.cpp \
         menu.cpp \
+        mind_game.cpp \
         rules.cpp
 
 HEADERS += \
     Chronometer.hpp \
     animatedsprite.h \
-    game_elements.h \
+    jumping_game_elements.h \
+    mind_game_elements.h \
     movingplatform.h \
     platform.h \
     scoretable.h \

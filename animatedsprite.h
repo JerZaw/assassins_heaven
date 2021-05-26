@@ -30,7 +30,7 @@ public:
         acceleration+=added_acceleration;
     }
 
-    void step(const sf::Time &elapsed){ //wymaga restartu zegara, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
+    void step(const sf::Time &elapsed, const sf::Window &okno){ //wymaga restartu zegara, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
         sf::Time pom(sf::milliseconds(1000/this->my_fps));
         this->dlugi_czas+=elapsed;
 
@@ -52,6 +52,8 @@ public:
         else if(this->pressed==2){
             this->move(-elapsed.asSeconds()*this->horizontalspeed,0);
         }
+
+        this->check_hero_move(okno);
     }
 
     void SetVerticalSpeed(float arg_verticalspeed){

@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <iostream>
+#include <Chronometer.hpp>
 
 class SmallElementCoin : public sf::Sprite
 {
@@ -25,7 +26,8 @@ public:
         switch (value) {
         case 1: return sf::Color::Green;break;
         case 2: return sf::Color::Blue;break;
-        default: return sf::Color::Magenta;break;
+        case 4: return sf::Color::Magenta;break;
+        case 0: return sf::Color::Black;break;
         }
     }
 
@@ -33,9 +35,14 @@ public:
         this->move(speed_x*elapsed.asSeconds(),speed_y*elapsed.asSeconds());
     } 
 
-    int picked(){
+    void SetValue(int arg_value){
+        this->value = arg_value;
+    }
+
+    virtual std::pair<bool,int> picked(sftools::Chronometer *chron,const bool &game_type = 0){
+        std::pair<bool,int> pom(game_type,value);
         this->move(-1000,-1000);
-        return value;
+        return pom;
     }
 
 

@@ -1,5 +1,5 @@
-#ifndef GAMEELEMENTS_H
-#define OBSTACLES_H
+#ifndef JUMPINGGAMEELEMENTS_H
+#define JUMPINGGAMEELEMENTS_H
 
 #include <platform.h>
 #include <movingplatform.h>
@@ -11,8 +11,9 @@
 #include <animatedsprite.h>
 #include <cmath>
 #include <scoretable.h>
+#include <Chronometer.hpp>
 
-class GameElements
+class JumpingGameElements
 {
 private:
     std::vector<Platform *> platformpointers;
@@ -29,14 +30,16 @@ private:
     int money = 0;
     ScoreTable points_table, money_table;
     sf::RenderWindow *okno;
+    sftools::Chronometer *chrono1;
 public:
-    GameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture,
-                 const sf::Font *arg_font, sf::RenderWindow *arg_okno){
+    JumpingGameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture,
+                 const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
         this->create_ludek();
         this->difficulty = arg_difficulty;
         this->elements_textures = texture;
+        this->chrono1 = arg_chrono;
 
         ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(600,15));
         points_table = pom_table;
@@ -122,7 +125,12 @@ public:
                         ludek.SetVerticalSpeed(-600);
                         platformpointers[i]->activate();
                         if(platformpointers[i]->GetCoin()!=nullptr){
-                            money+=platformpointers[i]->GetCoin()->picked();
+                            std::pair<bool,int> pom = platformpointers[i]->GetCoin()->picked(chrono1);
+                            if(pom.first==0)
+                            money+=pom.second;
+                            else{
+
+                            }
                             money_table.update(money);
                         }
                     }
@@ -141,13 +149,11 @@ public:
                 this->hero_alive=false;
             }
         }
-        ludek.step(elapsed);
-        ludek.check_hero_move(okno);
-
+        ludek.step(elapsed,okno);
         check_if_too_high(elapsed);
     }
 
-    void check_if_too_high(const sf::Time &elapsed){
+    void check_if_too_high(const sf::Time &elapsed){ //może by zrobić move zamiast zmieniać prędkość?
 
         if(ludek.getPosition().y < 200){//przesuwanie planszy gdy gracz wyskoczy ponad okno
             if(!this->was_too_high){
@@ -301,4 +307,4 @@ public:
 
 };
 
-#endif // GAMEELEMENTS_H
+#endif // JUMPINGGAMEELEMENTS_H

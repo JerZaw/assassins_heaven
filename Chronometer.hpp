@@ -47,6 +47,21 @@ public:
         return getElapsedTime();
     }
 
+    sf::Time reset_if(){
+        sf::Time time = getElapsedTime();
+
+        if(m_state == PAUSED){
+            m_time = sf::Time::Zero;
+        }
+        else{
+            m_time = sf::Time::Zero;
+            m_state = STOPPED;
+            resume();
+        }
+
+        return time;
+    }
+
     sf::Time reset(bool start = false)
     {
         sf::Time time = getElapsedTime();
