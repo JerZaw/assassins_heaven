@@ -31,8 +31,9 @@ private:
     ScoreTable points_table, money_table;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono1;
+    float hero_jumping_speed = -600;
 public:
-    JumpingGameElements(int count, sf::Texture texture, sf::IntRect texture_rect, int arg_difficulty, sf::Texture hero_texture,
+    JumpingGameElements(const int &count, const sf::Texture &texture, const sf::IntRect &texture_rect, const int &arg_difficulty, const sf::Texture &hero_texture,
                  const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
@@ -41,10 +42,10 @@ public:
         this->elements_textures = texture;
         this->chrono1 = arg_chrono;
 
-        ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(600,15));
+        ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(500,15),sf::Vector2f(600,15));
         points_table = pom_table;
 
-        ScoreTable pom2_table(elements_textures,arg_font,okno,sf::IntRect(0,0,100,60),sf::Vector2f(0,15));
+        ScoreTable pom2_table(elements_textures,arg_font,okno,sf::IntRect(0,0,100,60),sf::Vector2f(0,15),sf::Vector2f(50,15));
         money_table = pom2_table;
 
         this->current_platform_texture_rect = texture_rect;
@@ -112,6 +113,7 @@ public:
         speed+=elapsed.asSeconds()*3;  //przyspieszanie całości z biegiem czasu
         last_speed+=elapsed.asSeconds()*3;
         ludek.accelerate(elapsed.asSeconds()*3);
+        hero_jumping_speed-=elapsed.asSeconds()*3;
 
         for(int i=0;i<int(platformpointers.size());i++){
             platformpointers[i]->step_y(elapsed,this->speed);
@@ -122,9 +124,10 @@ public:
                                                                     platformpointers[i]->getGlobalBounds().top,
                                                                     platformpointers[i]->getGlobalBounds().width, 1))){ //zderzenie z górą platformy
                     if(ludek.GetVerticalSpeed()>100){
-                        ludek.SetVerticalSpeed(-600);
+                        ludek.SetVerticalSpeed(hero_jumping_speed);
                         platformpointers[i]->activate();
                         if(platformpointers[i]->GetCoin()!=nullptr){
+                            platformpointers[i]->GetCoin()->read_data(this->difficulty);
                             std::pair<bool,int> pom = platformpointers[i]->GetCoin()->picked(chrono1);
                             if(pom.first==0)
                             money+=pom.second;
@@ -171,7 +174,7 @@ public:
         }
         else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
             if(this->speed > this->last_speed){
-                this->speed -=120*elapsed.asSeconds();
+                this->speed -=200*elapsed.asSeconds();
             }
             else {
                 this->was_too_high = false;

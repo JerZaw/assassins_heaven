@@ -45,6 +45,8 @@ public:
         return pom;
     }
 
+    virtual void read_data(const int &arg_difficulty){};
+
 
 };
 

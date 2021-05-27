@@ -8,48 +8,51 @@
 
 
 
-int TaskElement::mind_game()
+int TaskElement::mind_game(const int &difficulty)
 {
-//    // create the window
-//    sf::RenderWindow window(sf::VideoMode(1200,1000), "My window",sf::Style::Close);
-//    window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-1200)/2,0));
-//    //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
+    // create the window
+    sf::RenderWindow window(sf::VideoMode(1500,800), "My window",sf::Style::Close);
+    window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-1500)/2,0));
 
-//    // create some shapes
-//    sf::Texture texture1;
-//    if (!texture1.loadFromFile("notexture_background.jpg")) {
-//        std::cerr << "Could not load texture" << std::endl;
-//        return 1;
-//    }
-//    texture1.setRepeated(true);
-//    sf::Sprite background;
-//    background.setTexture(texture1);
-//    background.setScale(1,1);
-//    background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
+    //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
 
-
-//    sf::Texture hero_texture;
-//    if (!hero_texture.loadFromFile("notexture.jpg")) {
-//        std::cerr << "Could not load texture" << std::endl;
-//        return 1;
-//    }
+    // create some shapes
+    sf::Texture texture1;
+    if (!texture1.loadFromFile("notexture_background.jpg")) {
+        std::cerr << "Could not load texture" << std::endl;
+        return 1;
+    }
+    texture1.setRepeated(true);
+    sf::Sprite background;
+    background.setTexture(texture1);
+    background.setScale(1,1);
+    background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
 
-//    sf::Texture elements_texture;
-//    if (!elements_texture.loadFromFile("notexture.jpg")) {
-//        std::cerr << "Could not load texture" << std::endl;
-//        return 1;
-//    }
+    sf::Texture hero_texture;
+    if (!hero_texture.loadFromFile("notexture.jpg")) {
+        std::cerr << "Could not load texture" << std::endl;
+        return 1;
+    }
 
-//    sf::Font *points_font = new sf::Font;
-//    if (!points_font->loadFromFile("arial.ttf")) {
-//        std::cerr << "Could not load font" << std::endl;
-//        return 1;
-//    }
 
-//    sftools::Chronometer chron1;
+    sf::Texture elements_texture;
+    if (!elements_texture.loadFromFile("notexture.jpg")) {
+        std::cerr << "Could not load texture" << std::endl;
+        return 1;
+    }
 
-//    JumpingGameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font, &window, &chron1);
+    sf::Font *points_font = new sf::Font;
+    if (!points_font->loadFromFile("arial.ttf")) {
+        std::cerr << "Could not load font" << std::endl;
+        return 1;
+    }
+
+    sftools::Chronometer chron1;
+
+    MindGameElements mind_plansza(difficulty,elements_texture, sf::IntRect(38,22,104,80),
+                                  hero_texture, points_font, &window,
+                                  &chron1);
 //    chron1.reset(true);
 //    // run the program as long as the window is open
 //    while (window.isOpen()) {

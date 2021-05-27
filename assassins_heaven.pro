@@ -25,6 +25,7 @@ HEADERS += \
     mind_game_elements.h \
     movingplatform.h \
     platform.h \
+    platformwithequation.h \
     scoretable.h \
     smallelementcoin.h \
     taskelement.h \

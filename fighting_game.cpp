@@ -8,7 +8,7 @@
 
 
 
-int TaskElement::fighting_game()
+int TaskElement::fighting_game(const int &difficulty)
 {
 //    srand(time(0));
 //    // create the window
