@@ -53,33 +53,33 @@ int TaskElement::mind_game(const int &difficulty)
     MindGameElements mind_plansza(difficulty,elements_texture, sf::IntRect(38,22,104,80),
                                   hero_texture, points_font, &window,
                                   &chron1);
-//    chron1.reset(true);
-//    // run the program as long as the window is open
-//    while (window.isOpen()) {
-//        while(plansza.Game_alive()){
+    chron1.reset(true);
+    // run the program as long as the window is open
+    while (window.isOpen()) {
+        //while(plansza.Game_alive()){
 
-//            plansza.step(chron1.reset_if(),window);
+            mind_plansza.step();
 
-//            // clear the window with black color
-//            window.clear(sf::Color::Black);
+            // clear the window with black color
+            window.clear(sf::Color::Black);
 
-//            // draw everything here...
-//            window.draw(background);
-//            plansza.draw();
+            // draw everything here...
+            window.draw(background);
+            mind_plansza.draw();
 
-//            // end the current frame
-//            window.display();
-//        }
-//        chron1.pause();
+            // end the current frame
+            window.display();
+        //}
+        chron1.pause();
 
-//        sf::Event event;
-//        // check all the window's events that were triggered since the last iteration of the loop
-//        while (window.pollEvent(event)) {
-//            // "close requested" event: we close the window
-//            if (event.type == sf::Event::Closed)
-//                window.close();
-//        }
-//    }
+        sf::Event event;
+        // check all the window's events that were triggered since the last iteration of the loop
+        while (window.pollEvent(event)) {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+    }
 
     return 0;
 }

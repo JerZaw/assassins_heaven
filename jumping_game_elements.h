@@ -34,7 +34,7 @@ private:
     float hero_jumping_speed = -600;
 public:
     JumpingGameElements(const int &count, const sf::Texture &texture, const sf::IntRect &texture_rect, const int &arg_difficulty, const sf::Texture &hero_texture,
-                 const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
+                        const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
         this->create_ludek();
@@ -59,6 +59,11 @@ public:
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
+
+            if(platformpointers[i]->GetCoin()!=nullptr){
+                this->platformpointers[i]->GetCoin()->read_data(difficulty);
+                this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
+            }
         }
     }
 
@@ -130,7 +135,7 @@ public:
                             platformpointers[i]->GetCoin()->read_data(this->difficulty);
                             std::pair<bool,int> pom = platformpointers[i]->GetCoin()->picked(chrono1);
                             if(pom.first==0)
-                            money+=pom.second;
+                                money+=pom.second;
                             else{
 
                             }

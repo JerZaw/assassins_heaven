@@ -23,6 +23,7 @@ HEADERS += \
     animatedsprite.h \
     jumping_game_elements.h \
     mind_game_elements.h \
+    mindgameanimatedsprite.h \
     movingplatform.h \
     platform.h \
     platformwithequation.h \

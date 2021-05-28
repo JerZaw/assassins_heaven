@@ -33,9 +33,12 @@ public:
     }
 
     void settextonmiddle(int space_between){
-        points_text.setPosition(background_table.getGlobalBounds().left - points_text.getGlobalBounds().width/2,
-                                background_table.getGlobalBounds().top - space_between);
+        points_text.setPosition(background_table.getGlobalBounds().left +
+                                background_table.getGlobalBounds().width/2 - points_text.getGlobalBounds().width/2,
+                                background_table.getGlobalBounds().top - space_between - points_text.getGlobalBounds().height);
     }
+
+    virtual void picked(){};
 
     void draw(){
         okno->draw(background_table);
@@ -44,6 +47,10 @@ public:
 
     void update(int points){
         points_text.setString(std::to_string(points));
+    }
+
+    sf::Sprite* GetBackground(){
+        return &background_table;
     }
 
 

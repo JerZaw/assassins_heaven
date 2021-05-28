@@ -12,14 +12,18 @@ private:
     std::vector<sf::IntRect> rec_vec;
     int current=0;
     int my_fps;
-    float verticalspeed=100;
-    float horizontalspeed=250;
-    float acceleration=800;
+    float verticalspeed;
+    float horizontalspeed;
+    float acceleration;
     sf::Time dlugi_czas = sf::Time::Zero;
     int pressed = 0;
 public:
-    AnimatedSprite(const int &fps=1){
+
+    AnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 800){
         this->my_fps = fps;
+        this->verticalspeed = ver_speed;
+        this->horizontalspeed = hor_speed;
+        this->acceleration = acceler;
     };
 
     void add_animation_frame(const sf::IntRect &rect){
@@ -34,26 +38,29 @@ public:
         sf::Time pom(sf::milliseconds(1000/this->my_fps));
         this->dlugi_czas+=elapsed;
 
-        if(this->dlugi_czas > pom){
+        if(this->dlugi_czas > pom){//zmiana klatek
             this->setTextureRect(rec_vec[++this->current]);
             if(this->current==int(rec_vec.size())-1){
                 this->current=0;
             }
             this->dlugi_czas = sf::Time::Zero;
         }
-        if(this->verticalspeed<10000){
-            this->verticalspeed+=this->acceleration*elapsed.asSeconds();}
 
-        this->move(0,this->verticalspeed*elapsed.asSeconds());
+        if(this->getGlobalBounds().top + this->getGlobalBounds().height < okno.getSize().y){
+            this->move(0,this->verticalspeed*elapsed.asSeconds());
+            if(this->verticalspeed<10000){
+                this->verticalspeed+=this->acceleration*elapsed.asSeconds();
+            }
+        }
 
-        if(this->pressed==1){
+        if(this->pressed==1){//ruch prawo lewo
             this->move(elapsed.asSeconds()*this->horizontalspeed,0);
         }
         else if(this->pressed==2){
             this->move(-elapsed.asSeconds()*this->horizontalspeed,0);
         }
 
-        this->check_hero_move(okno);
+        this->check_hero_move(okno);//sprawdzanie ruchu prawo lewo
     }
 
     void SetVerticalSpeed(float arg_verticalspeed){
