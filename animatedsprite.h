@@ -26,12 +26,27 @@ public:
         this->acceleration = acceler;
     };
 
+    void SetHorizontalSpeed(float arg_horizontalspeed){
+        this->horizontalspeed=arg_horizontalspeed;
+    }
+
+    float GetHorizontalSpeed(){
+        return this->horizontalspeed;
+    }
+
     void add_animation_frame(const sf::IntRect &rect){
         rec_vec.emplace_back(rect);
     }
 
     void accelerate(float added_acceleration){
         acceleration+=added_acceleration;
+    }
+
+    virtual void vertical_step(const sf::Time &elapsed, const sf::Window &okno){
+        this->move(0,this->verticalspeed*elapsed.asSeconds());
+        if(this->verticalspeed<100000){
+            this->verticalspeed+=this->acceleration*elapsed.asSeconds();
+        }
     }
 
     void step(const sf::Time &elapsed, const sf::Window &okno){ //wymaga restartu zegara, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
@@ -46,12 +61,7 @@ public:
             this->dlugi_czas = sf::Time::Zero;
         }
 
-        if(this->getGlobalBounds().top + this->getGlobalBounds().height < okno.getSize().y){
-            this->move(0,this->verticalspeed*elapsed.asSeconds());
-            if(this->verticalspeed<10000){
-                this->verticalspeed+=this->acceleration*elapsed.asSeconds();
-            }
-        }
+        vertical_step(elapsed,okno);
 
         if(this->pressed==1){//ruch prawo lewo
             this->move(elapsed.asSeconds()*this->horizontalspeed,0);
@@ -69,6 +79,10 @@ public:
 
     float GetVerticalSpeed(){
         return this->verticalspeed;
+    }
+
+    float GetAcceleration(){
+        return this->acceleration;
     }
 
     void check_hero_move(const sf::Window &okno){

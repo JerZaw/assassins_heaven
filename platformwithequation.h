@@ -27,8 +27,9 @@ public:
         this->settextonmiddle(10);
     };
 
-    void picked(){
+    bool picked(){
         this->GetBackground()->setColor(clicked_color);
+        return good_solution;
     }
 
 };

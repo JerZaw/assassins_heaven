@@ -49,16 +49,16 @@ int TaskElement::mind_game(const int &difficulty)
     }
 
     sftools::Chronometer chron1;
+    chron1.reset(true);
 
     MindGameElements mind_plansza(difficulty,elements_texture, sf::IntRect(38,22,104,80),
                                   hero_texture, points_font, &window,
                                   &chron1);
-    chron1.reset(true);
+
     // run the program as long as the window is open
     while (window.isOpen()) {
-        //while(plansza.Game_alive()){
-
-            mind_plansza.step();
+        while(!mind_plansza.tasks_finished()){
+            mind_plansza.step(chron1.reset(true));
 
             // clear the window with black color
             window.clear(sf::Color::Black);
@@ -69,8 +69,8 @@ int TaskElement::mind_game(const int &difficulty)
 
             // end the current frame
             window.display();
-        //}
-        chron1.pause();
+        }
+        //chron1.pause();
 
         sf::Event event;
         // check all the window's events that were triggered since the last iteration of the loop

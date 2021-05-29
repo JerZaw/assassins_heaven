@@ -17,6 +17,8 @@
 #include <scoretable.h>
 #include <mindgameanimatedsprite.h>
 
+enum Answer{NOANSWER,RIGHT,WRONG = 0};
+
 class MindGameElements
 {
 private:
@@ -33,6 +35,13 @@ private:
     int character_size = 30;
     std::string str_equation;
     MindGameAnimatedSprite ludek;
+    float ludek_last_horizontal_speed;
+    Answer answer = NOANSWER;
+    int good_points = 0;
+    int how_many_tasks;
+    int current_task_num = 0;
+    sf::Time max_task_time = sf::seconds(10);
+    sf::Time current_task_time;
 public:
     MindGameElements(){};
     MindGameElements(const int &arg_difficulty,const sf::Texture &arg_elements_textures, const sf::IntRect &arg_platform_texture_rect,
@@ -45,27 +54,134 @@ public:
         this->font = arg_font;
         this->okno = arg_okno;
         this->chrono = arg_chrono;
-        generate_platforms();
+        this->how_many_tasks = (rand()%2+1)*(this->difficulty+1);
 
         create_ludek();
 
+        int text_size = 40;
+        sf::IntRect back_score_rect(0,0,200,80);
+        ScoreTable *pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+                                               sf::Vector2f(okno->getSize().x/8-back_score_rect.width/2,15),
+                                               sf::Vector2f(okno->getSize().x/8,15),
+                                               std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks),
+                                               text_size);
+        pom_table->settextonmiddle(-text_size);
+        platforms.emplace_back(pom_table);
+
+        text_size = 40;
+        back_score_rect = sf::IntRect(0,0,200,80);
+        pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+                                   sf::Vector2f(okno->getSize().x-okno->getSize().x/4-back_score_rect.width/2,15),
+                                   sf::Vector2f(okno->getSize().x-okno->getSize().x/4,15),
+                                   "Punkty: " + std::to_string(good_points),
+                                   text_size);
+        pom_table->settextonmiddle(-text_size);
+        platforms.emplace_back(pom_table);
+
+        text_size = 40;
+        back_score_rect = sf::IntRect(0,0,150,80);
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
+
+        pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+                                   sf::Vector2f(okno->getSize().x/8 + 200-back_score_rect.width/2,15),
+                                   sf::Vector2f(okno->getSize().x/8 + 200,15),
+                                   stream.str(),
+                                   text_size);
+        pom_table->settextonmiddle(-text_size);
+        platforms.emplace_back(pom_table);
+
+
+        new_task();
+
     };
 
-    void step(){
-        ludek.step(chrono->getElapsedTime(),*okno);
+    bool tasks_finished(){
+        return current_task_num-1==how_many_tasks;
+    }
 
-        for(auto &el : platforms){ //aktywacja przy skoku od góry (DODAĆ BLOKADĘ ŚCIAN)
+    void new_task(){
+        current_task_time = sf::Time::Zero;
+        current_task_num++;
+        good_points+=answer;
+        answer = NOANSWER;
+
+        platforms.erase(platforms.begin()+3,platforms.end());
+        answers.clear();
+
+        generate_platforms();
+
+        ludek.setPosition(600,500);
+
+        platforms[0]->update(std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks));
+        platforms[0]->settextonmiddle(-40);
+        platforms[1]->update("Punkty: " + std::to_string(good_points));
+        platforms[1]->settextonmiddle(-40);
+
+
+    }
+
+    void step(const sf::Time &elapsed){
+
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
+        platforms[2]->update(stream.str());
+
+        current_task_time+=elapsed;
+        ludek.step(elapsed,*okno);
+
+        if(current_task_time>=max_task_time){
+            answer = WRONG;
+            new_task();
+        }
+
+        for(auto &el : platforms){ //aktywacja przy skoku od góry + zderzenia
+            if(ludek.getGlobalBounds().
+                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
+                                             el->GetBackground()->getGlobalBounds().top+0.1,
+                                             0.1,
+                                             el->GetBackground()->getGlobalBounds().height-0.1))){
+                ludek.move(-(ludek.GetHorizontalSpeed()+10)*elapsed.asSeconds(),0);
+                this->ludek_last_horizontal_speed = ludek.GetHorizontalSpeed();
+                ludek.SetHorizontalSpeed(0);
+            }
+            else if(ludek.getGlobalBounds().
+                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left + el->GetBackground()->getGlobalBounds().width - 0.1,
+                                             el->GetBackground()->getGlobalBounds().top+0.1,
+                                             0.1,
+                                             el->GetBackground()->getGlobalBounds().height-0.1))){
+                ludek.move((ludek.GetHorizontalSpeed()+10)*elapsed.asSeconds(),0);
+                this->ludek_last_horizontal_speed = ludek.GetHorizontalSpeed();
+                ludek.SetHorizontalSpeed(0);
+            }
+            else if(ludek.GetHorizontalSpeed()==0){
+                ludek.SetHorizontalSpeed(this->ludek_last_horizontal_speed);
+            }
+
             if(ludek.getGlobalBounds().
                     intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
                                              el->GetBackground()->getGlobalBounds().top,
-                                             el->GetBackground()->getGlobalBounds().width, 1))){
-                el->picked();
+                                             el->GetBackground()->getGlobalBounds().width, 0.1))){
+                if(el->picked()){
+                    answer = RIGHT;
+                }
+                else{
+                    answer = WRONG;
+                }
+                new_task();
+            }
+            else if(ludek.getGlobalBounds().
+                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
+                                             el->GetBackground()->getGlobalBounds().top + el->GetBackground()->getGlobalBounds().height,
+                                             el->GetBackground()->getGlobalBounds().width, -0.1))){
+                ludek.SetVerticalSpeed(1);
             }
         }
+
     }
 
     void create_ludek(){
-        MindGameAnimatedSprite pom_ludek(8,100,80,170);
+        MindGameAnimatedSprite pom_ludek(8,100,400,2600,-1200);
         pom_ludek.setTexture(this->hero_texture);
         pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 1 frame of animation
         pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 2 frame

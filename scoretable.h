@@ -38,15 +38,19 @@ public:
                                 background_table.getGlobalBounds().top - space_between - points_text.getGlobalBounds().height);
     }
 
-    virtual void picked(){};
+    virtual bool picked(){};
 
     void draw(){
         okno->draw(background_table);
         okno->draw(points_text);
     }
 
-    void update(int points){
+    void update(const int &points){
         points_text.setString(std::to_string(points));
+    }
+
+    void update(const std::string &text){
+        points_text.setString(text);
     }
 
     sf::Sprite* GetBackground(){
