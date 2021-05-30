@@ -39,8 +39,8 @@ public:
         this->value = arg_value;
     }
 
-    virtual std::pair<bool,int> picked(sftools::Chronometer *chron,const bool &game_type = 0){
-        std::pair<bool,int> pom(game_type,value);
+    virtual std::pair<bool,int> picked(sftools::Chronometer *chron,const int &game_type = 0){
+        std::pair<int,int> pom(game_type,value);
         this->move(-1000,-1000);
         return pom;
     }

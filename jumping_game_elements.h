@@ -12,6 +12,7 @@
 #include <cmath>
 #include <scoretable.h>
 #include <Chronometer.hpp>
+#include <countdown.h>
 
 class JumpingGameElements
 {
@@ -32,6 +33,8 @@ private:
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono1;
     float hero_jumping_speed = -600;
+    const sf::Font *font;
+    CountDown *countdown;
 public:
     JumpingGameElements(const int &count, const sf::Texture &texture, const sf::IntRect &texture_rect, const int &arg_difficulty, const sf::Texture &hero_texture,
                         const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
@@ -41,6 +44,7 @@ public:
         this->difficulty = arg_difficulty;
         this->elements_textures = texture;
         this->chrono1 = arg_chrono;
+        this->font = arg_font;
 
         ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(500,15),sf::Vector2f(600,15));
         points_table = pom_table;
@@ -60,10 +64,10 @@ public:
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
 
-            if(platformpointers[i]->GetCoin()!=nullptr){
-                this->platformpointers[i]->GetCoin()->read_data(difficulty);
-                this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
-            }
+            //            if(platformpointers[i]->GetCoin()!=nullptr){
+            //                this->platformpointers[i]->GetCoin()->read_data(difficulty);
+            //                this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
+            //            }
         }
     }
 
@@ -74,6 +78,10 @@ public:
         points_table.draw();
         money_table.draw();
         okno->draw(ludek);
+
+        if(countdown!=nullptr){
+            okno->draw(*countdown);
+        }
     }
 
     void create_ludek(){
@@ -104,62 +112,72 @@ public:
     }
 
     void step(const sf::Time &elapsed, const sf::Window &okno){
+        if(countdown==nullptr){
 
-        if(points>45){
-            difficulty=3;
-        }
-        else if(points>30){
-            difficulty=2;;
-        }
-        else if(points>15){
-            difficulty=1;
-        }
+            if(points>45){
+                difficulty=3;
+            }
+            else if(points>30){
+                difficulty=2;;
+            }
+            else if(points>15){
+                difficulty=1;
+            }
 
-        speed+=elapsed.asSeconds()*3;  //przyspieszanie całości z biegiem czasu
-        last_speed+=elapsed.asSeconds()*3;
-        ludek.accelerate(elapsed.asSeconds()*3);
-        hero_jumping_speed-=elapsed.asSeconds()*3;
+            speed+=elapsed.asSeconds()*3;  //przyspieszanie całości z biegiem czasu
+            last_speed+=elapsed.asSeconds()*3;
+            ludek.accelerate(elapsed.asSeconds()*3);
+            hero_jumping_speed-=elapsed.asSeconds()*3;
 
-        for(int i=0;i<int(platformpointers.size());i++){
-            platformpointers[i]->step_y(elapsed,this->speed);
-            platformpointers[i]->step(elapsed);
+            for(int i=0;i<int(platformpointers.size());i++){
+                platformpointers[i]->step_y(elapsed,this->speed);
+                platformpointers[i]->step(elapsed);
 
-            if(platformpointers[i]->Is_working()){
-                if(ludek.getGlobalBounds().intersects(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
-                                                                    platformpointers[i]->getGlobalBounds().top,
-                                                                    platformpointers[i]->getGlobalBounds().width, 1))){ //zderzenie z górą platformy
-                    if(ludek.GetVerticalSpeed()>100){
-                        ludek.SetVerticalSpeed(hero_jumping_speed);
-                        platformpointers[i]->activate();
-                        if(platformpointers[i]->GetCoin()!=nullptr){
-                            platformpointers[i]->GetCoin()->read_data(this->difficulty);
-                            std::pair<bool,int> pom = platformpointers[i]->GetCoin()->picked(chrono1);
-                            if(pom.first==0)
+                if(platformpointers[i]->Is_working()){
+                    if(ludek.getGlobalBounds().intersects(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
+                                                                        platformpointers[i]->getGlobalBounds().top,
+                                                                        platformpointers[i]->getGlobalBounds().width, 1))){ //zderzenie z górą platformy
+                        if(ludek.GetVerticalSpeed()>100){
+                            ludek.SetVerticalSpeed(hero_jumping_speed);
+                            platformpointers[i]->activate();
+                            if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje
+                                    ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())){
+                                platformpointers[i]->GetCoin()->read_data(this->difficulty);
+                                std::pair<int,int> pom = platformpointers[i]->GetCoin()->picked(chrono1);
+                                if(pom.first!=0)
+                                {
+                                    chrono1->reset(true);
+                                    countdown = new CountDown(font,this->okno);
+                                }
                                 money+=pom.second;
-                            else{
-
+                                money_table.update(money);
                             }
-                            money_table.update(money);
                         }
                     }
                 }
-            }
-            if(platformpointers[i]->getPosition().y>okno.getSize().y){
-                this->generate_new(i);
-                points++;
-                points_table.update(points);
-            }
-            else if(platformpointers[i]->getGlobalBounds().top > 0){
-                platformpointers[i]->ChangeWorkingState(true);
-            }
+                if(platformpointers[i]->getPosition().y>okno.getSize().y){
+                    this->generate_new(i);
+                    points++;
+                    points_table.update(points);
+                }
+                else if(platformpointers[i]->getGlobalBounds().top > 0){//platformy działają tylko gdy są w oknie
+                    platformpointers[i]->ChangeWorkingState(true);
+                }
 
-            if(ludek.getPosition().y>okno.getSize().y){
-                this->hero_alive=false;
+                if(ludek.getPosition().y + ludek.getGlobalBounds().height > okno.getSize().y){//śmierć gdy poniżej okna
+                    this->hero_alive=false;
+                }
+            }
+            ludek.step(elapsed,okno);
+            check_if_too_high(elapsed);
+        }
+        else{
+            if(countdown->step_countdown_finished(elapsed)){
+                countdown=nullptr;
             }
         }
-        ludek.step(elapsed,okno);
-        check_if_too_high(elapsed);
     }
+
 
     void check_if_too_high(const sf::Time &elapsed){ //może by zrobić move zamiast zmieniać prędkość?
 

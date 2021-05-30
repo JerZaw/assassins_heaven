@@ -17,7 +17,7 @@
 #include <scoretable.h>
 #include <mindgameanimatedsprite.h>
 
-enum Answer{NOANSWER,RIGHT,WRONG = 0};
+enum Answer{NOANSWER=-1,RIGHT=1,WRONG = 0};
 
 class MindGameElements
 {
@@ -36,12 +36,15 @@ private:
     std::string str_equation;
     MindGameAnimatedSprite ludek;
     float ludek_last_horizontal_speed;
-    Answer answer = NOANSWER;
+    Answer answer = WRONG;
     int good_points = 0;
     int how_many_tasks;
     int current_task_num = 0;
     sf::Time max_task_time = sf::seconds(10);
     sf::Time current_task_time;
+    sf::Text start_text;
+    bool started = false;
+    bool countdown_started = false;
 public:
     MindGameElements(){};
     MindGameElements(const int &arg_difficulty,const sf::Texture &arg_elements_textures, const sf::IntRect &arg_platform_texture_rect,
@@ -91,9 +94,12 @@ public:
         pom_table->settextonmiddle(-text_size);
         platforms.emplace_back(pom_table);
 
+        sf::Text pom_text(L"Naciśnij klawisz ENTER by rozpocząć grę",*font,70);
+        pom_text.setPosition(okno->getSize().x/2 - pom_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
+        pom_text.setFillColor(sf::Color(200,200,200,128));
+        this->start_text = pom_text;
 
         new_task();
-
     };
 
     bool tasks_finished(){
@@ -101,6 +107,7 @@ public:
     }
 
     void new_task(){
+
         current_task_time = sf::Time::Zero;
         current_task_num++;
         good_points+=answer;
@@ -123,58 +130,90 @@ public:
 
     void step(const sf::Time &elapsed){
 
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
-        platforms[2]->update(stream.str());
+        if(started){
 
-        current_task_time+=elapsed;
-        ludek.step(elapsed,*okno);
-
-        if(current_task_time>=max_task_time){
-            answer = WRONG;
-            new_task();
-        }
-
-        for(auto &el : platforms){ //aktywacja przy skoku od góry + zderzenia
-            if(ludek.getGlobalBounds().
-                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
-                                             el->GetBackground()->getGlobalBounds().top+0.1,
-                                             0.1,
-                                             el->GetBackground()->getGlobalBounds().height-0.1))){
-                ludek.move(-(ludek.GetHorizontalSpeed()+10)*elapsed.asSeconds(),0);
-                this->ludek_last_horizontal_speed = ludek.GetHorizontalSpeed();
-                ludek.SetHorizontalSpeed(0);
-            }
-            else if(ludek.getGlobalBounds().
-                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left + el->GetBackground()->getGlobalBounds().width - 0.1,
-                                             el->GetBackground()->getGlobalBounds().top+0.1,
-                                             0.1,
-                                             el->GetBackground()->getGlobalBounds().height-0.1))){
-                ludek.move((ludek.GetHorizontalSpeed()+10)*elapsed.asSeconds(),0);
-                this->ludek_last_horizontal_speed = ludek.GetHorizontalSpeed();
-                ludek.SetHorizontalSpeed(0);
-            }
-            else if(ludek.GetHorizontalSpeed()==0){
-                ludek.SetHorizontalSpeed(this->ludek_last_horizontal_speed);
-            }
-
-            if(ludek.getGlobalBounds().
-                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
-                                             el->GetBackground()->getGlobalBounds().top,
-                                             el->GetBackground()->getGlobalBounds().width, 0.1))){
-                if(el->picked()){
-                    answer = RIGHT;
-                }
-                else{
-                    answer = WRONG;
-                }
+            if(answer!=NOANSWER){
+                sf::sleep(sf::seconds(0.6));
+                chrono->add(-chrono->getElapsedTime());
                 new_task();
             }
-            else if(ludek.getGlobalBounds().
-                    intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
-                                             el->GetBackground()->getGlobalBounds().top + el->GetBackground()->getGlobalBounds().height,
-                                             el->GetBackground()->getGlobalBounds().width, -0.1))){
-                ludek.SetVerticalSpeed(1);
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
+            platforms[2]->update(stream.str());
+
+            current_task_time+=elapsed;
+            ludek.step(elapsed,*okno);
+
+            if(current_task_time>=max_task_time){
+                answer = WRONG;
+            }
+
+            for(auto &el : platforms){ //aktywacja przy skoku od góry + zderzenia
+                if(ludek.getGlobalBounds().
+                        intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
+                                                 el->GetBackground()->getGlobalBounds().top+0.1,
+                                                 0.1,
+                                                 el->GetBackground()->getGlobalBounds().height-0.1))){
+                    ludek.move(-(ludek.GetHorizontalSpeed()+10)*elapsed.asSeconds(),0);
+                    this->ludek_last_horizontal_speed = ludek.GetHorizontalSpeed();
+                    ludek.SetHorizontalSpeed(0);
+                }
+                else if(ludek.getGlobalBounds().
+                        intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left + el->GetBackground()->getGlobalBounds().width - 0.1,
+                                                 el->GetBackground()->getGlobalBounds().top+0.1,
+                                                 0.1,
+                                                 el->GetBackground()->getGlobalBounds().height-0.1))){
+                    ludek.move((ludek.GetHorizontalSpeed()+10)*elapsed.asSeconds(),0);
+                    this->ludek_last_horizontal_speed = ludek.GetHorizontalSpeed();
+                    ludek.SetHorizontalSpeed(0);
+                }
+                else if(ludek.GetHorizontalSpeed()==0){
+                    ludek.SetHorizontalSpeed(this->ludek_last_horizontal_speed);
+                }
+
+                if(ludek.getGlobalBounds().
+                        intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
+                                                 el->GetBackground()->getGlobalBounds().top,
+                                                 el->GetBackground()->getGlobalBounds().width, 0.1))){
+                    if(el->picked()){
+                        answer = RIGHT;
+                    }
+                    else{
+                        answer = WRONG;
+                    }
+                    ludek.SetVerticalSpeed(0);
+                }
+                else if(ludek.getGlobalBounds().
+                        intersects(sf::FloatRect(el->GetBackground()->getGlobalBounds().left,
+                                                 el->GetBackground()->getGlobalBounds().top + el->GetBackground()->getGlobalBounds().height,
+                                                 el->GetBackground()->getGlobalBounds().width, -0.1))){
+                    ludek.SetVerticalSpeed(1);
+                }
+            }
+        }
+        else{
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
+                countdown_started=true;
+            }
+            if(countdown_started){
+                current_task_time+=elapsed;
+                if(current_task_time<sf::seconds(1)){
+                    start_text.setString("3");
+                    start_text.setCharacterSize(100);
+                    start_text.setPosition(okno->getSize().x/2 -
+                                           start_text.getGlobalBounds().width/2,
+                                           okno->getSize().y/2-start_text.getCharacterSize());
+                }
+                else if(current_task_time<sf::seconds(2)){
+                    start_text.setString("2");
+                }
+                else if(current_task_time<sf::seconds(3)){
+                    start_text.setString("1");
+                }
+                else{
+                    this->started=true;
+                    current_task_time=sf::Time::Zero;
+                }
             }
         }
 
@@ -198,10 +237,15 @@ public:
     }
 
     void draw(){
-        for(auto &el : platforms){
-            el->draw();
+        if(!started){
+            okno->draw(start_text);
         }
-        okno->draw(ludek);
+        else{
+            for(auto &el : platforms){
+                el->draw();
+            }
+            okno->draw(ludek);
+        }
     }
 
     void generate_platforms(){
@@ -314,6 +358,10 @@ public:
 
     }
 
+    std::pair<int,int> summary_data(){
+        std::pair<int,int> parka(good_points,how_many_tasks);
+        return parka;
+    }
 
 };
 
