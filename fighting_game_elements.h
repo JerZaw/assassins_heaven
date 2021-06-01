@@ -121,7 +121,7 @@ public:
     void step(const sf::Time &elapsed){
 
         if(started){
-
+            ludek.step(elapsed);
         }
         else{
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
@@ -152,7 +152,7 @@ public:
     }
 
     void create_ludek(){
-        FightingGameAnimatedSprite pom_ludek(8,800,100);
+        FightingGameAnimatedSprite pom_ludek(8,40,1,okno);
         pom_ludek.setTexture(this->hero_texture);
         pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 1 frame of animation
         pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 2 frame
@@ -176,7 +176,7 @@ public:
             for(auto &el : scoretables){
                 el->draw();
             }
-            okno->draw(ludek);
+            ludek.draw_all();
         }
     }
 
