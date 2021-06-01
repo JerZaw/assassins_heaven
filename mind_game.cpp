@@ -11,7 +11,7 @@
 int TaskElement::mind_game(const int &difficulty)
 {
     // create the window
-    sf::RenderWindow window(sf::VideoMode(1500,800), "My window",sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(1500,800), "MIND_GAME",sf::Style::Close);
     window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-1500)/2,window.getPosition().y-100));
 
     //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);

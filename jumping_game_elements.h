@@ -64,10 +64,10 @@ public:
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
 
-            //            if(platformpointers[i]->GetCoin()!=nullptr){
-            //                this->platformpointers[i]->GetCoin()->read_data(difficulty);
-            //                this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
-            //            }
+                        if(platformpointers[i]->GetCoin()!=nullptr){
+                            this->platformpointers[i]->GetCoin()->read_data(difficulty);
+                            this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
+                        }
         }
     }
 

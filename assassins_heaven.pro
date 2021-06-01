@@ -21,7 +21,10 @@ SOURCES += \
 HEADERS += \
     Chronometer.hpp \
     animatedsprite.h \
+    arrow.h \
     countdown.h \
+    fighting_game_elements.h \
+    fightinggameanimatedsprite.h \
     jumping_game_elements.h \
     mind_game_elements.h \
     mindgameanimatedsprite.h \
@@ -31,6 +34,7 @@ HEADERS += \
     scoretable.h \
     smallelementcoin.h \
     summary.h \
+    targetplatform.h \
     taskelement.h \
     timedmovingplatform.h \
     timedplatform.h
