@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>
+#include <arrow.h>
 
 class FightingGameAnimatedSprite : public sf::Sprite
 {
@@ -16,12 +17,14 @@ private:
     float shot_velocity = 250;
     float shot_angle = 45*M_PI/180; //kąt w radianach
     float angle_changing_speed;
-    float velocity_changing_speed = 40;
+    float velocity_changing_speed = 80;
     float acceleration;
     sf::Time dlugi_czas = sf::Time::Zero;
     std::vector<sf::CircleShape> aiming_dots;
     int how_many_aiming_dots=50;
     sf::RenderWindow *okno;
+    bool shot_made = false;
+    bool space_pressed = false;
 public:
     FightingGameAnimatedSprite(){};
     FightingGameAnimatedSprite(const int &fps, const float &acceler,
@@ -34,6 +37,7 @@ public:
         for(int i=0;i<how_many_aiming_dots;i++){
             sf::CircleShape circle(10);
             circle.setFillColor(sf::Color(0,0,0,255));
+            circle.setRadius(8-i*0.15);
             aiming_dots.emplace_back(circle);
         }
         aiming_dots[0].setFillColor(sf::Color::Cyan);
@@ -58,7 +62,7 @@ public:
         for(int i=0;i<how_many_aiming_dots;i++){
             float x = circles_distance*i;
             aiming_dots[i].setPosition(x,okno->getSize().y - aiming_dots[i].getGlobalBounds().height-(a*x*x + b*x));
-           //std::cerr<<a*x*x + b*x<<std::endl;
+            //std::cerr<<a*x*x + b*x<<std::endl;
         }
     }
 
@@ -83,22 +87,42 @@ public:
     }
 
     void check_aiming_move(const sf::Time &elapsed){
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
-            if(shot_angle<1.570796326794897){ //kąt 90st w radianach
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){//zwiększenie kąta przy sprawdzeniu kątów granicznych
+            if(shot_angle<1.483529864195180){ //kąt 85st w radianach
                 shot_angle+=elapsed.asSeconds()*this->angle_changing_speed;
             }
         }
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-            if(shot_angle>0){
+            if(shot_angle>0.523598775598299){//kąt 30st w radianach
                 shot_angle-=elapsed.asSeconds()*this->angle_changing_speed;
             }
         }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ //po wciśnięciu spacji zmiana mocy podczas trzymania
+            space_pressed = true;
             shot_velocity+=velocity_changing_speed*elapsed.asSeconds();
-            if(shot_velocity>250 || shot_velocity<50){
+            if(shot_velocity>250 || shot_velocity<80){
                 velocity_changing_speed*=-1;
             }
         }
+        else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && space_pressed==true){ //po puszczeniu spacji strzał
+            space_pressed = false;
+            shot_made = true;
+        }
+    }
+
+    bool if_shot_called(){
+        if(shot_made){
+            shot_made = false;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    Arrow shoot(){
+        velocity_changing_speed*=-1; //strzał i ustawienie da dodawanie mocy
+        return Arrow(shot_velocity,acceleration,aiming_dots[0].getPosition(),shot_angle);
     }
 
     void draw_all(){

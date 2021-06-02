@@ -38,6 +38,9 @@ private:
     bool started = false;
     bool countdown_started = false;
     std::vector<ScoreTable*> scoretables;
+    std::vector<Arrow*> arrows;
+    int max_arrows_count = 5;
+    int current_arrow_counter = 0;
 public:
     fighting_game_elements(){};
     fighting_game_elements(const int &arg_difficulty,const sf::Texture &arg_elements_textures, const sf::IntRect &arg_platform_texture_rect,
@@ -51,6 +54,10 @@ public:
         this->okno = arg_okno;
         this->chrono = arg_chrono;
         this->how_many_tasks = (rand()%2+1)*(this->difficulty+1);
+
+        for(int i=0;i<max_arrows_count;i++){
+            arrows.emplace_back(nullptr);
+        }
 
         create_ludek();
 
@@ -120,10 +127,34 @@ public:
 
     void step(const sf::Time &elapsed){
 
-        if(started){
+        if(started){ //pętla czasowa gry
             ludek.step(elapsed);
+            if(ludek.if_shot_called()){
+                for(int i=0;i<max_arrows_count;i++){ //szukanie wolnego miejsca w wektorze na strzałę
+                    if(arrows[i]==nullptr){
+                        current_arrow_counter = i;
+                        break;
+                    }
+                    else{
+                        current_arrow_counter = -1;
+                    }
+                }
+                if(current_arrow_counter!=-1){ //jeśli znalazło miejsce dodaje nową strzałę i strzela
+                    arrows[current_arrow_counter]=new Arrow(ludek.shoot(),elements_textures,sf::IntRect(0,0,40,10));
+                }
+            }
+            for(auto &el:arrows){
+                if(el!=nullptr){
+                    el->step(elapsed);
+                    if(el->getGlobalBounds().left >= okno->getSize().x ||
+                            el->getGlobalBounds().top >= okno->getSize().y){
+                        delete el;
+                        el = nullptr;
+                    }
+                }
+            }
         }
-        else{
+        else{ //odliczanie przed grą
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
                 countdown_started=true;
             }
@@ -152,7 +183,7 @@ public:
     }
 
     void create_ludek(){
-        FightingGameAnimatedSprite pom_ludek(8,40,1,okno);
+        FightingGameAnimatedSprite pom_ludek(8,40,2,okno);
         pom_ludek.setTexture(this->hero_texture);
         pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 1 frame of animation
         pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 2 frame
@@ -175,6 +206,11 @@ public:
         else{
             for(auto &el : scoretables){
                 el->draw();
+            }
+            for(auto &el : arrows){
+                if(el!=nullptr){
+                    okno->draw(*el);
+                }
             }
             ludek.draw_all();
         }

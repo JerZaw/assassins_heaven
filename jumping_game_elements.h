@@ -64,10 +64,10 @@ public:
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
 
-                        if(platformpointers[i]->GetCoin()!=nullptr){
-                            this->platformpointers[i]->GetCoin()->read_data(difficulty);
-                            this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
-                        }
+//                        if(platformpointers[i]->GetCoin()!=nullptr){
+//                            this->platformpointers[i]->GetCoin()->read_data(difficulty);
+//                            this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA
+//                        }
         }
     }
 
@@ -102,6 +102,7 @@ public:
     }
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
+        delete this->platformpointers[i];
         this->platformpointers[i] = this->random_platform(this->difficulty);
         this->platformpointers[i]->setTexture(this->elements_textures);
         this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
@@ -118,7 +119,7 @@ public:
                 difficulty=3;
             }
             else if(points>30){
-                difficulty=2;;
+                difficulty=2;
             }
             else if(points>15){
                 difficulty=1;
@@ -147,6 +148,7 @@ public:
                                 if(pom.first!=0)
                                 {
                                     chrono1->reset(true);
+                                    std::cerr<<"new countdown\n";
                                     countdown = new CountDown(font,this->okno);
                                 }
                                 money+=pom.second;
@@ -173,6 +175,8 @@ public:
         }
         else{
             if(countdown->step_countdown_finished(elapsed)){
+                //COŚ NIE DZIAŁA CZASEM SIĘ NIE ODPALA PO MINIGRZE
+                delete countdown;
                 countdown=nullptr;
             }
         }
