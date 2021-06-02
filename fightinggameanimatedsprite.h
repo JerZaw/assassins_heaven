@@ -100,7 +100,7 @@ public:
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ //po wciśnięciu spacji zmiana mocy podczas trzymania
             space_pressed = true;
             shot_velocity+=velocity_changing_speed*elapsed.asSeconds();
-            if(shot_velocity>250 || shot_velocity<80){
+            if(shot_velocity>350 || shot_velocity<150){
                 velocity_changing_speed*=-1;
             }
         }
@@ -121,8 +121,10 @@ public:
     }
 
     Arrow shoot(){
-        velocity_changing_speed*=-1; //strzał i ustawienie da dodawanie mocy
-        return Arrow(shot_velocity,acceleration,aiming_dots[0].getPosition(),shot_angle);
+        float pom_shot_velocity = shot_velocity;
+        shot_velocity = 150;
+        velocity_changing_speed=fabs(velocity_changing_speed); //strzał i ustawienie początkowej mocy strzału
+        return Arrow(pom_shot_velocity,acceleration,aiming_dots[0].getPosition(),shot_angle);
     }
 
     void draw_all(){

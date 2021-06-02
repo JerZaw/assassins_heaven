@@ -50,7 +50,7 @@ int TaskElement::fighting_game(const int &difficulty)
     sftools::Chronometer chron1;
     chron1.reset(true);
 
-    fighting_game_elements mind_plansza(difficulty,elements_texture, sf::IntRect(38,22,104,80),
+    fighting_game_elements fight_plansza(difficulty,elements_texture, sf::IntRect(38,22,104,80),
                                   hero_texture, points_font, &window,
                                   &chron1);
     Summary summary(4,points_font,&window);
@@ -65,18 +65,18 @@ int TaskElement::fighting_game(const int &difficulty)
         // draw everything here...
         window.draw(background);
 
-        if(!mind_plansza.tasks_finished()){
-            mind_plansza.step(chron1.reset(true));
+        if(!fight_plansza.tasks_finished()){
+            fight_plansza.step(chron1.reset(true));
 
             // draw everything here...
-            mind_plansza.draw();
+            fight_plansza.draw();
         }
         else if(!summary_generated){
             summary.update(L"FIGHTING_GAME",
-                            L"Gratulacje, zdobyłeś " + std::to_wstring(mind_plansza.summary_data().first)
-                            + L'/' + std::to_wstring(mind_plansza.summary_data().second)+L" punktów",
+                            L"Gratulacje, zdobyłeś " + std::to_wstring(fight_plansza.summary_data().first)
+                            + L'/' + std::to_wstring(fight_plansza.summary_data().second)+L" punktów",
                            L"za wykonanie zadań otrzymujesz " +
-                           std::to_wstring(5*(current_difficulty+1)*mind_plansza.summary_data().first) + L" monet",
+                           std::to_wstring((current_difficulty+1)*fight_plansza.summary_data().first) + L" monet",
                             L"naciśnij klawisz ENTER, aby wyjść z minigry");
             summary_generated=true;
         }
@@ -85,7 +85,7 @@ int TaskElement::fighting_game(const int &difficulty)
 
             if(summary.closing()){
                 window.close();
-                return mind_plansza.summary_data().first;
+                return (current_difficulty+1)*fight_plansza.summary_data().first;
             }
         }
 

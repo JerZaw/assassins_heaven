@@ -34,7 +34,7 @@ HEADERS += \
     scoretable.h \
     smallelementcoin.h \
     summary.h \
-    targetplatform.h \
+    target.h \
     taskelement.h \
     timedmovingplatform.h \
     timedplatform.h

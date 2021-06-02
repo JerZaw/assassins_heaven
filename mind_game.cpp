@@ -86,7 +86,7 @@ int TaskElement::mind_game(const int &difficulty)
 
             if(summary.closing()){
                 window.close();
-                return mind_plansza.summary_data().first;
+                return 5*(current_difficulty+1)*mind_plansza.summary_data().first;
             }
         }
 

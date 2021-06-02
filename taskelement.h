@@ -18,7 +18,7 @@ public:
     TaskElement(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture,
                 const sf::IntRect &texture_rect)
         : SmallElementCoin(arg_value,arg_speed_x,texture,texture_rect){
-        task_type = Tasks(rand()%2);
+        task_type = Tasks(rand()%2+1);
     }
 
     void read_data(const int &arg_difficulty){
@@ -30,12 +30,12 @@ public:
 
     std::pair<bool,int> picked(sftools::Chronometer *chron, const int &game_type = 0){
         chron->pause();
-//        task_type=FIGHT; //do celów testowania, potem do usunięcia
+        task_type=FIGHT; //do celów testowania, potem do usunięcia
         if(task_type == FIGHT){
-            this->SetValue(5*(current_difficulty+1)*fighting_game(current_difficulty));
+            this->SetValue(fighting_game(current_difficulty));
         }
         else{
-            this->SetValue(5*(current_difficulty+1)*mind_game(current_difficulty));
+            this->SetValue(mind_game(current_difficulty));
         }
         return SmallElementCoin::picked(chron,task_type);
     }

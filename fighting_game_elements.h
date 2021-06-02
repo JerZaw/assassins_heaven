@@ -7,19 +7,19 @@
 #include <vector>
 #include <arrow.h>
 #include <fightinggameanimatedsprite.h>
-#include <targetplatform.h>
 #include <Chronometer.hpp>
 #include <scoretable.h>
 #include <sstream>
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
+#include <target.h>
 
 class fighting_game_elements
 {
 private:
     int difficulty=0;
-    int platform_count=2;
+    int target_count=2;
     sf::Texture elements_textures;
     sf::IntRect platform_texture_rect;
     sf::Texture hero_texture;
@@ -27,7 +27,6 @@ private:
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono;
     int character_size = 30;
-    std::string str_equation;
     FightingGameAnimatedSprite ludek;
     int good_points = 0;
     int how_many_tasks;
@@ -41,6 +40,10 @@ private:
     std::vector<Arrow*> arrows;
     int max_arrows_count = 5;
     int current_arrow_counter = 0;
+    std::vector<Target*> targets;
+    bool single_finished = false;
+    int single_targets_hit = 0;
+    int max_single_points = 0;
 public:
     fighting_game_elements(){};
     fighting_game_elements(const int &arg_difficulty,const sf::Texture &arg_elements_textures, const sf::IntRect &arg_platform_texture_rect,
@@ -57,6 +60,10 @@ public:
 
         for(int i=0;i<max_arrows_count;i++){
             arrows.emplace_back(nullptr);
+        }
+
+        for(int i=0;i<10;i++){//maks 10 celów
+            targets.emplace_back(nullptr);
         }
 
         create_ludek();
@@ -99,7 +106,7 @@ public:
         pom_text.setFillColor(sf::Color(200,200,200,128));
         this->start_text = pom_text;
 
-        //new_task();
+        new_task();
     };
 
     bool tasks_finished(){
@@ -111,45 +118,88 @@ public:
         current_task_time = sf::Time::Zero;
         current_task_num++;
 
-        scoretables.erase(scoretables.begin()+3,scoretables.end());
+        for(unsigned long long i=0;i<targets.size();i++){
+            delete targets[i];
+            targets[i] = nullptr;
+        }
 
-        generate_scoretables();
-
-        ludek.setPosition(600,500);
+        generate_targets();
 
         scoretables[0]->update(std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks));
         scoretables[0]->settextonmiddle(-40);
         scoretables[1]->update("Punkty: " + std::to_string(good_points));
         scoretables[1]->settextonmiddle(-40);
 
+        single_finished = false;
+        single_targets_hit = 0;
 
+        if(!tasks_finished()){
+            max_single_points+=target_count;
+        }
     }
 
     void step(const sf::Time &elapsed){
 
         if(started){ //pętla czasowa gry
-            ludek.step(elapsed);
-            if(ludek.if_shot_called()){
-                for(int i=0;i<max_arrows_count;i++){ //szukanie wolnego miejsca w wektorze na strzałę
-                    if(arrows[i]==nullptr){
-                        current_arrow_counter = i;
-                        break;
-                    }
-                    else{
-                        current_arrow_counter = -1;
-                    }
-                }
-                if(current_arrow_counter!=-1){ //jeśli znalazło miejsce dodaje nową strzałę i strzela
-                    arrows[current_arrow_counter]=new Arrow(ludek.shoot(),elements_textures,sf::IntRect(0,0,40,10));
-                }
+            if(single_finished){
+                sf::sleep(sf::seconds(0.6));
+                chrono->add(-chrono->getElapsedTime());
+                new_task();
             }
-            for(auto &el:arrows){
-                if(el!=nullptr){
-                    el->step(elapsed);
-                    if(el->getGlobalBounds().left >= okno->getSize().x ||
-                            el->getGlobalBounds().top >= okno->getSize().y){
-                        delete el;
-                        el = nullptr;
+            else{
+
+                current_task_time+=elapsed;
+
+                std::stringstream stream;
+                stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
+                scoretables[2]->update(stream.str());
+
+                if(current_task_time>=max_task_time){
+                    single_finished = true;
+                }
+                else if(single_targets_hit == target_count){
+                    single_finished = true;
+                    good_points+=5; //+5 punktów za zestrzelenie wszystkich celów na poziomie
+                }
+                else{
+                    ludek.step(elapsed);
+                    if(ludek.if_shot_called()){
+                        for(int i=0;i<max_arrows_count;i++){ //szukanie wolnego miejsca w wektorze na strzałę
+                            if(arrows[i]==nullptr){
+                                current_arrow_counter = i;
+                                break;
+                            }
+                            else{
+                                current_arrow_counter = -1;
+                            }
+                        }
+                        if(current_arrow_counter!=-1){ //jeśli znalazło miejsce dodaje nową strzałę i strzela
+                            arrows[current_arrow_counter]=new Arrow(ludek.shoot(),elements_textures,sf::IntRect(0,0,40,10));
+                        }
+                    }
+                    for(auto &el:arrows){ //przesuwanie strzał i sprawdzanie czy uderzają w cele
+                        if(el!=nullptr){
+                            el->step(elapsed);
+
+                            if(el->getGlobalBounds().left >= okno->getSize().x ||//usuwanie strzały gdy wypadnie poza planszę
+                                    el->getGlobalBounds().top >= okno->getSize().y){
+                                delete el;
+                                el = nullptr;
+                                break;
+                            }
+
+                            for(int i=0;i<target_count;i++){
+                                if(el->getGlobalBounds().intersects(targets[i]->getGlobalBounds()) && !targets[i]->if_hit()){
+                                    good_points++; //punkt za każde trafienie, usuwanie strzały po trafieniu
+                                    single_targets_hit++;
+                                    targets[i]->hit();
+                                    delete el;
+                                    el = nullptr;
+                                    scoretables[1]->update("Punkty: " + std::to_string(good_points));
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -179,7 +229,6 @@ public:
                 }
             }
         }
-
     }
 
     void create_ludek(){
@@ -207,6 +256,11 @@ public:
             for(auto &el : scoretables){
                 el->draw();
             }
+            for(auto &el : targets){
+                if(el!=nullptr){
+                    okno->draw(*el);
+                }
+            }
             for(auto &el : arrows){
                 if(el!=nullptr){
                     okno->draw(*el);
@@ -216,118 +270,54 @@ public:
         }
     }
 
-    void generate_scoretables(){
+    void generate_targets(){
         switch (this->difficulty) {
-        case 0:platform_count=2;break;
-        case 1:platform_count=rand()%2+2;break;
-        case 2:platform_count=3;break;
-        case 3:platform_count=rand()%2+3;break;
+        case 0:target_count=2;break;
+        case 1:target_count=rand()%2+2;break;
+        case 2:target_count=3;break;
+        case 3:target_count=rand()%2+3;break;
         }
 
-        generate_equation_and_answers();
-
-        for(int i=0;i<platform_count;i++){
-            //scoretables.emplace_back(generate_platform(i));
+        for(int i=0;i<target_count;i++){
+            targets[i] = new Target(generate_target());
+            generate_position(i);
         }
-
-        int text_size = 50;
-        sf::IntRect back_equation_rect(0,0,450,80);
-        ScoreTable *pom_table = new ScoreTable(elements_textures,font, okno,back_equation_rect,
-                                               sf::Vector2f(okno->getSize().x/2-back_equation_rect.width/2,15),sf::Vector2f(okno->getSize().x/2,15),str_equation,text_size);
-        pom_table->settextonmiddle(-text_size);
-        scoretables.emplace_back(pom_table);
     }
 
-    float float_round(const float &a){ //zaokrągla do dwóch miejsc po przecinku, żeby nie były za długie liczby
-        return round(a*100)/100;
+    void generate_position(const int &count){
+        sf::Vector2f pompoz;
+        do{
+            pompoz.x = rand()%(int(okno->getSize().x-100-targets[count]->getGlobalBounds().width))+100;//x odstęp od lewej 100 i koło
+            pompoz.y = rand()%(int(okno->getSize().y-100-targets[count]->getGlobalBounds().height))+50;//y odstęp od góry i dołu 50 i od dołu koło
+            targets[count]->setPosition(pompoz);
+        }
+        while(check_target_intersection(count));
     }
 
-    void generate_equation_and_answers(){
-        float a,b;
-        float c;
-        enum operation{ DODAWANIE,ODEJMOWANIE,MNOZENIE,DZIELENIE/*POTEGOWANIE,PIERWIASTEK*/} operation_type;
-        switch (this->difficulty) {//w zależności od difficulty losuje działanie i składowe
-        case 0:a=rand()%10;b=rand()%5;operation_type=DODAWANIE;break;
-        case 1:a=rand()%20;b=rand()%20;operation_type=operation(rand()%2);break;
-        case 2:operation_type=operation(rand()%3);
-            if(operation_type==DODAWANIE || operation_type==ODEJMOWANIE){
-                a=rand()%50;b=rand()%50;
+    bool check_target_intersection(const int &count){
+        if(count==0){return false;}
+
+        for(int i=0;i<count;i++){
+            if(targets[i]->getGlobalBounds().intersects(targets[count]->getGlobalBounds())){
+                return true;
             }
-            else{
-                a=rand()%10+1;b=rand()%19+1;
-            }
-            break;
-        case 3:operation_type=operation(rand()%4);
-            if(operation_type==DODAWANIE || operation_type==ODEJMOWANIE){
-                a=rand()%200;b=rand()%100;
-            }
-            else{
-                a=rand()%99+1;b=rand()%9+1;
-            }
-            break;
         }
+        return false;
+    }
 
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(2) << a;
-
-        switch (operation_type) {//dodaje składowe do stringa
-        case DODAWANIE:
-            c=a+b;
-            stream<<" + ";
-            break;
-        case ODEJMOWANIE:
-            c=a-b;
-            stream<<" - ";
-            break;
-        case MNOZENIE:
-            c=a*b;
-            stream<<" * ";
-            break;
-        case DZIELENIE:
-            c=float_round(a/b);
-            stream<<" / ";
-            break;
+    Target generate_target(){
+        float scale;
+        switch (difficulty) {
+        case 0:scale = 1;break;
+        case 1:scale = 1-rand()%2/10.0 -0.1;break;
+        case 2:scale = 1-rand()%3/10.0 -0.3;break;
+        case 3:scale = 1-rand()%3/10.0 -0.5;break;
         }
-
-        int solution_place = rand()%platform_count;
-
-        stream << std::fixed << std::setprecision(2) << b << " = ";
-        this->str_equation = stream.str();
-
-        //        for(int i=0;i<platform_count;i++){//dodaje dobre rozwiązanie lub losuje złe niewylosowane wcześniej
-        //            std::stringstream answer_stream;
-        //            if(i==solution_place){
-        //                answer_stream << std::fixed << std::setprecision(2) << c;
-        //                answers.emplace_back(answer_stream.str(),true);
-        //            }
-        //            else{
-        //                float addon;
-        //                do{
-        //                    addon = rand()%10+1;
-        //                    int mnoznik=rand()%2;
-        //                    if(mnoznik==0){
-        //                        addon=-addon;
-        //                    }
-        //                }
-        //                while(std::find_if(answers.begin(),answers.end(),[&c,&addon]
-        //                                   (const std::pair<std::string,bool> &el){return el.first==std::to_string(c+addon);})!=answers.end());
-
-        //                answer_stream << std::fixed << std::setprecision(2) << c+addon;
-        //                answers.emplace_back(answer_stream.str(),false);
-        //            }
-        //        }
-        //    }
-
-        //    ScoreTable* generate_platform(int current_count){//generuje platformę z równaniem losowo wygenerowanym; platformy w równej odległości
-        //        sf::Vector2f plat_pos(float(okno->getSize().x)/this->platform_count*(current_count+1.0/2)-this->platform_texture_rect.width/2,400);
-        //        ScoreTable *pom_platform = new PlatformWithEquation(elements_textures,font,okno,platform_texture_rect,plat_pos,plat_pos,
-        //                                                            answers[current_count].first,character_size,answers[current_count].second);
-        //        return pom_platform;
-
+        return Target(scale,elements_textures,sf::IntRect(0,0,100,100));
     }
 
     std::pair<int,int> summary_data(){
-        std::pair<int,int> parka(good_points,how_many_tasks);
+        std::pair<int,int> parka(good_points,max_single_points + 5*how_many_tasks);
         return parka;
     }
 
