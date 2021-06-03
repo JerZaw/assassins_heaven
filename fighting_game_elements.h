@@ -118,6 +118,11 @@ public:
         current_task_time = sf::Time::Zero;
         current_task_num++;
 
+        for(unsigned long long i=0;i<arrows.size();i++){
+            delete arrows[i];
+            arrows[i] = nullptr;
+        }
+
         for(unsigned long long i=0;i<targets.size();i++){
             delete targets[i];
             targets[i] = nullptr;

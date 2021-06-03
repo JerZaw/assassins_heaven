@@ -21,7 +21,8 @@ private:
     float acceleration;
     sf::Time dlugi_czas = sf::Time::Zero;
     std::vector<sf::CircleShape> aiming_dots;
-    int how_many_aiming_dots=50;
+    int how_many_aiming_dots;
+    int max_aiming_dots=30;
     sf::RenderWindow *okno;
     bool shot_made = false;
     bool space_pressed = false;
@@ -34,14 +35,12 @@ public:
         this->angle_changing_speed = arg_angle_changing_speed;
         this->okno = arg_okno;
 
-        for(int i=0;i<how_many_aiming_dots;i++){
-            sf::CircleShape circle(10);
+        for(int i=0;i<max_aiming_dots;i++){//kulki ze zmniejszającą się średnicą
+            sf::CircleShape circle(1);
             circle.setFillColor(sf::Color(0,0,0,255));
-            circle.setRadius(8-i*0.15);
+            circle.setRadius(3-i*0.1);
             aiming_dots.emplace_back(circle);
         }
-        aiming_dots[0].setFillColor(sf::Color::Cyan);
-        aiming_dots[how_many_aiming_dots-1].setFillColor(sf::Color::Magenta);
     };
 
     void update_aiming_dots(){
@@ -52,17 +51,19 @@ public:
         float road_x = v0_x * flight_time;
         float road_y = 2*(v0_y*flight_time + acceleration*flight_time*flight_time/2);
         float road = road_x+fabs(road_y);
-        float circles_distance = road/how_many_aiming_dots; //ZROBIĆ COŚ ŻEBY NIE BYŁY ZA GĘSTO KULKI
-        //ZMIENIAJĄCA SIĘ ILOŚĆ W ZALEŻNOŚCI OD DROGI?
-        //ZMNIEJSZAJĄCE SIĘ KULKI IM DALEJ?
+        how_many_aiming_dots = road/100;
+        float circles_distance = road/10/how_many_aiming_dots;
+        //MOŻE POPRAWIĆ ODLEGŁOŚCI, ILOŚCI KULEK?
 
         float a = -acceleration/(2*v0_x*v0_x);
         float b = tanf(shot_angle);
 
-        for(int i=0;i<how_many_aiming_dots;i++){
-            float x = circles_distance*i;
+        for(int i=0;i<how_many_aiming_dots;i++){ //tworzenie kulek celujących
+            float x = circles_distance*i + 50;
             aiming_dots[i].setPosition(x,okno->getSize().y - aiming_dots[i].getGlobalBounds().height-(a*x*x + b*x));
-            //std::cerr<<a*x*x + b*x<<std::endl;
+        }
+        for(unsigned long long i=how_many_aiming_dots;i<aiming_dots.size();i++){
+            aiming_dots[i].setPosition(-100,-100);
         }
     }
 
@@ -88,7 +89,7 @@ public:
 
     void check_aiming_move(const sf::Time &elapsed){
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){//zwiększenie kąta przy sprawdzeniu kątów granicznych
-            if(shot_angle<1.483529864195180){ //kąt 85st w radianach
+            if(shot_angle<1.308996938995747){ //kąt 75st w radianach
                 shot_angle+=elapsed.asSeconds()*this->angle_changing_speed;
             }
         }

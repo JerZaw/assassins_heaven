@@ -40,7 +40,7 @@ private:
     int good_points = 0;
     int how_many_tasks;
     int current_task_num = 0;
-    sf::Time max_task_time = sf::seconds(10);
+    sf::Time max_task_time = sf::seconds(15);
     sf::Time current_task_time;
     sf::Text start_text;
     bool started = false;
@@ -113,6 +113,9 @@ public:
         good_points+=answer;
         answer = NOANSWER;
 
+        for(unsigned long long i=3;i<platforms.size();i++){
+            delete platforms[i];
+        }
         platforms.erase(platforms.begin()+3,platforms.end());
         answers.clear();
 
@@ -286,21 +289,27 @@ public:
                 a=rand()%50;b=rand()%50;
             }
             else{
-                a=rand()%10+1;b=rand()%19+1;
+                a=rand()%10+1;b=rand()%10+1;
             }
             break;
         case 3:operation_type=operation(rand()%4);
             if(operation_type==DODAWANIE || operation_type==ODEJMOWANIE){
-                a=rand()%200;b=rand()%100;
+                a=rand()%100;b=rand()%100;
+            }
+            else if(operation_type==MNOZENIE){
+                a=rand()%49+1;b=rand()%10+1;
             }
             else{
+                do{
                 a=rand()%99+1;b=rand()%9+1;
+                }
+                while(int(a)%int(b)!=0);
             }
             break;
         }
 
         std::stringstream stream;
-        stream << std::fixed << std::setprecision(2) << a;
+        stream << std::fixed << std::setprecision(0) << a;
 
         switch (operation_type) {//dodaje składowe do stringa
         case DODAWANIE:
@@ -323,13 +332,13 @@ public:
 
         int solution_place = rand()%platform_count;
 
-        stream << std::fixed << std::setprecision(2) << b << " = ";
+        stream << std::fixed << std::setprecision(0) << b << " = ";
         this->str_equation = stream.str();
 
         for(int i=0;i<platform_count;i++){//dodaje dobre rozwiązanie lub losuje złe niewylosowane wcześniej
             std::stringstream answer_stream;
             if(i==solution_place){
-                answer_stream << std::fixed << std::setprecision(2) << c;
+                answer_stream << std::fixed << std::setprecision(0) << c;
                 answers.emplace_back(answer_stream.str(),true);
             }
             else{
@@ -344,7 +353,7 @@ public:
                 while(std::find_if(answers.begin(),answers.end(),[&c,&addon]
                                    (const std::pair<std::string,bool> &el){return el.first==std::to_string(c+addon);})!=answers.end());
 
-                answer_stream << std::fixed << std::setprecision(2) << c+addon;
+                answer_stream << std::fixed << std::setprecision(0) << c+addon;
                 answers.emplace_back(answer_stream.str(),false);
             }
         }
