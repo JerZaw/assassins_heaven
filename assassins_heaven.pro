@@ -20,6 +20,8 @@ SOURCES += \
 
 HEADERS += \
     Chronometer.hpp \
+    Highscores.h \
+    Rules.h \
     animatedsprite.h \
     arrow.h \
     countdown.h \

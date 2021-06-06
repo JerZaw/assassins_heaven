@@ -5,6 +5,8 @@
 
 int menu()
 {
+    bool mouse_released = false;
+
     // create the window
     sf::RenderWindow window(sf::VideoMode(800,800), "Menu");
 
@@ -38,6 +40,17 @@ int menu()
     // run the program as long as the window is open
     while (window.isOpen()) {
         sf::Event event;
+
+        // clear the window with black color
+        window.clear(sf::Color::Black);
+        // draw everything here...
+        window.draw(tlo);
+        for(auto &el : options){
+            window.draw(el);
+        }
+        // end the current frame
+        window.display();
+
         // check all the window's events that were triggered since the last iteration of the loop
         while (window.pollEvent(event)) {
             // "close requested" event: we close the window
@@ -45,33 +58,23 @@ int menu()
                 window.close();
                 return 0;
             }
-            if (event.type == sf::Event::MouseButtonPressed){
-                if(event.mouseButton.button == sf::Mouse::Left){
-                    sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                    if(options[0].getGlobalBounds().contains(mouse_position)){
-                        return 1;
-                    }
-                    else if(options[1].getGlobalBounds().contains(mouse_position)){
-                        return 2;
-                    }
-                    else if(options[2].getGlobalBounds().contains(mouse_position)){
-                        return 3;
-                    }
+            if(!sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+                mouse_released = true;
+            }
+            else if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && mouse_released){
+                mouse_released = false;
+                sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                if(options[0].getGlobalBounds().contains(mouse_position)){
+                    return 1;
+                }
+                else if(options[1].getGlobalBounds().contains(mouse_position)){
+                    return 2;
+                }
+                else if(options[2].getGlobalBounds().contains(mouse_position)){
+                    return 3;
                 }
             }
         }
-
-        // clear the window with black color
-        window.clear(sf::Color::Black);
-
-        // draw everything here...
-        window.draw(tlo);
-        for(auto &el : options){
-            window.draw(el);
-        }
-
-        // end the current frame
-        window.display();
     }
-    return 0;
+return 0;
 }
