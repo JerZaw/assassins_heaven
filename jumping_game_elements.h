@@ -13,6 +13,7 @@
 #include <scoretable.h>
 #include <Chronometer.hpp>
 #include <countdown.h>
+#include <fstream>
 
 class JumpingGameElements
 {
@@ -29,12 +30,14 @@ private:
     sf::Time high_time;
     int points = 0;
     int money = 0;
-    ScoreTable points_table, money_table;
+    ScoreTable points_table, money_table, highscore_table;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono1;
     float hero_jumping_speed = -600;
     const sf::Font *font;
     CountDown *countdown;
+    std::pair<std::string,int> highscore;
+    bool new_highscore = false;
 public:
     JumpingGameElements(const int &count, const sf::Texture &texture, const sf::IntRect &texture_rect, const int &arg_difficulty, const sf::Texture &hero_texture,
                         const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
@@ -46,11 +49,26 @@ public:
         this->chrono1 = arg_chrono;
         this->font = arg_font;
 
+        countdown = nullptr;
+
         ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(500,15),sf::Vector2f(600,15));
         points_table = pom_table;
 
         ScoreTable pom2_table(elements_textures,arg_font,okno,sf::IntRect(0,0,100,60),sf::Vector2f(0,15),sf::Vector2f(50,15));
         money_table = pom2_table;
+
+        std::string highscore_pom;
+        std::ifstream odczyt("assets/highscores.txt");
+        odczyt >> highscore_pom;
+        highscore.first = highscore_pom.substr(0,highscore_pom.find('-'));
+        highscore.second = std::stoi(highscore_pom.substr(highscore_pom.find('-')+1,highscore_pom.size()-1));
+        odczyt.close();
+
+        ScoreTable pom3_table(elements_textures,arg_font,okno,sf::IntRect(0,0,350,60),
+                              sf::Vector2f(800,15),sf::Vector2f(850,15),
+                              "Highscore: "+ highscore.first + "   " + std::to_string(highscore.second));
+        highscore_table = pom3_table;
+        highscore_table.settextonmiddle(-highscore_table.GetBackground()->getGlobalBounds().height/2);
 
         this->current_platform_texture_rect = texture_rect;
         for(int i=0;i<count;i++){
@@ -63,12 +81,17 @@ public:
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
-
-//                        if(platformpointers[i]->GetCoin()!=nullptr){
-//                            this->platformpointers[i]->GetCoin()->read_data(3);
-//                            this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
-//                        }
+            //                        if(platformpointers[i]->GetCoin()!=nullptr){
+            //                            this->platformpointers[i]->GetCoin()->read_data(3);
+            //                            this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
+            //                        }
         }
+    }
+
+    std::pair<std::pair<int,bool>,int> summary_data(){
+        std::pair<int,bool> parka(points,new_highscore);
+        std::pair<std::pair<int,bool>,int> bigparka(parka,money);
+        return bigparka;
     }
 
     void draw(){
@@ -77,6 +100,7 @@ public:
         }
         points_table.draw();
         money_table.draw();
+        highscore_table.draw();
         okno->draw(ludek);
 
         if(countdown!=nullptr){
@@ -130,6 +154,12 @@ public:
             ludek.accelerate(elapsed.asSeconds()*3);
             hero_jumping_speed-=elapsed.asSeconds()*3;
 
+            if(points>highscore.second){
+                highscore.second = points;
+                highscore_table.update("NEW Highscore! - " + std::to_string(highscore.second));
+                new_highscore = true;
+            }
+
             for(int i=0;i<int(platformpointers.size());i++){
                 platformpointers[i]->step_y(elapsed,this->speed);
                 platformpointers[i]->step(elapsed);
@@ -175,7 +205,6 @@ public:
         }
         else{
             if(countdown->step_countdown_finished(elapsed)){
-                //COŚ NIE DZIAŁA CZASEM SIĘ NIE ODPALA PO MINIGRZE
                 delete countdown;
                 countdown=nullptr;
             }

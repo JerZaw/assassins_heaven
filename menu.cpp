@@ -10,7 +10,7 @@ int menu()
 
     // create some shapes
     sf::Texture tlo_texture;
-    if (!tlo_texture.loadFromFile("menu/back.png")) {
+    if (!tlo_texture.loadFromFile("assets/menu/back.png")) {
         std::cerr << "Could not load texture" << std::endl;
         return -1;
     }
@@ -20,7 +20,7 @@ int menu()
     std::vector<sf::Sprite> options;
 
     sf::Texture option_texture;
-    if (!option_texture.loadFromFile("menu/option.png")) {
+    if (!option_texture.loadFromFile("assets/menu/option.png")) {
         std::cerr << "Could not load texture" << std::endl;
         return -1;
     }

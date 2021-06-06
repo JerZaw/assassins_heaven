@@ -17,7 +17,7 @@ int TaskElement::fighting_game(const int &difficulty)
 
     // create some shapes
     sf::Texture texture1;
-    if (!texture1.loadFromFile("notexture_background.jpg")) {
+    if (!texture1.loadFromFile("assets/notexture_background.jpg")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
@@ -29,20 +29,20 @@ int TaskElement::fighting_game(const int &difficulty)
 
 
     sf::Texture hero_texture;
-    if (!hero_texture.loadFromFile("notexture.jpg")) {
+    if (!hero_texture.loadFromFile("assets/notexture.jpg")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
 
 
     sf::Texture elements_texture;
-    if (!elements_texture.loadFromFile("notexture.jpg")) {
+    if (!elements_texture.loadFromFile("assets/notexture.jpg")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
 
     sf::Font *points_font = new sf::Font;
-    if (!points_font->loadFromFile("arial.ttf")) {
+    if (!points_font->loadFromFile("assets/arial.ttf")) {
         std::cerr << "Could not load font" << std::endl;
         return 1;
     }

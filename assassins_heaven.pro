@@ -31,6 +31,7 @@ HEADERS += \
     movingplatform.h \
     platform.h \
     platformwithequation.h \
+    scoresavingelement.h \
     scoretable.h \
     smallelementcoin.h \
     summary.h \

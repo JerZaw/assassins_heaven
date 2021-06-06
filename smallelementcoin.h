@@ -27,7 +27,7 @@ public:
         case 1: return sf::Color::Green;break;
         case 2: return sf::Color::Blue;break;
         case 4: return sf::Color::Magenta;break;
-        case 0: return sf::Color::Black;break;
+        default: return sf::Color::Black;break;
         }
     }
 

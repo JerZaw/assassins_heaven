@@ -111,13 +111,13 @@ public:
     {
         switch (m_state) {
         case STOPPED:
-            return sf::Time::Zero;
+            return sf::Time::Zero;break;
 
         case RUNNING:
-            return m_time + m_clock.getElapsedTime();
+            return m_time + m_clock.getElapsedTime();break;
 
-        case PAUSED:
-            return m_time;
+        default:
+            return m_time;break;
         }
     }
 
