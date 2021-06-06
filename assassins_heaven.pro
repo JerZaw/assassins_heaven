@@ -19,9 +19,11 @@ SOURCES += \
         rules.cpp
 
 HEADERS += \
+    Boost.h \
     Chronometer.hpp \
     Highscores.h \
     Rules.h \
+    Shop.h \
     animatedsprite.h \
     arrow.h \
     countdown.h \

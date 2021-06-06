@@ -73,7 +73,7 @@ int game_jumping()
 
         if(plansza.Game_alive()){
 
-            plansza.step(chron1.reset_if(),window);
+            plansza.step(chron1.reset_if());
             // draw everything here...
             plansza.draw();
         }
@@ -82,7 +82,7 @@ int game_jumping()
                 summary.update(L"NEW HIGHSCORE!!!",
                                L"Congratulations! You got " + std::to_wstring(plansza.summary_data().first.first)
                                + L" points",
-                               L"AND " +
+                               L"AND you have " +
                                std::to_wstring(plansza.summary_data().second) + L" coins",
                                L"Do you want to save your score?");
             }

@@ -1,0 +1,2 @@
+#include "animatedsprite.h"
+

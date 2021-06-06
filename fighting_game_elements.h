@@ -26,7 +26,6 @@ private:
     const sf::Font *font;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono;
-    int character_size = 30;
     FightingGameAnimatedSprite ludek;
     int good_points = 0;
     int how_many_tasks;
@@ -291,9 +290,9 @@ public:
 
     void generate_position(const int &count){
         sf::Vector2f pompoz;
-        do{
-            pompoz.x = rand()%(int(okno->getSize().x-100-targets[count]->getGlobalBounds().width))+100;//x odstęp od lewej 100 i koło
-            pompoz.y = rand()%(int(okno->getSize().y-100-targets[count]->getGlobalBounds().height))+50;//y odstęp od góry i dołu 50 i od dołu koło
+        do{//odstępy od granic i od innych celów
+            pompoz.x = rand()%(int(okno->getSize().x-100-targets[count]->getGlobalBounds().width))+100;//x odstęp od lewej 100
+            pompoz.y = rand()%(int(okno->getSize().y-150-targets[count]->getGlobalBounds().height))+100;//y odstęp od góry 100 i dołu 50
             targets[count]->setPosition(pompoz);
         }
         while(check_target_intersection(count));

@@ -14,6 +14,7 @@
 #include <Chronometer.hpp>
 #include <countdown.h>
 #include <fstream>
+#include <Shop.h>
 
 class JumpingGameElements
 {
@@ -38,6 +39,11 @@ private:
     CountDown *countdown;
     std::pair<std::string,int> highscore;
     bool new_highscore = false;
+    Shop *shop;
+    const sf::Time MAXshopworkingtime = sf::seconds(12);
+    sf::Time shopworkingtime = sf::Time::Zero;
+    int boost_height = 0;
+    bool boost_bought = false;
 public:
     JumpingGameElements(const int &count, const sf::Texture &texture, const sf::IntRect &texture_rect, const int &arg_difficulty, const sf::Texture &hero_texture,
                         const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
@@ -49,7 +55,7 @@ public:
         this->chrono1 = arg_chrono;
         this->font = arg_font;
 
-        countdown = nullptr;
+        countdown = new CountDown(font,this->okno);
 
         ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(500,15),sf::Vector2f(600,15));
         points_table = pom_table;
@@ -57,11 +63,21 @@ public:
         ScoreTable pom2_table(elements_textures,arg_font,okno,sf::IntRect(0,0,100,60),sf::Vector2f(0,15),sf::Vector2f(50,15));
         money_table = pom2_table;
 
-        std::string highscore_pom;
+        shop = new Shop(elements_textures,okno);
+        shop->update_position(sf::Vector2f(10,okno->getSize().y - shop->GetShopBounds().height - 10));
+
+        std::string str_pom;
+
+        std::ifstream odczyt_money("assets/money.txt");
+        odczyt_money >> str_pom;
+        money = std::stoi(str_pom);
+        odczyt_money.close();
+        money_table.update(money);
+
         std::ifstream odczyt("assets/highscores.txt");
-        odczyt >> highscore_pom;
-        highscore.first = highscore_pom.substr(0,highscore_pom.find('-'));
-        highscore.second = std::stoi(highscore_pom.substr(highscore_pom.find('-')+1,highscore_pom.size()-1));
+        odczyt >> str_pom;
+        highscore.first = str_pom.substr(0,str_pom.find('-'));
+        highscore.second = std::stoi(str_pom.substr(str_pom.find('-')+1,str_pom.size()-1));
         odczyt.close();
 
         ScoreTable pom3_table(elements_textures,arg_font,okno,sf::IntRect(0,0,350,60),
@@ -106,6 +122,10 @@ public:
         if(countdown!=nullptr){
             okno->draw(*countdown);
         }
+
+        if(shop!=nullptr){
+            shop->draw();
+        }
     }
 
     void create_ludek(){
@@ -136,16 +156,65 @@ public:
 
     }
 
-    void step(const sf::Time &elapsed, const sf::Window &okno){
+    void step(const sf::Time &elapsed){
         if(countdown==nullptr){
 
-            if(points>45){
+            if(shop!=nullptr){
+                shopworkingtime+=elapsed;
+                if(shopworkingtime < MAXshopworkingtime){
+                    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+                        sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
+                        if(shop->GetShopBounds().contains(mouse_position)){
+
+                            boost_height = shop->buy(money,mouse_position);
+                            if(boost_height != 0){
+                                boost_bought = true;
+                                delete shop;
+                                shop = nullptr;
+                                shopworkingtime = sf::Time::Zero;
+                                money_table.update(money);
+                            }
+                        }
+                    }
+                }
+                else{
+                    delete shop;
+                    shop = nullptr;
+                }
+            }
+
+            if(boost_bought){//na środek ekranu i potem boost
+                if((fabs(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 - okno->getSize().x/2)>15 &&
+                        fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>15) &&
+                        shopworkingtime < sf::seconds(10)){
+                    ludek.move((ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 -
+                               okno->getSize().x/2) * -2 * elapsed.asSeconds(),
+                               (ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 -
+                               okno->getSize().y/2) * -2 *elapsed.asSeconds());
+                    shopworkingtime+=elapsed;
+                }
+                else if(points<boost_height){
+                    speed+=elapsed.asSeconds()*1000;  //przyspieszanie całości z biegiem czasu
+                    ludek.setPosition(okno->getSize().x/2-ludek.getGlobalBounds().width/2,
+                                      okno->getSize().y/2-ludek.getGlobalBounds().height/2);
+                }
+                else if(speed>31){
+                    speed-=elapsed.asSeconds()*3000;//zwolnienie całości z biegiem czasu
+                    ludek.setPosition(okno->getSize().x/2-ludek.getGlobalBounds().width/2,
+                                      okno->getSize().y/2-ludek.getGlobalBounds().height/2);
+                }
+                else{
+                    boost_bought = false;
+                }
+            }
+
+            if(points>225){
                 difficulty=3;
             }
-            else if(points>30){
+            else if(points>150){
                 difficulty=2;
             }
-            else if(points>15){
+            else if(points>75){
                 difficulty=1;
             }
 
@@ -187,7 +256,7 @@ public:
                         }
                     }
                 }
-                if(platformpointers[i]->getPosition().y>okno.getSize().y){
+                if(platformpointers[i]->getPosition().y>okno->getSize().y){
                     this->generate_new(i);
                     points++;
                     points_table.update(points);
@@ -196,11 +265,15 @@ public:
                     platformpointers[i]->ChangeWorkingState(true);
                 }
 
-                if(ludek.getPosition().y + ludek.getGlobalBounds().height > okno.getSize().y){//śmierć gdy poniżej okna
+                if(ludek.getPosition().y + ludek.getGlobalBounds().height > okno->getSize().y){//śmierć gdy poniżej okna
                     this->hero_alive=false;
+
+                    std::ofstream zapis_money("assets/money.txt", std::ios::trunc);
+                    zapis_money << std::to_string(money);
+                    zapis_money.close();
                 }
             }
-            ludek.step(elapsed,okno);
+            ludek.step(elapsed,*okno);
             check_if_too_high(elapsed);
         }
         else{
