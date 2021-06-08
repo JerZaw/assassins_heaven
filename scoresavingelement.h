@@ -79,7 +79,7 @@ public:
         while(!odczyt.eof()){
             odczyt >> str_pom;
             highscores.emplace_back(str_pom.substr(0,str_pom.find('-')),
-                               std::stoi(str_pom.substr(str_pom.find('-')+1,str_pom.size()-1)));
+                                    std::stoi(str_pom.substr(str_pom.find('-')+1,str_pom.size()-1)));
         }
         odczyt.close();
     }
@@ -117,6 +117,18 @@ public:
             }
         }
 
+        sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
+        if(SubmitButton.getGlobalBounds().contains(mouse_position)){
+            SubmitButton.setTextureRect(sf::IntRect(489,732,402,174));
+        }else{
+            SubmitButton.setTextureRect(sf::IntRect(0,732,402,174));
+            if(QuitButton.getGlobalBounds().contains(mouse_position)){
+                QuitButton.setTextureRect(sf::IntRect(489,549,402,174));
+            }
+            else{
+                QuitButton.setTextureRect(sf::IntRect(0,549,402,174));
+            }
+        }
     }
 
     void SetScore(const int &arg_score){
@@ -139,20 +151,18 @@ public:
     void create_buttons(const sf::Texture &texture){
         this->button_texture = texture;
         SubmitButton.setTexture(button_texture);
-        SubmitButton.setTextureRect(sf::IntRect(1088,206,270,129));
-        SubmitButton.setScale(1,0.7);
-        SubmitButton.setPosition(okno->getSize().x/4+100 - SubmitButton.getGlobalBounds().width/2, okno->getSize().y/2 + 200);
+        SubmitButton.setTextureRect(sf::IntRect(0,732,402,174));
+        SubmitButton.setPosition(okno->getSize().x/4+50 - SubmitButton.getGlobalBounds().width/2, okno->getSize().y/2 + 200);
         drawables.emplace_back(&SubmitButton);
         QuitButton.setTexture(button_texture);
-        QuitButton.setTextureRect(sf::IntRect(1439,206,270,129));
-        QuitButton.setScale(1,0.7);
-        QuitButton.setPosition(okno->getSize().x/4*3-100 - QuitButton.getGlobalBounds().width/2, okno->getSize().y/2 + 200);
+        QuitButton.setTextureRect(sf::IntRect(0,549,402,174));
+        QuitButton.setPosition(okno->getSize().x/4*3-50 - QuitButton.getGlobalBounds().width/2, okno->getSize().y/2 + 200);
         drawables.emplace_back(&QuitButton);
     }
 
     void AddScore(const std::pair<std::string,int> &parka){
         auto it = std::find_if(highscores.begin(),highscores.end(),
-                            [&parka](const std::pair<std::string,int> &el_pair){return parka.first == el_pair.first;});
+                               [&parka](const std::pair<std::string,int> &el_pair){return parka.first == el_pair.first;});
         if(it==highscores.end()){
             highscores.emplace_back(parka);
             std::cerr<<parka.first<<std::endl;

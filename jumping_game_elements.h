@@ -24,7 +24,10 @@ private:
     float speed = 30, last_speed;
     sf::Texture elements_textures;
     sf::Texture current_hero_texture;
-    sf::IntRect current_platform_texture_rect;
+    sf::IntRect current_long_platform_texture_rect;
+    sf::IntRect current_small_platform_texture_rect;
+    sf::IntRect current_long_timed_platform_texture_rect;
+    sf::IntRect current_small_timed_platform_texture_rect;
     AnimatedSprite ludek;
     bool hero_alive = true;
     bool was_too_high = false;
@@ -45,7 +48,7 @@ private:
     int boost_height = 0;
     bool boost_bought = false;
 public:
-    JumpingGameElements(const int &count, const sf::Texture &texture, const sf::IntRect &texture_rect, const int &arg_difficulty, const sf::Texture &hero_texture,
+    JumpingGameElements(const int &count, const sf::Texture &texture, const int &arg_difficulty, const sf::Texture &hero_texture,
                         const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
@@ -86,11 +89,22 @@ public:
         highscore_table = pom3_table;
         highscore_table.settextonmiddle(-highscore_table.GetBackground()->getGlobalBounds().height/2);
 
-        this->current_platform_texture_rect = texture_rect;
+        this->current_long_platform_texture_rect = sf::IntRect(0,288,380,94);
+        this->current_small_platform_texture_rect = sf::IntRect(214,1662,200,100);
+        this->current_long_timed_platform_texture_rect = sf::IntRect(0,384,380,94);
+        this->current_small_timed_platform_texture_rect = sf::IntRect(382,204,200,100);
         for(int i=0;i<count;i++){
             this->platformpointers.emplace_back(this->random_platform(this->difficulty));
+            int a=rand()%2;
+            if(a==0){
+                this->platformpointers[i]->setScale(0.3,0.3);
+                this->platformpointers[i]->setTextureRect(this->current_long_platform_texture_rect);
+            }
+            else{
+                this->platformpointers[i]->setScale(0.4,0.4);
+                this->platformpointers[i]->setTextureRect(this->current_small_platform_texture_rect);
+            }
             this->platformpointers[i]->setTexture(this->elements_textures);
-            this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
             if(i==0){
                 this->platformpointers[i]->setPosition(600,850);
             }
@@ -132,16 +146,16 @@ public:
         AnimatedSprite pom_ludek(10);
         pom_ludek.setTexture(this->current_hero_texture);
         //JUMPING TEXTURE RECTANGLES
-//        pom_ludek.add_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
-//        pom_ludek.add_animation_frame(sf::IntRect(290, 4, 266, 461)); // 2 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(567, 2, 253, 433)); // 3 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(834, 2, 253, 432)); // 4 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(1134,2,253,432)); // 5 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(1402, 2,253,432)); // 6 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(1677, 2, 274, 425)); // 7 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(1980, 0, 301, 420)); // 8 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(2321, 0, 329, 412)); // 9 frame
-//        pom_ludek.add_animation_frame(sf::IntRect(2685, 0, 329, 412)); // 10 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
+        pom_ludek.add_pom_animation_frame(sf::IntRect(290, 4, 266, 461)); // 2 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(567, 2, 253, 433)); // 3 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(834, 2, 253, 432)); // 4 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1134,2,253,432)); // 5 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1402, 2,253,432)); // 6 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1677, 2, 274, 425)); // 7 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1980, 0, 301, 420)); // 8 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(2321, 0, 329, 412)); // 9 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(2685, 0, 329, 412)); // 10 frame
 
         //RUNNING TEXTURE RECTANGLES
         pom_ludek.add_animation_frame(sf::IntRect(0,482,328,433)); // 1 frame of animation
@@ -164,9 +178,8 @@ public:
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
         delete this->platformpointers[i];
-        this->platformpointers[i] = this->random_platform(this->difficulty);
+        this->platformpointers[i] = this->random_platform(this->difficulty);      
         this->platformpointers[i]->setTexture(this->elements_textures);
-        this->platformpointers[i]->setTextureRect(this->current_platform_texture_rect);
         this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
         this->platformpointers[i]->SetMiddle();
         this->platformpointers[i]->random_coin();
@@ -225,20 +238,32 @@ public:
                 }
             }
 
-            if(points>225){
+            if(points>250){
                 difficulty=3;
+                this->current_long_platform_texture_rect = sf::IntRect(0,96,380,94);
+                this->current_small_platform_texture_rect = sf::IntRect(382,408,200,100);
+                this->current_long_timed_platform_texture_rect = sf::IntRect(0,192,380,94);
+                this->current_small_timed_platform_texture_rect = sf::IntRect(232,1288,200,100);
             }
             else if(points>150){
                 difficulty=2;
+                this->current_long_platform_texture_rect = sf::IntRect(0,768,380,94);
+                this->current_small_platform_texture_rect = sf::IntRect(214,1764,200,100);
+                this->current_long_timed_platform_texture_rect = sf::IntRect(0,480,380,94);
+                this->current_small_timed_platform_texture_rect = sf::IntRect(382,306,200,100);
             }
             else if(points>75){
                 difficulty=1;
+                this->current_long_platform_texture_rect = sf::IntRect(0,672,380,94);
+                this->current_small_platform_texture_rect = sf::IntRect(209,1879,200,100);
+                this->current_long_timed_platform_texture_rect = sf::IntRect(0,1056,380,94);
+                this->current_small_timed_platform_texture_rect = sf::IntRect(382,102,200,100);
             }
 
-            speed+=elapsed.asSeconds()*3;  //przyspieszanie całości z biegiem czasu
-            last_speed+=elapsed.asSeconds()*3;
-            ludek.accelerate(elapsed.asSeconds()*3);
-            hero_jumping_speed-=elapsed.asSeconds()*3;
+            speed+=elapsed.asSeconds()*2;  //przyspieszanie całości z biegiem czasu
+            last_speed+=elapsed.asSeconds()*2;
+            //ludek.accelerate(elapsed.asSeconds()*2);
+            hero_jumping_speed=speed-670;
 
             if(points>highscore.second){
                 highscore.second = points;
@@ -248,7 +273,6 @@ public:
 
             for(int i=0;i<int(platformpointers.size());i++){
                 platformpointers[i]->step_y(elapsed,this->speed);
-                platformpointers[i]->step(elapsed);
 
                 if(platformpointers[i]->Is_working()){
                     if(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
@@ -259,15 +283,15 @@ public:
                                                      ludek.getGlobalBounds().width, 1))){ //zderzenie z górą platformy
                         if(ludek.GetVerticalSpeed()>100){
                             ludek.SetVerticalSpeed(hero_jumping_speed);
+                            ludek.start_jump_animation();
                             platformpointers[i]->activate();
                             if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje
                                     ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())){
                                 platformpointers[i]->GetCoin()->read_data(this->difficulty);
-                                std::pair<int,int> pom = platformpointers[i]->GetCoin()->picked(chrono1);
+                                std::pair<int,int> pom = platformpointers[i]->pick(chrono1);
                                 if(pom.first!=0)
                                 {
                                     chrono1->reset(true);
-                                    std::cerr<<"new countdown\n";
                                     countdown = new CountDown(font,this->okno);
                                 }
                                 money+=pom.second;
@@ -304,7 +328,6 @@ public:
         }
     }
 
-
     void check_if_too_high(const sf::Time &elapsed){ //może by zrobić move zamiast zmieniać prędkość?
 
         if(ludek.getPosition().y < 200){//przesuwanie planszy gdy gracz wyskoczy ponad okno
@@ -317,7 +340,7 @@ public:
             else{
                 this->speed+=70*elapsed.asSeconds();
                 if(ludek.getPosition().y<0){
-                    ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() + 800*elapsed.asSeconds());
+                    ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() + 1200*elapsed.asSeconds());
                 }//this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() - 75*elapsed.asSeconds());
             }
         }
@@ -361,11 +384,11 @@ public:
     float random_position_y(int iterator){
         float vec_y;
         switch (this->difficulty) {
-        case 0 :  vec_y = rand()%2;break;
-        case 1 :  vec_y = rand()%6;break;
-        case 2 :  vec_y = rand()%12;break;
-        case 3 :  vec_y = rand()%20;break;
-        default:  vec_y = rand()%2;break;
+        case 0 :  vec_y = rand()%15;break;
+        case 1 :  vec_y = rand()%25;break;
+        case 2 :  vec_y = rand()%35;break;
+        case 3 :  vec_y = rand()%45;break;
+        default:  break;
         }
 
         if(iterator==0){
@@ -431,7 +454,7 @@ public:
 
     Platform *random_platform(const int &difficulty){
 
-        int num,speed,boundary=rand()%40+65,time_=5;
+        int num,speed,boundary=rand()%40+65,time_=2;
         if(difficulty==1){
             num=this->random_pick(60,40,0,0);
             speed = rand()%30+20;
@@ -439,20 +462,58 @@ public:
         else if(difficulty==2){
             num=this->random_pick(20,40,25,15);
             speed = rand()%20+40;
-            time_ = rand()%2+3;
+            time_ = 1-(rand()%2+3)/10.0;
         }
         else if(difficulty==3){
             num=this->random_pick(10,35,30,25);
             speed = rand()%20+50;
-            time_ = rand()%2+1;
+            time_ = (rand()%4+1)/10.0;
         }
         else num=0;
+
+        int a = rand()%2;
         Platform* rand_plat;
         switch(num){
-        case 1: rand_plat = new MovingPlatform(speed,boundary,elements_textures);break;
-        case 2: rand_plat = new TimedPlatform(time_,elements_textures);break;
-        case 3: rand_plat = new TimedMovingPlatform(speed,boundary,time_,elements_textures);break;
-        default: rand_plat = new Platform(elements_textures);break;
+        case 1: rand_plat = new MovingPlatform(speed,boundary,elements_textures);
+            if(a==0){
+                rand_plat->setScale(0.3,0.3);
+                rand_plat->setTextureRect(current_long_platform_texture_rect);
+            }
+            else{
+                rand_plat->setScale(0.4,0.4);
+                rand_plat->setTextureRect(current_small_platform_texture_rect);
+            }
+                    break;
+        case 2: rand_plat = new TimedPlatform(time_,elements_textures);
+            if(a==0){
+                rand_plat->setScale(0.3,0.3);
+                rand_plat->setTextureRect(current_long_timed_platform_texture_rect);
+            }
+            else{
+                rand_plat->setScale(0.4,0.4);
+                rand_plat->setTextureRect(current_small_timed_platform_texture_rect);
+            }
+            break;
+        case 3: rand_plat = new TimedMovingPlatform(speed,boundary,time_,elements_textures);
+            if(a==0){
+                rand_plat->setScale(0.3,0.3);
+                rand_plat->setTextureRect(current_long_timed_platform_texture_rect);
+            }
+            else{
+                rand_plat->setScale(0.4,0.4);
+                rand_plat->setTextureRect(current_small_timed_platform_texture_rect);
+            }
+            break;
+        default: rand_plat = new Platform(elements_textures);
+            if(a==0){
+                rand_plat->setScale(0.3,0.3);
+                rand_plat->setTextureRect(current_long_platform_texture_rect);
+            }
+            else{
+                rand_plat->setScale(0.4,0.4);
+                rand_plat->setTextureRect(current_small_platform_texture_rect);
+            }
+            break;
         }
         return rand_plat;
     }

@@ -24,18 +24,18 @@ public:
         this->okno = arg_okno;
         this->font1 = *font;
 
-        text_1.setCharacterSize(70);
-        text_1.setString("Highscores");
+        text_1.setCharacterSize(74);
+        text_1.setString("Top 10");
         text_1.setFont(font1);
-        text_1.setPosition(okno->getSize().x/2 - text_1.getGlobalBounds().width/2,30);
-        text_1.setFillColor(sf::Color(0,0,0,250));
+        text_1.setPosition(okno->getSize().x/2 - text_1.getGlobalBounds().width/2,144);
+        text_1.setFillColor(sf::Color::White);
         drawables.emplace_back(&text_1);
 
-        text_2.setCharacterSize(50);
+        text_2.setCharacterSize(70);
         text_2.setString("Top 10");
         text_2.setFont(font1);
-        text_2.setPosition(okno->getSize().x/2 - text_2.getGlobalBounds().width/2,125);
-        text_2.setFillColor(sf::Color(0,0,0,250));
+        text_2.setPosition(okno->getSize().x/2 - text_2.getGlobalBounds().width/2,145);
+        text_2.setFillColor(sf::Color(70,36,0));
         drawables.emplace_back(&text_2);
 
         for(int i=0;i<10;i++){
@@ -53,7 +53,7 @@ public:
             counter++;
         }
 
-        scores[0].setPosition(okno->getSize().x/3,okno->getSize().y/4);
+        scores[0].setPosition(okno->getSize().x/3,okno->getSize().y/4+25);
         for(unsigned long long i=1;i<scores.size();i++){
             scores[i].setPosition(okno->getSize().x/3,scores[i-1].getPosition().y + 40);
         }

@@ -19,7 +19,7 @@ public:
         this->okno = arg_okno;
         this->font1 = *font;
 
-        sf::Text text_1("Rules",font1,70);
+        sf::Text text_1("",font1,70);
         text_1.setPosition(okno->getSize().x/2 - text_1.getGlobalBounds().width/2,30);
         text_1.setFillColor(sf::Color(0,0,0,250));
         rules.emplace_back(text_1);
@@ -29,18 +29,18 @@ public:
             rules[i].setFillColor(sf::Color::Black);
         }
 
-        rules[1].setString(L"Gra polega na zdobyciu jak największej");
-        rules[2].setString(L"ilości punktów poprzed wspięcie się jak najwyżej");
-        rules[3].setString(L"w głównej grze sterowanie strzałki lewo-prawo");
-        rules[4].setString(L"możesz też zdobyć pieniądze zbierając");
-        rules[5].setString(L"monety pojawiające się na platformach");
-        rules[6].setString(L"zbierając symbol assassina aktywuje się minigra");
-        rules[7].setString(L"1. mindgame: wskocz na platformę z dobrą odpowiedzią");
-        rules[8].setString(L"2. fightinggame: zestrzel wszystkie cele");
-        rules[9].setString(L"po skończeniu minigier wracasz do gry");
-        rules[10].setString(L"za pieniądze możesz kupić boosty na starcie");
+        rules[1].setString(L"Game objective is to gain the highest");
+        rules[2].setString(L"score possible by jumping on the platforms");
+        rules[3].setString(L"left/right arrows move you accordingly");
+        rules[4].setString(L"you can also earn money by collecting");
+        rules[5].setString(L"coins appearing on the platforms");
+        rules[6].setString(L"when assassin's symbol is collected minigame will start");
+        rules[7].setString(L"1. mindgame: jump on the platform with the right answer");
+        rules[8].setString(L"2. fightinggame: shoot all the targets");
+        rules[9].setString(L"after the minigame ends you come back to the main game");
+        rules[10].setString(L"use money to buy boosts at the start of each new game");
 
-        rules[1].setPosition(okno->getSize().x/2 - rules[1].getGlobalBounds().width/2,okno->getSize().y/6);
+        rules[1].setPosition(okno->getSize().x/2 - rules[1].getGlobalBounds().width/2,okno->getSize().y/5 + 50);
         for(unsigned long long i=2;i<rules.size();i++){
             rules[i].setPosition(okno->getSize().x/2 - rules[i].getGlobalBounds().width/2,rules[i-1].getPosition().y + 40);
         }

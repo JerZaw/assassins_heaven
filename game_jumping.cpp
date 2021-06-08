@@ -38,11 +38,11 @@ int game_jumping()
 //    }
 
 
-    sf::Texture elements_texture;
-    if (!elements_texture.loadFromFile("assets/notexture.jpg")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return 1;
-    }
+//    sf::Texture elements_texture;
+//    if (!elements_texture.loadFromFile("assets/notexture.jpg")) {
+//        std::cerr << "Could not load texture" << std::endl;
+//        return 1;
+//    }
 
     sf::Font *points_font = new sf::Font;
     if (!points_font->loadFromFile("assets/arial.ttf")) {
@@ -55,11 +55,11 @@ int game_jumping()
     bool score_saving = false;
 
     ScoreSavingElement scoresaving(points_font,&window);
-    scoresaving.create_buttons(elements_texture);
+    scoresaving.create_buttons(menu_button_textures);
 
     sftools::Chronometer chron1;
 
-    JumpingGameElements plansza(30,elements_texture,sf::IntRect(38,22,104,80),0,hero_texture,points_font, &window, &chron1);
+    JumpingGameElements plansza(30,elements_textures,0,hero_texture,points_font, &window, &chron1);
     chron1.reset(true);
     // run the program as long as the window is open
     while (window.isOpen()) {
@@ -95,18 +95,19 @@ int game_jumping()
                                std::to_wstring(plansza.summary_data().second) + L" coins",
                                L"Do you want to save your score?");
             }
-            summary.create_buttons(elements_texture);
+            summary.create_buttons(menu_button_textures);
             summary.update_main_game();
             summary_generated=true;
         }
         else if(!score_saving){
             summary.draw();
+            sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+            std::string pom_chosenbutton = summary.YesOrNo(mouse_position);
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-                sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                if(summary.YesOrNo(mouse_position)=="no"){
+                if(pom_chosenbutton=="no"){
                     window.close();
                 }
-                else if(summary.YesOrNo(mouse_position)=="yes"){
+                else if(pom_chosenbutton=="yes"){
                     score_saving=true;
                     scoresaving.SetScore(plansza.summary_data().first.first);
                 }

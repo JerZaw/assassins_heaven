@@ -39,11 +39,11 @@ public:
     void create_buttons(const sf::Texture &texture){
         this->button_texture = texture;
         YesButton.setTexture(button_texture);
-        YesButton.setTextureRect(sf::IntRect(1089,45,266,127));
-        YesButton.setPosition(okno->getSize().x/4+100 - YesButton.getGlobalBounds().width/2, okno->getSize().y/2 + 100);
+        YesButton.setTextureRect(sf::IntRect(0,915,402,174));
+        YesButton.setPosition(okno->getSize().x/4+50 - YesButton.getGlobalBounds().width/2, okno->getSize().y/2 + 100);
         NoButton.setTexture(button_texture);
-        NoButton.setTextureRect(sf::IntRect(1440,48,266,127));
-        NoButton.setPosition(okno->getSize().x/4*3-100 - NoButton.getGlobalBounds().width/2, okno->getSize().y/2 + 100);
+        NoButton.setTextureRect(sf::IntRect(0,1098,402,174));
+        NoButton.setPosition(okno->getSize().x/4*3-50 - NoButton.getGlobalBounds().width/2, okno->getSize().y/2 + 100);
         buttons = true;
     }
 
@@ -120,12 +120,21 @@ public:
 
     std::string YesOrNo(const sf::Vector2f &mouse_position){
         if(YesButton.getGlobalBounds().contains(mouse_position)){
+            YesButton.setTextureRect(sf::IntRect(489,915,402,174));
+            NoButton.setTextureRect(sf::IntRect(0,1098,402,174));
             return "yes";
         }
-        else if(NoButton.getGlobalBounds().contains(mouse_position)){
-            return "no";
+        else{
+            YesButton.setTextureRect(sf::IntRect(0,915,402,174));
+            if(NoButton.getGlobalBounds().contains(mouse_position)){
+                NoButton.setTextureRect(sf::IntRect(489,1098,402,174));
+                return "no";
+            }
+            else{
+                NoButton.setTextureRect(sf::IntRect(0,1098,402,174));
+            }
         }
-        else return "";
+        return "";
     }
 
     bool closing(){

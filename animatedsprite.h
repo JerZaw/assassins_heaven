@@ -9,7 +9,7 @@
 class AnimatedSprite : public sf::Sprite
 {
 private:
-    std::vector<sf::IntRect> rec_vec;
+    std::vector<sf::IntRect> rec_vec,pom_rec_vec;
     int current=0;
     int my_fps;
     float verticalspeed;
@@ -17,7 +17,8 @@ private:
     float acceleration;
     sf::Time dlugi_czas = sf::Time::Zero;
     int pressed = 0;
-    enum { CHANGED_LEFT, CHANGED_RIGHT } side_state;
+    enum { CHANGED_LEFT, CHANGED_RIGHT } side_state = CHANGED_RIGHT;
+    bool jumping = false;
 public:
 
     AnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 800){
@@ -39,6 +40,17 @@ public:
         rec_vec.emplace_back(rect);
     }
 
+    void start_jump_animation(){
+        current = 0;
+        dlugi_czas = sf::Time::Zero;
+        std::swap(rec_vec,pom_rec_vec);
+        jumping = true;
+    }
+
+    void add_pom_animation_frame(const sf::IntRect &rect){
+        pom_rec_vec.emplace_back(rect);
+    }
+
     void accelerate(float added_acceleration){
         acceleration+=added_acceleration;
     }
@@ -58,6 +70,10 @@ public:
             this->setTextureRect(rec_vec[++this->current]);
             if(this->current==int(rec_vec.size())-1){
                 this->current=0;
+                if(jumping){
+                    jumping = false;
+                    std::swap(rec_vec,pom_rec_vec);
+                }
             }
             this->dlugi_czas = sf::Time::Zero;
         }

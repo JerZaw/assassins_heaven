@@ -15,9 +15,8 @@ private:
     int current_difficulty;
 public:
     TaskElement(){};
-    TaskElement(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture,
-                const sf::IntRect &texture_rect)
-        : SmallElementCoin(arg_value,arg_speed_x,texture,texture_rect){
+    TaskElement(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture)
+        : SmallElementCoin(arg_value,arg_speed_x,texture){
         task_type = Tasks(rand()%2+1);
     }
 
