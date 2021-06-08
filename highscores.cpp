@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <Highscores.h>
+#include <read_textures.h>
 
 int highscores()
 {
@@ -33,8 +34,8 @@ int highscores()
         return 1;
     }
 
-    Highscores highscores(points_font,&window);
-    highscores.create_buttons(elements_texture);
+    Highscores highscores(&font_comica_bold,&window);
+    highscores.create_buttons(menu_button_textures);
 
     // run the program as long as the window is open
     while (window.isOpen()) {

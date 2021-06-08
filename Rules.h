@@ -53,6 +53,14 @@ public:
                 okno->close();
             }
         }
+
+        sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
+        if(QuitButton.getGlobalBounds().contains(mouse_position)){
+            QuitButton.setTextureRect(sf::IntRect(489,549,402,174));
+        }
+        else{
+            QuitButton.setTextureRect(sf::IntRect(0,549,402,174));
+        }
     }
 
     void draw(){
@@ -65,9 +73,10 @@ public:
     void create_buttons(const sf::Texture &texture){
         this->button_texture = texture;
         QuitButton.setTexture(button_texture);
-        QuitButton.setTextureRect(sf::IntRect(1439,206,270,129));
-        QuitButton.setScale(1,0.7);
+        QuitButton.setTextureRect(sf::IntRect(0,549,402,174));
+        QuitButton.setScale(0.9,0.9);
         QuitButton.setPosition(okno->getSize().x/2 - QuitButton.getGlobalBounds().width/2, okno->getSize().y/2 + 230);
+
     }
 };
 

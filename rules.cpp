@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <Rules.h>
+#include <read_textures.h>
 
 int rules()
 {
@@ -28,13 +29,13 @@ int rules()
     }
 
     sf::Font *points_font = new sf::Font;
-    if (!points_font->loadFromFile("assets/arial.ttf")) {
+    if (!points_font->loadFromFile("assets/Comica_BD_Bold.ttf")) {
         std::cerr << "Could not load font" << std::endl;
         return 1;
     }
 
-    Rules rules(points_font,&window);
-    rules.create_buttons(elements_texture);
+    Rules rules(&font_comica_bold,&window);
+    rules.create_buttons(menu_button_textures);
 
     // run the program as long as the window is open
     while (window.isOpen()) {

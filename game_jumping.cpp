@@ -6,6 +6,7 @@
 #include <Chronometer.hpp>
 #include <summary.h>
 #include <scoresavingelement.h>
+#include <read_textures.h>
 
 int game_jumping()
 {
@@ -30,11 +31,11 @@ int game_jumping()
     background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
 
-    sf::Texture hero_texture;
-    if (!hero_texture.loadFromFile("assets/notexture.jpg")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return 1;
-    }
+//    sf::Texture hero_texture;
+//    if (!hero_texture.loadFromFile("assets/notexture.jpg")) {
+//        std::cerr << "Could not load texture" << std::endl;
+//        return 1;
+//    }
 
 
     sf::Texture elements_texture;

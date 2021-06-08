@@ -2,6 +2,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <read_textures.h>
 
 int menu()
 {
@@ -17,7 +18,7 @@ int menu()
         return -1;
     }
     sf::Sprite tlo;
-    tlo.setTexture(tlo_texture);
+    tlo.setTexture(menu_back_texture);
 
     std::vector<sf::Sprite> options;
 
@@ -26,15 +27,20 @@ int menu()
         std::cerr << "Could not load texture" << std::endl;
         return -1;
     }
+
     sf::Sprite option;
-    option.setTexture(option_texture);
-    option.setPosition(192,200);
+    option.setTexture(menu_button_textures);
+    option.setTextureRect(sf::IntRect(0,0,402,174));
+    option.setScale(0.9,0.9);
+    option.setPosition(window.getSize().x/2 - option.getGlobalBounds().width/2,250);
     options.emplace_back(option);
 
-    option.setPosition(192,400);
+    option.setTextureRect(sf::IntRect(0,183,402,174));
+    option.setPosition(window.getSize().x/2 - option.getGlobalBounds().width/2,250 + 174 + 10);
     options.emplace_back(option);
 
-    option.setPosition(192,600);
+    option.setTextureRect(sf::IntRect(0,366,402,174));
+    option.setPosition(window.getSize().x/2 - option.getGlobalBounds().width/2,option.getPosition().y+ 174 + 10);
     options.emplace_back(option);
 
     // run the program as long as the window is open
@@ -46,10 +52,29 @@ int menu()
         // draw everything here...
         window.draw(tlo);
         for(auto &el : options){
-            window.draw(el);
+            window.draw(el); 
         }
         // end the current frame
         window.display();
+
+        sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        if(options[0].getGlobalBounds().contains(mouse_position)){
+            options[0].setTextureRect(sf::IntRect(489,0,402,174));
+        }else{
+            options[0].setTextureRect(sf::IntRect(0,0,402,174));
+            if(options[1].getGlobalBounds().contains(mouse_position)){
+                options[1].setTextureRect(sf::IntRect(489,183,402,174));
+            }
+            else{
+                options[1].setTextureRect(sf::IntRect(0,183,402,174));
+                if(options[2].getGlobalBounds().contains(mouse_position)){
+                    options[2].setTextureRect(sf::IntRect(489,366,402,174));
+                }
+                else{
+                    options[2].setTextureRect(sf::IntRect(0,366,402,174));
+                }
+            }
+        }
 
         // check all the window's events that were triggered since the last iteration of the loop
         while (window.pollEvent(event)) {

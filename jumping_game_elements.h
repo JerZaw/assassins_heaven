@@ -97,10 +97,10 @@ public:
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
-            //                        if(platformpointers[i]->GetCoin()!=nullptr){
-            //                            this->platformpointers[i]->GetCoin()->read_data(3);
-            //                            this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
-            //                        }
+//                                    if(platformpointers[i]->GetCoin()!=nullptr){
+//                                        this->platformpointers[i]->GetCoin()->read_data(3);
+//                                        this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
+//                                    }
         }
     }
 
@@ -129,17 +129,34 @@ public:
     }
 
     void create_ludek(){
-        AnimatedSprite pom_ludek(8);
+        AnimatedSprite pom_ludek(10);
         pom_ludek.setTexture(this->current_hero_texture);
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 1 frame of animation
-        pom_ludek.add_animation_frame(sf::IntRect(65, 6, 19, 31)); // 2 frame
-        pom_ludek.add_animation_frame(sf::IntRect(115, 6, 19, 31)); // 3 frame
-        pom_ludek.add_animation_frame(sf::IntRect(167, 6, 20, 30)); // 4 frame
-        pom_ludek.add_animation_frame(sf::IntRect(216,6,20,31)); // 5 frame
-        pom_ludek.add_animation_frame(sf::IntRect(266, 6, 20, 31)); // 6 frame
-        pom_ludek.add_animation_frame(sf::IntRect(317, 6, 20, 31)); // 7 frame
-        pom_ludek.add_animation_frame(sf::IntRect(366, 6, 20, 30)); // 8 frame
-        pom_ludek.setTextureRect(sf::IntRect(14,6,19,31));
+        //JUMPING TEXTURE RECTANGLES
+//        pom_ludek.add_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
+//        pom_ludek.add_animation_frame(sf::IntRect(290, 4, 266, 461)); // 2 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(567, 2, 253, 433)); // 3 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(834, 2, 253, 432)); // 4 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(1134,2,253,432)); // 5 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(1402, 2,253,432)); // 6 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(1677, 2, 274, 425)); // 7 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(1980, 0, 301, 420)); // 8 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(2321, 0, 329, 412)); // 9 frame
+//        pom_ludek.add_animation_frame(sf::IntRect(2685, 0, 329, 412)); // 10 frame
+
+        //RUNNING TEXTURE RECTANGLES
+        pom_ludek.add_animation_frame(sf::IntRect(0,482,328,433)); // 1 frame of animation
+        pom_ludek.add_animation_frame(sf::IntRect(330, 476, 323, 450)); // 2 frame
+        pom_ludek.add_animation_frame(sf::IntRect(655, 472, 321, 446)); // 3 frame
+        pom_ludek.add_animation_frame(sf::IntRect(983, 475, 353, 422)); // 4 frame
+        pom_ludek.add_animation_frame(sf::IntRect(1340,482,354,427)); // 5 frame
+        pom_ludek.add_animation_frame(sf::IntRect(1694, 482,328,427)); // 6 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2031, 476, 323, 448)); // 7 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2357, 472, 316, 431)); // 8 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2678, 474, 318, 405)); // 9 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2998, 482, 328, 422)); // 10 frame
+
+        pom_ludek.setScale(0.2,0.2);
+        pom_ludek.setTextureRect(sf::IntRect(0,482,328,433));//first frame
 
         ludek = pom_ludek;
         ludek.setPosition(600,500);
@@ -234,9 +251,12 @@ public:
                 platformpointers[i]->step(elapsed);
 
                 if(platformpointers[i]->Is_working()){
-                    if(ludek.getGlobalBounds().intersects(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
+                    if(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
                                                                         platformpointers[i]->getGlobalBounds().top,
-                                                                        platformpointers[i]->getGlobalBounds().width, 1))){ //zderzenie z górą platformy
+                                                                        platformpointers[i]->getGlobalBounds().width, -0.1).
+                            intersects(sf::FloatRect(ludek.getGlobalBounds().left,
+                                                     ludek.getGlobalBounds().top + ludek.getGlobalBounds().height-1,
+                                                     ludek.getGlobalBounds().width, 1))){ //zderzenie z górą platformy
                         if(ludek.GetVerticalSpeed()>100){
                             ludek.SetVerticalSpeed(hero_jumping_speed);
                             platformpointers[i]->activate();

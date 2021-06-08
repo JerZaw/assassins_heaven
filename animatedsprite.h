@@ -17,6 +17,7 @@ private:
     float acceleration;
     sf::Time dlugi_czas = sf::Time::Zero;
     int pressed = 0;
+    enum { CHANGED_LEFT, CHANGED_RIGHT } side_state;
 public:
 
     AnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 800){
@@ -91,11 +92,21 @@ public:
             if (this->getGlobalBounds().left+this->getGlobalBounds().width > okno.getSize().x){
                 this->move(-(this->getGlobalBounds().left + this->getGlobalBounds().width - okno.getSize().x),0);
             }
+            if(side_state==CHANGED_LEFT){
+                this->setScale(0.2,0.2);
+                this->move(-this->getGlobalBounds().width,0);
+                side_state = CHANGED_RIGHT;
+            }
         }
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
             this->pressed = 2;
             if (this->getGlobalBounds().left < 0){
                 this->move(-this->getGlobalBounds().left,0);
+            }
+            if(side_state==CHANGED_RIGHT){
+                this->setScale(-0.2,0.2);
+                this->move(this->getGlobalBounds().width,0);
+                side_state = CHANGED_LEFT;
             }
         }
         else this->pressed = 0;
