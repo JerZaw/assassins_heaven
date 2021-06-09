@@ -10,7 +10,8 @@
 class TimedMovingPlatform : public MovingPlatform, public TimedPlatform
 {
 public:
-    TimedMovingPlatform(const int &arg_speed, const int &arg_moving_boundary, const int &arg_disappear_time, const sf::Texture &arg_texture) :
+    TimedMovingPlatform(const int &arg_speed, const int &arg_moving_boundary, const int &arg_disappear_time,
+                        const sf::Texture &arg_texture) :
         MovingPlatform(arg_speed, arg_moving_boundary,arg_texture),TimedPlatform(arg_disappear_time){
     }
     void step(const sf::Time &elapsed){ //łączy funkcjonalności step z wyższych klas

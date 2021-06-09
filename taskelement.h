@@ -28,14 +28,14 @@ public:
     int mind_game(const int &arg_difficulty);
 
     std::pair<bool,int> picked(sftools::Chronometer *chron, const int &game_type = 0){
-        chron->pause();
-//        task_type=FIGHT; //do celów testowania, potem do usunięcia
-        if(task_type == FIGHT){
-            this->SetValue(fighting_game(current_difficulty));
-        }
-        else{
-            this->SetValue(mind_game(current_difficulty));
-        }
+            chron->pause();
+            //        task_type=FIGHT; //do celów testowania, potem do usunięcia
+            if(task_type == FIGHT){
+                this->SetValue(fighting_game(current_difficulty));
+            }
+            else{
+                this->SetValue(mind_game(current_difficulty));
+            }
         return SmallElementCoin::picked(chron,task_type);
     }
 

@@ -95,6 +95,7 @@ public:
         this->current_small_timed_platform_texture_rect = sf::IntRect(382,204,200,100);
         for(int i=0;i<count;i++){
             this->platformpointers.emplace_back(this->random_platform(this->difficulty));
+            this->platformpointers[i]->SetDifficulty(this->difficulty);
             int a=rand()%2;
             if(a==0){
                 this->platformpointers[i]->setScale(0.3,0.3);
@@ -111,10 +112,10 @@ public:
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
-//                                    if(platformpointers[i]->GetCoin()!=nullptr){
-//                                        this->platformpointers[i]->GetCoin()->read_data(3);
-//                                        this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
-//                                    }
+            //                                    if(platformpointers[i]->GetCoin()!=nullptr){
+            //                                        this->platformpointers[i]->GetCoin()->read_data(3);
+            //                                        this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
+            //                                    }
         }
     }
 
@@ -178,7 +179,8 @@ public:
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
         delete this->platformpointers[i];
-        this->platformpointers[i] = this->random_platform(this->difficulty);      
+        this->platformpointers[i] = this->random_platform(this->difficulty);
+        this->platformpointers[i]->SetDifficulty(this->difficulty);
         this->platformpointers[i]->setTexture(this->elements_textures);
         this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
         this->platformpointers[i]->SetMiddle();
@@ -215,12 +217,12 @@ public:
 
             if(boost_bought){//na środek ekranu i potem boost
                 if((fabs(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 - okno->getSize().x/2)>15 &&
-                        fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>15) &&
+                    fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>15) &&
                         shopworkingtime < sf::seconds(10)){
                     ludek.move((ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 -
-                               okno->getSize().x/2) * -2 * elapsed.asSeconds(),
+                                okno->getSize().x/2) * -2 * elapsed.asSeconds(),
                                (ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 -
-                               okno->getSize().y/2) * -2 *elapsed.asSeconds());
+                                okno->getSize().y/2) * -2 *elapsed.asSeconds());
                     shopworkingtime+=elapsed;
                 }
                 else if(points<boost_height){
@@ -273,11 +275,12 @@ public:
 
             for(int i=0;i<int(platformpointers.size());i++){
                 platformpointers[i]->step_y(elapsed,this->speed);
+                platformpointers[i]->step(elapsed);
 
                 if(platformpointers[i]->Is_working()){
                     if(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
-                                                                        platformpointers[i]->getGlobalBounds().top,
-                                                                        platformpointers[i]->getGlobalBounds().width, -0.1).
+                                     platformpointers[i]->getGlobalBounds().top+0.1,
+                                     platformpointers[i]->getGlobalBounds().width, -0.2).
                             intersects(sf::FloatRect(ludek.getGlobalBounds().left,
                                                      ludek.getGlobalBounds().top + ludek.getGlobalBounds().height-1,
                                                      ludek.getGlobalBounds().width, 1))){ //zderzenie z górą platformy
@@ -285,8 +288,9 @@ public:
                             ludek.SetVerticalSpeed(hero_jumping_speed);
                             ludek.start_jump_animation();
                             platformpointers[i]->activate();
-                            if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje
-                                    ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())){
+                            if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje i nie ma boosta
+                                    ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())
+                                    && !boost_bought){
                                 platformpointers[i]->GetCoin()->read_data(this->difficulty);
                                 std::pair<int,int> pom = platformpointers[i]->pick(chrono1);
                                 if(pom.first!=0)
@@ -483,7 +487,7 @@ public:
                 rand_plat->setScale(0.4,0.4);
                 rand_plat->setTextureRect(current_small_platform_texture_rect);
             }
-                    break;
+            break;
         case 2: rand_plat = new TimedPlatform(time_,elements_textures);
             if(a==0){
                 rand_plat->setScale(0.3,0.3);

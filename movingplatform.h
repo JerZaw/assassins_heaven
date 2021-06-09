@@ -14,7 +14,8 @@ private:
     float x_srodka=600;
 public:
 
-    MovingPlatform(int arg_speed, int arg_moving_boundary,const sf::Texture &arg_texture): Platform(arg_texture){
+    MovingPlatform(int arg_speed, int arg_moving_boundary,const sf::Texture &arg_texture):
+        Platform(arg_texture){
         this->speed = arg_speed;
         this->moving_boundary = arg_moving_boundary;
     }
