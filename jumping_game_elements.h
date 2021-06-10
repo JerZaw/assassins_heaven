@@ -15,6 +15,7 @@
 #include <countdown.h>
 #include <fstream>
 #include <Shop.h>
+#include <movingbackground.h>
 
 class JumpingGameElements
 {
@@ -47,8 +48,11 @@ private:
     sf::Time shopworkingtime = sf::Time::Zero;
     int boost_height = 0;
     bool boost_bought = false;
+    MovingBackground *background;
+    sf::Texture back_texture;
 public:
     JumpingGameElements(const int &count, const sf::Texture &texture, const int &arg_difficulty, const sf::Texture &hero_texture,
+                        const sf::Texture &jumping_back_texture,
                         const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
@@ -57,6 +61,9 @@ public:
         this->elements_textures = texture;
         this->chrono1 = arg_chrono;
         this->font = arg_font;
+        this->back_texture = jumping_back_texture;
+
+        background = new MovingBackground(back_texture,arg_okno);
 
         countdown = new CountDown(font,this->okno);
 
@@ -129,6 +136,7 @@ public:
         for(auto &el : platformpointers){
             el->draw(okno);
         }
+        background->draw();
         points_table.draw();
         money_table.draw();
         highscore_table.draw();
@@ -262,6 +270,8 @@ public:
                 this->current_small_timed_platform_texture_rect = sf::IntRect(382,102,200,100);
             }
 
+            background->step(elapsed,speed);
+
             speed+=elapsed.asSeconds()*2;  //przyspieszanie całości z biegiem czasu
             last_speed+=elapsed.asSeconds()*2;
             //ludek.accelerate(elapsed.asSeconds()*2);
@@ -284,24 +294,25 @@ public:
                             intersects(sf::FloatRect(ludek.getGlobalBounds().left,
                                                      ludek.getGlobalBounds().top + ludek.getGlobalBounds().height-1,
                                                      ludek.getGlobalBounds().width, 1))){ //zderzenie z górą platformy
-                        if(ludek.GetVerticalSpeed()>100){
+                        if(ludek.GetVerticalSpeed()>30){
                             ludek.SetVerticalSpeed(hero_jumping_speed);
                             ludek.start_jump_animation();
                             platformpointers[i]->activate();
-                            if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje i nie ma boosta
-                                    ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())
-                                    && !boost_bought){
-                                platformpointers[i]->GetCoin()->read_data(this->difficulty);
-                                std::pair<int,int> pom = platformpointers[i]->pick(chrono1);
-                                if(pom.first!=0)
-                                {
-                                    chrono1->reset(true);
-                                    countdown = new CountDown(font,this->okno);
-                                }
-                                money+=pom.second;
-                                money_table.update(money);
-                            }
                         }
+                    }
+
+                    if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje i nie ma boosta
+                            ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())
+                            && !boost_bought){
+                        platformpointers[i]->GetCoin()->read_data(this->difficulty);
+                        std::pair<int,int> pom = platformpointers[i]->pick(chrono1);
+                        if(pom.first!=0)
+                        {
+                            chrono1->reset(true);
+                            countdown = new CountDown(font,this->okno);
+                        }
+                        money+=pom.second;
+                        money_table.update(money);
                     }
                 }
                 if(platformpointers[i]->getPosition().y>okno->getSize().y){
@@ -342,7 +353,7 @@ public:
                 //this->ludek.SetVerticalSpeed(fabs(ludek.GetVerticalSpeed())*2);
             }
             else{
-                this->speed+=70*elapsed.asSeconds();
+                this->speed+=125*elapsed.asSeconds();
                 if(ludek.getPosition().y<0){
                     ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() + 1200*elapsed.asSeconds());
                 }//this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() - 75*elapsed.asSeconds());
@@ -350,7 +361,7 @@ public:
         }
         else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
             if(this->speed > this->last_speed){
-                this->speed -=200*elapsed.asSeconds();
+                this->speed -=400*elapsed.asSeconds();
             }
             else {
                 this->was_too_high = false;
@@ -458,7 +469,8 @@ public:
 
     Platform *random_platform(const int &difficulty){
 
-        int num,speed,boundary=rand()%40+65,time_=2;
+        int num,speed,boundary=rand()%40+65;
+        float time_=1;
         if(difficulty==1){
             num=this->random_pick(60,40,0,0);
             speed = rand()%30+20;

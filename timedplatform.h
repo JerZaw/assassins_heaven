@@ -9,16 +9,16 @@
 class TimedPlatform : public virtual Platform
 {
 private:
-    int disappear_time;
+    float disappear_time;
     float visibility = 255;
     sf::Time currenttime = sf::Time::Zero;
     bool activated = false;
 public:
-    TimedPlatform(int arg_disappear_time,const sf::Texture &arg_texture):
+    TimedPlatform(const float &arg_disappear_time,const sf::Texture &arg_texture):
         Platform(arg_texture){
         this->disappear_time = arg_disappear_time;
     }
-    TimedPlatform(int arg_disappear_time){
+    TimedPlatform(float arg_disappear_time){
         this->disappear_time = arg_disappear_time;
     }
 

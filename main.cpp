@@ -15,6 +15,7 @@ sf::Texture menu_button_textures;
 sf::Texture rules_back;
 sf::Texture highscores_back;
 sf::Texture assassin_logo_texture;
+sf::Texture jumping_back_textures;
 sf::Font font_comica, font_comica_bold;
 
 int main()
@@ -41,6 +42,9 @@ int main()
     if(!assassin_logo_texture.loadFromFile("assets/assassin_logo.png")){
         throw std::runtime_error("texture assassin_logo.png not found!");
     }
+    if(!jumping_back_textures.loadFromFile("assets/background_1.png")){
+        throw std::runtime_error("texture jumping_back_textures.png not found!");
+    }
     if(!font_comica.loadFromFile("assets/Comica_BD.ttf")){
         throw std::runtime_error("font Comica_BD.ttf not found!");
     }
@@ -50,6 +54,7 @@ int main()
     }
     catch (const std::exception &e) {
         std::cerr<<"ERROR: "<<e.what()<<std::endl;
+        sf::sleep(sf::seconds(5));
         return 0;
     }
     int x;

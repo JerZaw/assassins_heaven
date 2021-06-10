@@ -19,47 +19,17 @@ int game_jumping()
 
 
     // create some shapes
-    sf::Texture texture1;
-    if (!texture1.loadFromFile("assets/notexture_background.jpg")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return 1;
-    }
-    texture1.setRepeated(true);
-    sf::Sprite background;
-    background.setTexture(texture1);
-    background.setScale(1,1);
-    background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
-
-//    sf::Texture hero_texture;
-//    if (!hero_texture.loadFromFile("assets/notexture.jpg")) {
-//        std::cerr << "Could not load texture" << std::endl;
-//        return 1;
-//    }
-
-
-//    sf::Texture elements_texture;
-//    if (!elements_texture.loadFromFile("assets/notexture.jpg")) {
-//        std::cerr << "Could not load texture" << std::endl;
-//        return 1;
-//    }
-
-    sf::Font *points_font = new sf::Font;
-    if (!points_font->loadFromFile("assets/arial.ttf")) {
-        std::cerr << "Could not load font" << std::endl;
-        return 1;
-    }
-
-    Summary summary(4,points_font,&window);
+    Summary summary(4,&font_comica_bold,&window);
     bool summary_generated = false;
     bool score_saving = false;
 
-    ScoreSavingElement scoresaving(points_font,&window);
+    ScoreSavingElement scoresaving(&font_comica_bold,&window);
     scoresaving.create_buttons(menu_button_textures);
 
     sftools::Chronometer chron1;
 
-    JumpingGameElements plansza(30,elements_textures,0,hero_texture,points_font, &window, &chron1);
+    JumpingGameElements plansza(30,elements_textures,0,hero_texture,jumping_back_textures,&font_comica_bold, &window, &chron1);
     chron1.reset(true);
     // run the program as long as the window is open
     while (window.isOpen()) {
@@ -70,8 +40,6 @@ int game_jumping()
         window.clear(sf::Color::Black);
 
         // draw everything here...
-        window.draw(background);
-
         if(plansza.Game_alive()){
 
             plansza.step(chron1.reset_if());
