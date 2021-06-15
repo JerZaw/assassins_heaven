@@ -46,6 +46,7 @@ public:
 
             this->SetVerticalSpeed(jumping_speed);
             this->move(0,this->GetVerticalSpeed()*elapsed.asSeconds());
+            this->start_jump_animation();
             space_pressed = true;
             space_press_count++;
         }

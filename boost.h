@@ -4,19 +4,18 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <read_textures.h>
 
 class Boost : public sf::Sprite
 {
 private:
     int price;
     int boost_height;
-    sf::Texture texture;
 public:
-    Boost(const int &arg_price, const int &arg_boost_height, const sf::Texture &arg_texture, const sf::IntRect &texture_rect){
+    Boost(const int &arg_price, const int &arg_boost_height, const sf::IntRect &texture_rect){
         this->price = arg_price;
         this->boost_height = arg_boost_height;
-        this->texture = arg_texture;
-        this->setTexture(texture);
+        this->setTexture(scoreboards_textures);
         this->setTextureRect(texture_rect);
     }
 

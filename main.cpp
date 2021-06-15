@@ -10,12 +10,15 @@ int rules();
 
 sf::Texture menu_back_texture;
 sf::Texture hero_texture;
-sf::Texture elements_textures;
+sf::Texture jumping_elements_textures;
 sf::Texture menu_button_textures;
 sf::Texture rules_back;
 sf::Texture highscores_back;
 sf::Texture assassin_logo_texture;
 sf::Texture jumping_back_textures;
+sf::Texture stationary_jumping_backgrounds;
+sf::Texture scoreboards_textures;
+sf::Texture mind_game_back_texture;
 sf::Font font_comica, font_comica_bold;
 
 int main()
@@ -30,7 +33,7 @@ int main()
     if(!hero_texture.loadFromFile("assets/character.png")){
         throw std::runtime_error("texture character.png not found!");
     }
-    if(!elements_textures.loadFromFile("assets/spritesheet_jumper.png")){
+    if(!jumping_elements_textures.loadFromFile("assets/spritesheet_jumper.png")){
         throw std::runtime_error("texture spritesheet_jumper.png not found!");
     }
     if(!rules_back.loadFromFile("assets/rules_back.png")){
@@ -44,6 +47,15 @@ int main()
     }
     if(!jumping_back_textures.loadFromFile("assets/background_1.png")){
         throw std::runtime_error("texture jumping_back_textures.png not found!");
+    }
+    if(!stationary_jumping_backgrounds.loadFromFile("assets/stationary_jumping_backgrounds.png")){
+        throw std::runtime_error("texture stationary_jumping_backgrounds.png not found!");
+    }
+    if(!scoreboards_textures.loadFromFile("assets/scoreboards_textures.png")){
+        throw std::runtime_error("texture scoreboards_textures.png not found!");
+    }
+    if(!mind_game_back_texture.loadFromFile("assets/mind_game_back_texture.png")){
+        throw std::runtime_error("texture mind_game_back_texture.png not found!");
     }
     if(!font_comica.loadFromFile("assets/Comica_BD.ttf")){
         throw std::runtime_error("font Comica_BD.ttf not found!");

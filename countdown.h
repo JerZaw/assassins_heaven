@@ -23,7 +23,7 @@ public:
         this->font = arg_font;
         this->okno = arg_okno;
 
-        this->setString(L"Naciśnij klawisz ENTER by rozpocząć grę");
+        this->setString(L"Press ENTER to start the game");
         this->setCharacterSize(50);
         this->setFont(*font);
         this->setPosition(okno->getSize().x/2 - this->getGlobalBounds().width/2,okno->getSize().y/2-70);

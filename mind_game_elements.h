@@ -16,6 +16,7 @@
 #include <sstream>
 #include <scoretable.h>
 #include <mindgameanimatedsprite.h>
+#include <read_textures.h>
 
 enum Answer{NOANSWER=-1,RIGHT=1,WRONG = 0};
 
@@ -28,7 +29,6 @@ private:
     int platform_count=2;
     sf::Texture elements_textures;
     sf::IntRect platform_texture_rect;
-    sf::Texture hero_texture;
     const sf::Font *font;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono;
@@ -47,14 +47,12 @@ private:
     bool countdown_started = false;
 public:
     MindGameElements(){};
-    MindGameElements(const int &arg_difficulty,const sf::Texture &arg_elements_textures, const sf::IntRect &arg_platform_texture_rect,
-                     const sf::Texture &arg_hero_texture, const sf::Font *arg_font, sf::RenderWindow *arg_okno,
-                     sftools::Chronometer *arg_chrono){
+    MindGameElements(const int &arg_difficulty, const sf::IntRect &arg_platform_texture_rect,
+                     sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->difficulty = arg_difficulty;
-        this->elements_textures = arg_elements_textures;
+        this->elements_textures = jumping_elements_textures;
         this->platform_texture_rect = arg_platform_texture_rect;
-        this->hero_texture = arg_hero_texture;
-        this->font = arg_font;
+        this->font = &font_comica_bold;
         this->okno = arg_okno;
         this->chrono = arg_chrono;
         this->how_many_tasks = (rand()%2+1)*(this->difficulty+1);
@@ -223,20 +221,36 @@ public:
     }
 
     void create_ludek(){
-        MindGameAnimatedSprite pom_ludek(8,100,400,2600,-1200);
-        pom_ludek.setTexture(this->hero_texture);
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 1 frame of animation
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 2 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 3 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 4 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 5 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 6 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 7 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 8 frame
-        pom_ludek.setTextureRect(sf::IntRect(14,6,19,31));
+        MindGameAnimatedSprite pom_ludek(10,100,400,2600,-1200);
+        pom_ludek.setTexture(hero_texture);
+        //JUMPING TEXTURE RECTANGLES
+        pom_ludek.add_pom_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
+        pom_ludek.add_pom_animation_frame(sf::IntRect(290, 4, 266, 461)); // 2 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(567, 2, 253, 433)); // 3 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(834, 2, 253, 432)); // 4 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1134,2,253,432)); // 5 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1402, 2,253,432)); // 6 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1677, 2, 274, 425)); // 7 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(1980, 0, 301, 420)); // 8 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(2321, 0, 329, 412)); // 9 frame
+        pom_ludek.add_pom_animation_frame(sf::IntRect(2685, 0, 329, 412)); // 10 frame
 
-        ludek = pom_ludek;
-        ludek.setPosition(600,500);
+        //RUNNING TEXTURE RECTANGLES
+        pom_ludek.add_animation_frame(sf::IntRect(0,482,328,433)); // 1 frame of animation
+        pom_ludek.add_animation_frame(sf::IntRect(330, 476, 323, 450)); // 2 frame
+        pom_ludek.add_animation_frame(sf::IntRect(655, 472, 321, 446)); // 3 frame
+        pom_ludek.add_animation_frame(sf::IntRect(983, 475, 353, 422)); // 4 frame
+        pom_ludek.add_animation_frame(sf::IntRect(1340,482,354,427)); // 5 frame
+        pom_ludek.add_animation_frame(sf::IntRect(1694, 482,328,427)); // 6 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2031, 476, 323, 448)); // 7 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2357, 472, 316, 431)); // 8 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2678, 474, 318, 405)); // 9 frame
+        pom_ludek.add_animation_frame(sf::IntRect(2998, 482, 328, 422)); // 10 frame
+
+        pom_ludek.setScale(0.2,0.2);
+        pom_ludek.setTextureRect(sf::IntRect(0,482,328,433));//first frame
+
+        ludek=pom_ludek;
     }
 
     void draw(){

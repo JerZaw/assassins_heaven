@@ -16,6 +16,8 @@
 #include <fstream>
 #include <Shop.h>
 #include <movingbackground.h>
+#include <stationarybackground.h>
+#include <read_textures.h>
 
 class JumpingGameElements
 {
@@ -49,31 +51,33 @@ private:
     int boost_height = 0;
     bool boost_bought = false;
     MovingBackground *background;
+    StationaryBackground *stationary_background;
     sf::Texture back_texture;
 public:
-    JumpingGameElements(const int &count, const sf::Texture &texture, const int &arg_difficulty, const sf::Texture &hero_texture,
-                        const sf::Texture &jumping_back_texture,
-                        const sf::Font *arg_font, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
+    JumpingGameElements(const int &count, const int &arg_difficulty, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
         this->current_hero_texture = hero_texture;
         this->create_ludek();
         this->difficulty = arg_difficulty;
-        this->elements_textures = texture;
+        this->elements_textures = jumping_elements_textures;
         this->chrono1 = arg_chrono;
-        this->font = arg_font;
-        this->back_texture = jumping_back_texture;
+        this->font = &font_comica_bold;
+        this->back_texture = jumping_back_textures;
 
         background = new MovingBackground(back_texture,arg_okno);
 
+        stationary_background = new StationaryBackground(arg_okno);
+
         countdown = new CountDown(font,this->okno);
 
-        ScoreTable pom_table(elements_textures,arg_font, okno,sf::IntRect(0,0,200,60),sf::Vector2f(500,15),sf::Vector2f(600,15));
+        ScoreTable pom_table(scoreboards_textures,font, okno,sf::IntRect(0,68,238,60),sf::Vector2f(okno->getSize().x/2 - 119,5),sf::Vector2f(600,5));
+        pom_table.settextonmiddle(-30);
         points_table = pom_table;
 
-        ScoreTable pom2_table(elements_textures,arg_font,okno,sf::IntRect(0,0,100,60),sf::Vector2f(0,15),sf::Vector2f(50,15));
+        ScoreTable pom2_table(scoreboards_textures,font,okno,sf::IntRect(0,0,200,60),sf::Vector2f(5,5),sf::Vector2f(63,15));
         money_table = pom2_table;
 
-        shop = new Shop(elements_textures,okno);
+        shop = new Shop(okno);
         shop->update_position(sf::Vector2f(10,okno->getSize().y - shop->GetShopBounds().height - 10));
 
         std::string str_pom;
@@ -90,11 +94,12 @@ public:
         highscore.second = std::stoi(str_pom.substr(str_pom.find('-')+1,str_pom.size()-1));
         odczyt.close();
 
-        ScoreTable pom3_table(elements_textures,arg_font,okno,sf::IntRect(0,0,350,60),
-                              sf::Vector2f(800,15),sf::Vector2f(850,15),
-                              "Highscore: "+ highscore.first + "   " + std::to_string(highscore.second));
+        ScoreTable pom3_table(scoreboards_textures,font,okno,sf::IntRect(101,182,350,60),
+                              sf::Vector2f(800,5),sf::Vector2f(850,15),
+                              "HS: "+ highscore.first + "   " + std::to_string(highscore.second));
+        pom3_table.settextonmiddle(-37);
         highscore_table = pom3_table;
-        highscore_table.settextonmiddle(-highscore_table.GetBackground()->getGlobalBounds().height/2);
+
 
         this->current_long_platform_texture_rect = sf::IntRect(0,288,380,94);
         this->current_small_platform_texture_rect = sf::IntRect(214,1662,200,100);
@@ -119,10 +124,10 @@ public:
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
             this->platformpointers[i]->random_coin();
-            //                                    if(platformpointers[i]->GetCoin()!=nullptr){
-            //                                        this->platformpointers[i]->GetCoin()->read_data(3);
-            //                                        this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
-            //                                    }
+                                                if(platformpointers[i]->GetCoin()!=nullptr){
+                                                    this->platformpointers[i]->GetCoin()->read_data(3);
+                                                    this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
+                                                }
         }
     }
 
@@ -133,6 +138,7 @@ public:
     }
 
     void draw(){
+        stationary_background->draw();
         for(auto &el : platformpointers){
             el->draw(okno);
         }
@@ -245,6 +251,7 @@ public:
                 }
                 else{
                     boost_bought = false;
+                    ludek.SetVerticalSpeed(speed);
                 }
             }
 
@@ -254,6 +261,8 @@ public:
                 this->current_small_platform_texture_rect = sf::IntRect(382,408,200,100);
                 this->current_long_timed_platform_texture_rect = sf::IntRect(0,192,380,94);
                 this->current_small_timed_platform_texture_rect = sf::IntRect(232,1288,200,100);
+                background->SetTextureRect(difficulty);
+                stationary_background->SetTextureRect(difficulty);
             }
             else if(points>150){
                 difficulty=2;
@@ -261,6 +270,8 @@ public:
                 this->current_small_platform_texture_rect = sf::IntRect(214,1764,200,100);
                 this->current_long_timed_platform_texture_rect = sf::IntRect(0,480,380,94);
                 this->current_small_timed_platform_texture_rect = sf::IntRect(382,306,200,100);
+                background->SetTextureRect(difficulty);
+                stationary_background->SetTextureRect(difficulty);
             }
             else if(points>75){
                 difficulty=1;
@@ -268,9 +279,12 @@ public:
                 this->current_small_platform_texture_rect = sf::IntRect(209,1879,200,100);
                 this->current_long_timed_platform_texture_rect = sf::IntRect(0,1056,380,94);
                 this->current_small_timed_platform_texture_rect = sf::IntRect(382,102,200,100);
+                background->SetTextureRect(difficulty);
+                stationary_background->SetTextureRect(difficulty);
             }
 
             background->step(elapsed,speed);
+            stationary_background->step(elapsed);
 
             speed+=elapsed.asSeconds()*2;  //przyspieszanie całości z biegiem czasu
             last_speed+=elapsed.asSeconds()*2;
@@ -319,6 +333,7 @@ public:
                     this->generate_new(i);
                     points++;
                     points_table.update(points);
+                    points_table.settextonmiddle(-30);
                 }
                 else if(platformpointers[i]->getGlobalBounds().top > 0){//platformy działają tylko gdy są w oknie
                     platformpointers[i]->ChangeWorkingState(true);

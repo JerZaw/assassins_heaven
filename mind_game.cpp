@@ -6,6 +6,7 @@
 #include <mind_game_elements.h>
 #include <taskelement.h>
 #include <summary.h>
+#include <read_textures.h>
 
 
 int TaskElement::mind_game(const int &difficulty)
@@ -17,44 +18,17 @@ int TaskElement::mind_game(const int &difficulty)
     //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
 
     // create some shapes
-    sf::Texture texture1;
-    if (!texture1.loadFromFile("notexture_background.jpg")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return 1;
-    }
-    texture1.setRepeated(true);
     sf::Sprite background;
-    background.setTexture(texture1);
+    background.setTexture(mind_game_back_texture);
     background.setScale(1,1);
     background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
-
-
-    sf::Texture hero_texture;
-    if (!hero_texture.loadFromFile("notexture.jpg")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return 1;
-    }
-
-
-    sf::Texture elements_texture;
-    if (!elements_texture.loadFromFile("notexture.jpg")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return 1;
-    }
-
-    sf::Font *points_font = new sf::Font;
-    if (!points_font->loadFromFile("arial.ttf")) {
-        std::cerr << "Could not load font" << std::endl;
-        return 1;
-    }
 
     sftools::Chronometer chron1;
     chron1.reset(true);
 
-    MindGameElements mind_plansza(difficulty,elements_texture, sf::IntRect(38,22,104,80),
-                                  hero_texture, points_font, &window,
-                                  &chron1);
-    Summary summary(4,points_font,&window);
+    MindGameElements mind_plansza(difficulty,sf::IntRect(38,22,104,80),
+                                  &window, &chron1);
+    Summary summary(4,&font_comica_bold,&window);
     bool summary_generated = false;
 
     // run the program as long as the window is open

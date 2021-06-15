@@ -5,13 +5,18 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <read_textures.h>
 
 class MovingBackground
 {
 private:
     sf::Sprite background1,background2;
     sf::Texture texture;
-    std::vector<sf::IntRect> texture_rects_vec = {sf::IntRect(0,0,3000,2500)};
+    std::vector<sf::IntRect> texture_rects_vec = {sf::IntRect(0,0,3000,2500),
+                                                  sf::IntRect(0,2500,3000,2500),
+                                                  sf::IntRect(0,5000,3000,2500),
+                                                  sf::IntRect(0,7500,3000,2500)};
+    sf::IntRect current_texture_rect = sf::IntRect(0,0,3000,2500);
     sf::RenderWindow *okno;
 public:
     MovingBackground(){};
@@ -19,7 +24,7 @@ public:
         this->texture = arg_texture;
         this->okno = arg_okno;
         background1.setTexture(this->texture);
-        SetTextureRect(0);
+        background1.setTextureRect(texture_rects_vec[0]);
         background1.setScale(0.4,0.4);
         background2=background1;
         background1.setPosition(0,0);
@@ -27,8 +32,7 @@ public:
     }
 
     void SetTextureRect(const int &difficulty){
-        background1.setTextureRect(texture_rects_vec[difficulty]);
-        background2.setTextureRect(texture_rects_vec[difficulty]);
+        current_texture_rect = texture_rects_vec[difficulty];
     }
 
     void draw(){
@@ -42,9 +46,15 @@ public:
 
         if(background1.getPosition().y > okno->getSize().y){
             background1.setPosition(0,-background1.getGlobalBounds().height);
+            if(background1.getTextureRect() != current_texture_rect){
+                background1.setTextureRect(current_texture_rect);
+            }
         }
         else if(background2.getPosition().y > okno->getSize().y){
             background2.setPosition(0,-background2.getGlobalBounds().height);
+            if(background2.getTextureRect() != current_texture_rect){
+                background2.setTextureRect(current_texture_rect);
+            }
         }
     }
 };

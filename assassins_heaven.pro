@@ -40,6 +40,7 @@ HEADERS += \
     scoresavingelement.h \
     scoretable.h \
     smallelementcoin.h \
+    stationarybackground.h \
     summary.h \
     target.h \
     taskelement.h \

@@ -29,7 +29,7 @@ int game_jumping()
 
     sftools::Chronometer chron1;
 
-    JumpingGameElements plansza(30,elements_textures,0,hero_texture,jumping_back_textures,&font_comica_bold, &window, &chron1);
+    JumpingGameElements plansza(30,0, &window, &chron1);
     chron1.reset(true);
     // run the program as long as the window is open
     while (window.isOpen()) {

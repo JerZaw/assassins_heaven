@@ -81,13 +81,13 @@ public:
         int pom = rand()%100;
         SmallElementCoin *pom_coin;
         if(pom < current_coin_chances[0]){
-            pom_coin = new SmallElementCoin(1,0,elements_textures);
+            pom_coin = new SmallElementCoin(1,0,jumping_elements_textures);
         }
         else if(pom < current_coin_chances[1]){
-            pom_coin = new SmallElementCoin(2,0,elements_textures);
+            pom_coin = new SmallElementCoin(2,0,jumping_elements_textures);
         }
         else if(pom < current_coin_chances[2]){
-            pom_coin = new SmallElementCoin(4,0,elements_textures);
+            pom_coin = new SmallElementCoin(4,0,jumping_elements_textures);
         }
         else if(pom < current_coin_chances[3]){
             pom_coin = new TaskElement(0,0,assassin_logo_texture);pom_coin->setScale(0.3,0.3);
