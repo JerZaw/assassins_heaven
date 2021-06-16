@@ -73,11 +73,11 @@ int TaskElement::fighting_game(const int &difficulty)
         }
         else if(!summary_generated){
             summary.update(L"FIGHTING_GAME",
-                            L"Gratulacje, zdobyłeś " + std::to_wstring(fight_plansza.summary_data().first)
-                            + L'/' + std::to_wstring(fight_plansza.summary_data().second)+L" punktów",
-                           L"za wykonanie zadań otrzymujesz " +
-                           std::to_wstring((current_difficulty+1)*fight_plansza.summary_data().first) + L" monet",
-                            L"naciśnij klawisz ENTER, aby wyjść z minigry");
+                            L"Congratulations, you got " + std::to_wstring(fight_plansza.summary_data().first)
+                            + L'/' + std::to_wstring(fight_plansza.summary_data().second)+L" points",
+                           L"For completing the tasks you gain " +
+                           std::to_wstring((current_difficulty+1)*fight_plansza.summary_data().first) + L" coins",
+                            L"press ENTER, to leave the minigame");
             summary_generated=true;
         }
         else{

@@ -32,6 +32,14 @@ public:
             points_text.setPosition(arg_text_position);
     }
 
+    float GetTextHeight(){
+        return points_text.getGlobalBounds().height;
+    }
+
+    void scalebackground(const float &scale){
+        background_table.scale(scale,scale);
+    }
+
     void settextonmiddle(int space_between){
         points_text.setPosition(background_table.getGlobalBounds().left +
                                 background_table.getGlobalBounds().width/2 - points_text.getGlobalBounds().width/2,

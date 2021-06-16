@@ -16,6 +16,7 @@ public:
                            const float &arg_jumping_speed = -600)
         :AnimatedSprite(fps,ver_speed,hor_speed,acceler){
         this->jumping_speed = arg_jumping_speed;
+        setMainrecvec("idle");
     };
 
     void step(const sf::Time &elapsed, const sf::Window &okno){
@@ -26,6 +27,16 @@ public:
             this->SetVerticalSpeed(1);
         }
 
+        check_animation(okno);
+    }
+
+    void check_animation(const sf::Window &okno){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
+            setrecvec("walk");
+        }
+        else if(this->getGlobalBounds().top + this->getGlobalBounds().height >= okno.getSize().y){
+            setrecvec("idle");
+        }
     }
 
     void vertical_step(const sf::Time &elapsed, const sf::Window &okno){
@@ -37,6 +48,7 @@ public:
         }
         else{
             this->SetVerticalSpeed(0);
+            //this->setrecvec("idle");
             this->setPosition(this->getPosition().x,okno.getSize().y - this->getGlobalBounds().height);
         }
     }

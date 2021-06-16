@@ -9,7 +9,7 @@
 #include <read_textures.h>
 
 
-int TaskElement::mind_game(const int &difficulty)
+int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long_platform_texture_rect)
 {
     // create the window
     sf::RenderWindow window(sf::VideoMode(1500,800), "MIND_GAME",sf::Style::Close);
@@ -26,7 +26,7 @@ int TaskElement::mind_game(const int &difficulty)
     sftools::Chronometer chron1;
     chron1.reset(true);
 
-    MindGameElements mind_plansza(difficulty,sf::IntRect(38,22,104,80),
+    MindGameElements mind_plansza(difficulty,current_long_platform_texture_rect,
                                   &window, &chron1);
     Summary summary(4,&font_comica_bold,&window);
     bool summary_generated = false;
@@ -48,11 +48,11 @@ int TaskElement::mind_game(const int &difficulty)
         }
         else if(!summary_generated){
             summary.update(L"MIND_GAME",
-                            L"Gratulacje, zdobyłeś " + std::to_wstring(mind_plansza.summary_data().first)
-                            + L'/' + std::to_wstring(mind_plansza.summary_data().second)+L" punktów",
-                           L"za wykonanie zadań otrzymujesz " +
-                           std::to_wstring(5*(current_difficulty+1)*mind_plansza.summary_data().first) + L" monet",
-                            L"naciśnij klawisz ENTER, aby wyjść z minigry");
+                            L"Congratulations, you got " + std::to_wstring(mind_plansza.summary_data().first)
+                            + L'/' + std::to_wstring(mind_plansza.summary_data().second)+L" points",
+                           L"For completing the tasks you gain " +
+                           std::to_wstring(5*(current_difficulty+1)*mind_plansza.summary_data().first) + L" coins",
+                            L"press ENTER, to leave the minigame");
             summary_generated=true;
         }
         else{

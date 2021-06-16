@@ -77,7 +77,7 @@ public:
         return this->working;
     }
 
-    void random_coin(){
+    void random_coin(const sf::IntRect &current_long_platform_rect){
         int pom = rand()%100;
         SmallElementCoin *pom_coin;
         if(pom < current_coin_chances[0]){
@@ -90,7 +90,7 @@ public:
             pom_coin = new SmallElementCoin(4,0,jumping_elements_textures);
         }
         else if(pom < current_coin_chances[3]){
-            pom_coin = new TaskElement(0,0,assassin_logo_texture);pom_coin->setScale(0.3,0.3);
+            pom_coin = new TaskElement(0,0,assassin_logo_texture, current_long_platform_rect);pom_coin->setScale(0.3,0.3);
         }
         else{
            pom_coin = nullptr;

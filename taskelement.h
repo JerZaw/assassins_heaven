@@ -13,11 +13,14 @@ class TaskElement : public SmallElementCoin
 private:
     enum Tasks{ FIGHT=2, MIND=1 } task_type;
     int current_difficulty;
+    sf::IntRect my_long_platform_texture_rect;
 public:
     TaskElement(){};
-    TaskElement(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture)
+    TaskElement(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture,
+                const sf::IntRect &current_long_platform_rect)
         : SmallElementCoin(arg_value,arg_speed_x,texture){
         task_type = Tasks(rand()%2+1);
+        my_long_platform_texture_rect = current_long_platform_rect;
     }
 
     void read_data(const int &arg_difficulty){
@@ -25,16 +28,15 @@ public:
     }
 
     int fighting_game(const int &arg_difficulty);
-    int mind_game(const int &arg_difficulty);
+    int mind_game(const int &arg_difficulty, const sf::IntRect &current_long_platform_rect);
 
     std::pair<bool,int> picked(sftools::Chronometer *chron, const int &game_type = 0){
             chron->pause();
-             task_type=MIND; //do celów testowania, potem do usunięcia
             if(task_type == FIGHT){
                 this->SetValue(fighting_game(current_difficulty));
             }
             else{
-                this->SetValue(mind_game(current_difficulty));
+                this->SetValue(mind_game(current_difficulty, my_long_platform_texture_rect));
             }
         return SmallElementCoin::picked(chron,task_type);
     }

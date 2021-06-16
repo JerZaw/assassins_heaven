@@ -123,12 +123,11 @@ public:
             }
             else this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
             this->platformpointers[i]->SetMiddle();
-            this->platformpointers[i]->random_coin();
-                                                if(platformpointers[i]->GetCoin()!=nullptr){
-                                                    this->platformpointers[i]->GetCoin()->read_data(3);
-                                                    this->platformpointers[i]->GetCoin()->picked(chrono1); //DO TESTOWANIA MINIGIER
-                                                }
+            this->platformpointers[i]->random_coin(current_long_platform_texture_rect);
         }
+
+       //TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
+       //task.mind_game(3, current_long_platform_texture_rect);
     }
 
     std::pair<std::pair<int,bool>,int> summary_data(){
@@ -160,35 +159,14 @@ public:
     void create_ludek(){
         AnimatedSprite pom_ludek(10);
         pom_ludek.setTexture(this->current_hero_texture);
-        //JUMPING TEXTURE RECTANGLES
-        pom_ludek.add_pom_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
-        pom_ludek.add_pom_animation_frame(sf::IntRect(290, 4, 266, 461)); // 2 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(567, 2, 253, 433)); // 3 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(834, 2, 253, 432)); // 4 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1134,2,253,432)); // 5 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1402, 2,253,432)); // 6 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1677, 2, 274, 425)); // 7 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1980, 0, 301, 420)); // 8 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(2321, 0, 329, 412)); // 9 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(2685, 0, 329, 412)); // 10 frame
-
-        //RUNNING TEXTURE RECTANGLES
-        pom_ludek.add_animation_frame(sf::IntRect(0,482,328,433)); // 1 frame of animation
-        pom_ludek.add_animation_frame(sf::IntRect(330, 476, 323, 450)); // 2 frame
-        pom_ludek.add_animation_frame(sf::IntRect(655, 472, 321, 446)); // 3 frame
-        pom_ludek.add_animation_frame(sf::IntRect(983, 475, 353, 422)); // 4 frame
-        pom_ludek.add_animation_frame(sf::IntRect(1340,482,354,427)); // 5 frame
-        pom_ludek.add_animation_frame(sf::IntRect(1694, 482,328,427)); // 6 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2031, 476, 323, 448)); // 7 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2357, 472, 316, 431)); // 8 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2678, 474, 318, 405)); // 9 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2998, 482, 328, 422)); // 10 frame
 
         pom_ludek.setScale(0.2,0.2);
         pom_ludek.setTextureRect(sf::IntRect(0,482,328,433));//first frame
 
         ludek = pom_ludek;
         ludek.setPosition(600,500);
+
+        ludek.setMainrecvec("walk");
     }
 
     void generate_new(int i){ //podmienia starą platformę na nową random generation
@@ -198,7 +176,7 @@ public:
         this->platformpointers[i]->setTexture(this->elements_textures);
         this->platformpointers[i]->setPosition(random_position_x(i),random_position_y(i));
         this->platformpointers[i]->SetMiddle();
-        this->platformpointers[i]->random_coin();
+        this->platformpointers[i]->random_coin(current_long_platform_texture_rect);
 
     }
 

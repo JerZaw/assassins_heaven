@@ -24,7 +24,8 @@ public:
         else{
             clicked_color = sf::Color::Red;
         }
-        this->settextonmiddle(10);
+        this->scalebackground(0.35);
+        this->settextonmiddle(13);
     };
 
     bool picked(){

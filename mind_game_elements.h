@@ -60,8 +60,8 @@ public:
         create_ludek();
 
         int text_size = 40;
-        sf::IntRect back_score_rect(0,0,200,80);
-        ScoreTable *pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+        sf::IntRect back_score_rect(275,246,200,80);
+        ScoreTable *pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                                sf::Vector2f(okno->getSize().x/8-back_score_rect.width/2,15),
                                                sf::Vector2f(okno->getSize().x/8,15),
                                                std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks),
@@ -70,8 +70,8 @@ public:
         platforms.emplace_back(pom_table);
 
         text_size = 40;
-        back_score_rect = sf::IntRect(0,0,200,80);
-        pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+        back_score_rect = sf::IntRect(2,328,250,80);
+        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4,15),
                                    "Punkty: " + std::to_string(good_points),
@@ -80,11 +80,11 @@ public:
         platforms.emplace_back(pom_table);
 
         text_size = 40;
-        back_score_rect = sf::IntRect(0,0,150,80);
+        back_score_rect = sf::IntRect(101,246,150,80);
         std::stringstream stream;
         stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
 
-        pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                    sf::Vector2f(okno->getSize().x/8 + 200-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x/8 + 200,15),
                                    stream.str(),
@@ -92,9 +92,9 @@ public:
         pom_table->settextonmiddle(-text_size);
         platforms.emplace_back(pom_table);
 
-        sf::Text pom_text(L"Naciśnij klawisz ENTER by rozpocząć grę",*font,70);
+        sf::Text pom_text(L"Press ENTER to start the game",*font,70);
         pom_text.setPosition(okno->getSize().x/2 - pom_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
-        pom_text.setFillColor(sf::Color(200,200,200,128));
+        pom_text.setFillColor(sf::Color(0,0,0,128));
         this->start_text = pom_text;
 
         new_task();
@@ -223,29 +223,6 @@ public:
     void create_ludek(){
         MindGameAnimatedSprite pom_ludek(10,100,400,2600,-1200);
         pom_ludek.setTexture(hero_texture);
-        //JUMPING TEXTURE RECTANGLES
-        pom_ludek.add_pom_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
-        pom_ludek.add_pom_animation_frame(sf::IntRect(290, 4, 266, 461)); // 2 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(567, 2, 253, 433)); // 3 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(834, 2, 253, 432)); // 4 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1134,2,253,432)); // 5 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1402, 2,253,432)); // 6 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1677, 2, 274, 425)); // 7 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(1980, 0, 301, 420)); // 8 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(2321, 0, 329, 412)); // 9 frame
-        pom_ludek.add_pom_animation_frame(sf::IntRect(2685, 0, 329, 412)); // 10 frame
-
-        //RUNNING TEXTURE RECTANGLES
-        pom_ludek.add_animation_frame(sf::IntRect(0,482,328,433)); // 1 frame of animation
-        pom_ludek.add_animation_frame(sf::IntRect(330, 476, 323, 450)); // 2 frame
-        pom_ludek.add_animation_frame(sf::IntRect(655, 472, 321, 446)); // 3 frame
-        pom_ludek.add_animation_frame(sf::IntRect(983, 475, 353, 422)); // 4 frame
-        pom_ludek.add_animation_frame(sf::IntRect(1340,482,354,427)); // 5 frame
-        pom_ludek.add_animation_frame(sf::IntRect(1694, 482,328,427)); // 6 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2031, 476, 323, 448)); // 7 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2357, 472, 316, 431)); // 8 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2678, 474, 318, 405)); // 9 frame
-        pom_ludek.add_animation_frame(sf::IntRect(2998, 482, 328, 422)); // 10 frame
 
         pom_ludek.setScale(0.2,0.2);
         pom_ludek.setTextureRect(sf::IntRect(0,482,328,433));//first frame
@@ -279,11 +256,11 @@ public:
             platforms.emplace_back(generate_platform(i));
         }
 
-        int text_size = 50;
-        sf::IntRect back_equation_rect(0,0,450,80);
-        ScoreTable *pom_table = new ScoreTable(elements_textures,font, okno,back_equation_rect,
+        int text_size = 65;
+        sf::IntRect back_equation_rect(585,202,400,124);
+        ScoreTable *pom_table = new ScoreTable(scoreboards_textures,font, okno,back_equation_rect,
                                                sf::Vector2f(okno->getSize().x/2-back_equation_rect.width/2,15),sf::Vector2f(okno->getSize().x/2,15),str_equation,text_size);
-        pom_table->settextonmiddle(-text_size);
+        pom_table->settextonmiddle(-pom_table->GetTextHeight()-10);
         platforms.emplace_back(pom_table);
     }
 
@@ -374,7 +351,7 @@ public:
     }
 
     ScoreTable* generate_platform(int current_count){//generuje platformę z równaniem losowo wygenerowanym; platformy w równej odległości
-        sf::Vector2f plat_pos(float(okno->getSize().x)/this->platform_count*(current_count+1.0/2)-this->platform_texture_rect.width/2,400);
+        sf::Vector2f plat_pos(float(okno->getSize().x)/this->platform_count*(current_count+1.0/2)-this->platform_texture_rect.width*0.35/2,400);
         ScoreTable *pom_platform = new PlatformWithEquation(elements_textures,font,okno,platform_texture_rect,plat_pos,plat_pos,
                                                             answers[current_count].first,character_size,answers[current_count].second);
         return pom_platform;
