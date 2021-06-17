@@ -52,7 +52,7 @@ int menu()
         // draw everything here...
         window.draw(tlo);
         for(auto &el : options){
-            window.draw(el); 
+            window.draw(el);
         }
         // end the current frame
         window.display();
@@ -90,16 +90,19 @@ int menu()
                 mouse_released = false;
                 sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 if(options[0].getGlobalBounds().contains(mouse_position)){
+                    click.play();
                     return 1;
                 }
                 else if(options[1].getGlobalBounds().contains(mouse_position)){
+                    click.play();
                     return 2;
                 }
                 else if(options[2].getGlobalBounds().contains(mouse_position)){
+                    click.play();
                     return 3;
                 }
             }
         }
     }
-return 0;
+    return 0;
 }

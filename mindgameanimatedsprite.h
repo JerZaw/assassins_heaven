@@ -4,6 +4,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <animatedsprite.h>
+#include <read_textures.h>
 
 class MindGameAnimatedSprite : public AnimatedSprite
 {
@@ -48,7 +49,6 @@ public:
         }
         else{
             this->SetVerticalSpeed(0);
-            //this->setrecvec("idle");
             this->setPosition(this->getPosition().x,okno.getSize().y - this->getGlobalBounds().height);
         }
     }

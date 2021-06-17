@@ -10,6 +10,7 @@
 
 int game_jumping()
 {
+    jumping_game_music.play();
     srand(time(0));
     //PLATFORMER
     // create the window
@@ -73,9 +74,11 @@ int game_jumping()
             std::string pom_chosenbutton = summary.YesOrNo(mouse_position);
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                 if(pom_chosenbutton=="no"){
+                    click.play();
                     window.close();
                 }
                 else if(pom_chosenbutton=="yes"){
+                    click.play();
                     score_saving=true;
                     scoresaving.SetScore(plansza.summary_data().first.first);
                 }
@@ -97,6 +100,6 @@ int game_jumping()
         // end the current frame
         window.display();
     }
-
+    jumping_game_music.stop();
     return 0;
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <read_textures.h>
 
 class Target : public sf::Sprite
 {
@@ -17,12 +18,13 @@ public:
         this->texture = arg_texture;
         this->setTexture(arg_texture);
         this->setTextureRect(texture_rect);
-        this->setColor(sf::Color::Red);
+        //this->setColor(sf::Color::Red);
         this->setScale(scale,scale);
     }
 
     void hit(){
         this->setColor(sf::Color::Green);
+        hit_sound.play();
         was_hit=true;
     }
 

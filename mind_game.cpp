@@ -48,12 +48,13 @@ int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long
         }
         else if(!summary_generated){
             summary.update(L"MIND_GAME",
-                            L"Congratulations, you got " + std::to_wstring(mind_plansza.summary_data().first)
-                            + L'/' + std::to_wstring(mind_plansza.summary_data().second)+L" points",
+                           L"Congratulations, you got " + std::to_wstring(mind_plansza.summary_data().first)
+                           + L'/' + std::to_wstring(mind_plansza.summary_data().second)+L" points",
                            L"For completing the tasks you gain " +
                            std::to_wstring(5*(current_difficulty+1)*mind_plansza.summary_data().first) + L" coins",
-                            L"press ENTER, to leave the minigame");
+                           L"press ENTER, to leave the minigame");
             summary_generated=true;
+            //minigame_end_horns.play();
         }
         else{
             summary.draw();
@@ -69,7 +70,9 @@ int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long
         while (window.pollEvent(event)) {
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
+            {
                 window.close();
+            }
         }
 
         // end the current frame

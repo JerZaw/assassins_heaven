@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <read_textures.h>
 
 class Rules
 {
@@ -14,6 +15,7 @@ private:
     sf::Sprite QuitButton;
     sf::Texture button_texture;
     std::vector<sf::Text> rules;
+    sf::Clock clock;
 public:
     Rules(const sf::Font *font, sf::RenderWindow *arg_okno){
         this->okno = arg_okno;
@@ -44,12 +46,14 @@ public:
         for(unsigned long long i=2;i<rules.size();i++){
             rules[i].setPosition(okno->getSize().x/2 - rules[i].getGlobalBounds().width/2,rules[i-1].getPosition().y + 40);
         }
+        clock.restart();
     }
 
     void step(){
-        if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && clock.getElapsedTime()>sf::seconds(1)){
             sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
             if(QuitButton.getGlobalBounds().contains(mouse_position)){
+                click.play();
                 okno->close();
             }
         }

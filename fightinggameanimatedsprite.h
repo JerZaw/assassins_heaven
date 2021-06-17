@@ -7,11 +7,12 @@
 #include <vector>
 #include <cmath>
 #include <arrow.h>
+#include <read_textures.h>
 
 class FightingGameAnimatedSprite : public sf::Sprite
 {
 private:
-    std::vector<sf::IntRect> rec_vec;
+    std::vector<sf::IntRect> rec_vec, idle_rec_vec, throwing_rec_vec;
     int current=0;
     int my_fps;
     float shot_velocity = 250;
@@ -26,6 +27,7 @@ private:
     sf::RenderWindow *okno;
     bool shot_made = false;
     bool space_pressed = false;
+    bool throwing = false;
 public:
     FightingGameAnimatedSprite(){};
     FightingGameAnimatedSprite(const int &fps, const float &acceler,
@@ -35,12 +37,38 @@ public:
         this->angle_changing_speed = arg_angle_changing_speed;
         this->okno = arg_okno;
 
+        //IDLE TEXTURE RECTANGLES
+        this->add_idle_animation_frame(sf::IntRect(1,1415,232,439)); // 1 frame of animation
+        this->add_idle_animation_frame(sf::IntRect(242,1416, 231,438)); // 2 frame
+        this->add_idle_animation_frame(sf::IntRect(480,1416, 229,438)); // 3 frame
+        this->add_idle_animation_frame(sf::IntRect(721,1417,228,437)); // 4 frame
+        this->add_idle_animation_frame(sf::IntRect(958,1418,227,436)); // 5 frame
+        this->add_idle_animation_frame(sf::IntRect(1191,1419,226,435)); // 6 frame
+        this->add_idle_animation_frame(sf::IntRect(1426,1418,227,436)); // 7 frame
+        this->add_idle_animation_frame(sf::IntRect(1661,1417,228,437)); // 8 frame
+        this->add_idle_animation_frame(sf::IntRect(1896,1416,229,438)); // 9 frame
+        this->add_idle_animation_frame(sf::IntRect(2134,1416,231,438)); // 10 frame
+
+        //THROWING TEXTURE RECTANGLES
+        this->add_throwing_animation_frame(sf::IntRect(0,1878,257,425)); // 1 frame of animation
+        this->add_throwing_animation_frame(sf::IntRect(261,1867,240,438)); // 2 frame
+        this->add_throwing_animation_frame(sf::IntRect(513,1861,314,444)); // 3 frame
+        this->add_throwing_animation_frame(sf::IntRect(844,1861,303,443)); // 4 frame
+        this->add_throwing_animation_frame(sf::IntRect(1156,1861,299,443)); // 5 frame
+        this->add_throwing_animation_frame(sf::IntRect(1464,1861,297,443)); // 6 frame
+        this->add_throwing_animation_frame(sf::IntRect(1770,1861,295,442)); // 7 frame
+        this->add_throwing_animation_frame(sf::IntRect(2078,1861,323,446)); // 8 frame
+        this->add_throwing_animation_frame(sf::IntRect(2409,1863,292,444)); // 9 frame
+        this->add_throwing_animation_frame(sf::IntRect(2715,1869,241,437)); // 10 frame
+
         for(int i=0;i<max_aiming_dots;i++){//kulki ze zmniejszającą się średnicą
             sf::CircleShape circle(1);
             circle.setFillColor(sf::Color(0,0,0,255));
             circle.setRadius(3-i*0.1);
             aiming_dots.emplace_back(circle);
         }
+
+        rec_vec = idle_rec_vec;
     };
 
     void update_aiming_dots(){
@@ -58,17 +86,23 @@ public:
         float a = -acceleration/(2*v0_x*v0_x);
         float b = tanf(shot_angle);
 
-        for(int i=0;i<how_many_aiming_dots;i++){ //tworzenie kulek celujących
-            float x = circles_distance*i + 50;
-            aiming_dots[i].setPosition(x,okno->getSize().y - aiming_dots[i].getGlobalBounds().height-(a*x*x + b*x));
+        aiming_dots[0].setPosition(100,okno->getSize().y - 70);
+        for(int i=1;i<how_many_aiming_dots;i++){ //tworzenie kulek celujących
+            float x = circles_distance*i + aiming_dots[0].getGlobalBounds().left;
+            aiming_dots[i].setPosition(x,okno->getSize().y - aiming_dots[i].getGlobalBounds().height
+                                       -(a*(x-100)*(x-100) + b*(x-100)) - 65);
         }
         for(unsigned long long i=how_many_aiming_dots;i<aiming_dots.size();i++){
             aiming_dots[i].setPosition(-100,-100);
         }
     }
 
-    void add_animation_frame(const sf::IntRect &rect){
-        rec_vec.emplace_back(rect);
+    void add_throwing_animation_frame(const sf::IntRect &rect){
+        throwing_rec_vec.emplace_back(rect);
+    }
+
+    void add_idle_animation_frame(const sf::IntRect &rect){
+        idle_rec_vec.emplace_back(rect);
     }
 
     void step(const sf::Time &elapsed){ //wymaga restartu zegara, odpowiada za zmianę kąta, moc strzału oraz zmianę animacji
@@ -79,6 +113,13 @@ public:
             this->setTextureRect(rec_vec[++this->current]);
             if(this->current==int(rec_vec.size())-1){
                 this->current=0;
+                if(throwing){
+                    throwing = false;
+                    rec_vec = idle_rec_vec;
+                }
+            }
+            if(throwing && this->current == 3){
+                shot_made = true;
             }
             this->dlugi_czas = sf::Time::Zero;
         }
@@ -107,8 +148,16 @@ public:
         }
         else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && space_pressed==true){ //po puszczeniu spacji strzał
             space_pressed = false;
-            shot_made = true;
+            throw_sound.play();
+            start_throw_animation();
         }
+    }
+
+    void start_throw_animation(){
+        current = 0;
+        dlugi_czas = sf::Time::Zero;
+        rec_vec = throwing_rec_vec;
+        throwing = true;
     }
 
     bool if_shot_called(){

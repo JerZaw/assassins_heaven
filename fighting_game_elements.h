@@ -14,6 +14,7 @@
 #include <ctime>
 #include <iomanip>
 #include <target.h>
+#include <read_textures.h>
 
 class fighting_game_elements
 {
@@ -22,7 +23,7 @@ private:
     int target_count=2;
     sf::Texture elements_textures;
     sf::IntRect platform_texture_rect;
-    sf::Texture hero_texture;
+    sf::Texture my_hero_texture;
     const sf::Font *font;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono;
@@ -45,14 +46,14 @@ private:
     int max_single_points = 0;
 public:
     fighting_game_elements(){};
-    fighting_game_elements(const int &arg_difficulty,const sf::Texture &arg_elements_textures, const sf::IntRect &arg_platform_texture_rect,
-                           const sf::Texture &arg_hero_texture, const sf::Font *arg_font, sf::RenderWindow *arg_okno,
+    fighting_game_elements(const int &arg_difficulty,const sf::IntRect &arg_platform_texture_rect,
+                           sf::RenderWindow *arg_okno,
                            sftools::Chronometer *arg_chrono){
         this->difficulty = arg_difficulty;
-        this->elements_textures = arg_elements_textures;
+        this->elements_textures = fighting_elements_textures;
         this->platform_texture_rect = arg_platform_texture_rect;
-        this->hero_texture = arg_hero_texture;
-        this->font = arg_font;
+        this->my_hero_texture = hero_texture;
+        this->font = &font_comica_bold;
         this->okno = arg_okno;
         this->chrono = arg_chrono;
         this->how_many_tasks = (rand()%2+1)*(this->difficulty+1);
@@ -68,8 +69,8 @@ public:
         create_ludek();
 
         int text_size = 40;
-        sf::IntRect back_score_rect(0,0,200,80);
-        ScoreTable *pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+        sf::IntRect back_score_rect(275,246,200,80);
+        ScoreTable *pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                                sf::Vector2f(okno->getSize().x/8-back_score_rect.width/2,15),
                                                sf::Vector2f(okno->getSize().x/8,15),
                                                std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks),
@@ -78,21 +79,21 @@ public:
         scoretables.emplace_back(pom_table);
 
         text_size = 40;
-        back_score_rect = sf::IntRect(0,0,200,80);
-        pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+        back_score_rect = sf::IntRect(2,328,250,80);
+        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4,15),
-                                   "Punkty: " + std::to_string(good_points),
+                                   "Points: " + std::to_string(good_points),
                                    text_size);
         pom_table->settextonmiddle(-text_size);
         scoretables.emplace_back(pom_table);
 
         text_size = 40;
-        back_score_rect = sf::IntRect(0,0,150,80);
+        back_score_rect = sf::IntRect(101,246,150,80);
         std::stringstream stream;
         stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
 
-        pom_table = new ScoreTable(elements_textures,font, okno,back_score_rect,
+        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                    sf::Vector2f(okno->getSize().x/8 + 200-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x/8 + 200,15),
                                    stream.str(),
@@ -100,9 +101,9 @@ public:
         pom_table->settextonmiddle(-text_size);
         scoretables.emplace_back(pom_table);
 
-        sf::Text pom_text(L"Naciśnij klawisz ENTER by rozpocząć grę",*font,70);
+        sf::Text pom_text(L"Press ENTER to start the game",*font,70);
         pom_text.setPosition(okno->getSize().x/2 - pom_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
-        pom_text.setFillColor(sf::Color(200,200,200,128));
+        pom_text.setFillColor(sf::Color(0,0,0,128));
         this->start_text = pom_text;
 
         new_task();
@@ -178,7 +179,8 @@ public:
                             }
                         }
                         if(current_arrow_counter!=-1){ //jeśli znalazło miejsce dodaje nową strzałę i strzela
-                            arrows[current_arrow_counter]=new Arrow(ludek.shoot(),elements_textures,sf::IntRect(0,0,40,10));
+                            arrows[current_arrow_counter]=new Arrow(ludek.shoot(),elements_textures,sf::IntRect(765,421,160,32));
+                            arrows[current_arrow_counter]->setScale(0.5,0.5);
                         }
                     }
                     for(auto &el:arrows){ //przesuwanie strzał i sprawdzanie czy uderzają w cele
@@ -209,8 +211,9 @@ public:
             }
         }
         else{ //odliczanie przed grą
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && countdown_started==false){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
                 countdown_started=true;
+                countdown.play();
             }
             if(countdown_started){
                 current_task_time+=elapsed;
@@ -236,17 +239,11 @@ public:
     }
 
     void create_ludek(){
-        FightingGameAnimatedSprite pom_ludek(8,40,2,okno);
-        pom_ludek.setTexture(this->hero_texture);
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 1 frame of animation
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 2 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 3 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 4 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 5 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 6 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 7 frame
-        pom_ludek.add_animation_frame(sf::IntRect(14,6,19,31)); // 8 frame
-        pom_ludek.setTextureRect(sf::IntRect(14,6,19,31));
+        FightingGameAnimatedSprite pom_ludek(10,40,2,okno);
+        pom_ludek.setTexture(this->my_hero_texture);
+
+        pom_ludek.setTextureRect(sf::IntRect(1,1415,232,439));
+        pom_ludek.setScale(0.4,0.4);
 
         ludek = pom_ludek;
         ludek.setPosition(5,okno->getSize().y-ludek.getGlobalBounds().height-5);
@@ -291,7 +288,7 @@ public:
     void generate_position(const int &count){
         sf::Vector2f pompoz;
         do{//odstępy od granic i od innych celów
-            pompoz.x = rand()%(int(okno->getSize().x-100-targets[count]->getGlobalBounds().width))+100;//x odstęp od lewej 100
+            pompoz.x = rand()%(int(okno->getSize().x-200-targets[count]->getGlobalBounds().width))+200;//x odstęp od lewej 200
             pompoz.y = rand()%(int(okno->getSize().y-150-targets[count]->getGlobalBounds().height))+100;//y odstęp od góry 100 i dołu 50
             targets[count]->setPosition(pompoz);
         }
@@ -317,7 +314,7 @@ public:
         case 2:scale = 1-rand()%3/10.0 -0.3;break;
         case 3:scale = 1-rand()%3/10.0 -0.5;break;
         }
-        return Target(scale,elements_textures,sf::IntRect(0,0,100,100));
+        return Target(scale,elements_textures,sf::IntRect(178,465,129,129));
     }
 
     std::pair<int,int> summary_data(){

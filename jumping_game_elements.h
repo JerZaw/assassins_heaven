@@ -53,6 +53,7 @@ private:
     MovingBackground *background;
     StationaryBackground *stationary_background;
     sf::Texture back_texture;
+    float temp_hero_hor_speed;
 public:
     JumpingGameElements(const int &count, const int &arg_difficulty, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
@@ -126,8 +127,8 @@ public:
             this->platformpointers[i]->random_coin(current_long_platform_texture_rect);
         }
 
-       //TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
-       //task.mind_game(3, current_long_platform_texture_rect);
+        //       TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
+        //       task.picked(chrono1);
     }
 
     std::pair<std::pair<int,bool>,int> summary_data(){
@@ -197,6 +198,7 @@ public:
                                 shop = nullptr;
                                 shopworkingtime = sf::Time::Zero;
                                 money_table.update(money);
+                                temp_hero_hor_speed = ludek.GetHorizontalSpeed();
                             }
                         }
                     }
@@ -208,14 +210,26 @@ public:
             }
 
             if(boost_bought){//na środek ekranu i potem boost
-                if((fabs(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 - okno->getSize().x/2)>15 &&
-                    fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>15) &&
-                        shopworkingtime < sf::seconds(10)){
-                    ludek.move((ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 -
-                                okno->getSize().x/2) * -2 * elapsed.asSeconds(),
-                               (ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 -
-                                okno->getSize().y/2) * -2 *elapsed.asSeconds());
-                    shopworkingtime+=elapsed;
+                int boost_speed = 300;
+                ludek.SetVerticalSpeed(0);
+                ludek.SetHorizontalSpeed(0);
+                ludek.setrecvec("jump");
+
+                if((fabs(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 - okno->getSize().x/2)>1 ||
+                    fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>1)){
+                    if(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 < okno->getSize().y/2){
+                        ludek.move(0,boost_speed*elapsed.asSeconds());
+                    }
+                    else if(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 > okno->getSize().y/2){
+                        ludek.move(0,-boost_speed*elapsed.asSeconds());
+                    }
+
+                    if(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 < okno->getSize().x/2){
+                        ludek.move(boost_speed*elapsed.asSeconds(),0);
+                    }
+                    else if(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 > okno->getSize().x/2){
+                        ludek.move(-boost_speed*elapsed.asSeconds(),0);
+                    }
                 }
                 else if(points<boost_height){
                     speed+=elapsed.asSeconds()*1000;  //przyspieszanie całości z biegiem czasu
@@ -230,56 +244,15 @@ public:
                 else{
                     boost_bought = false;
                     ludek.SetVerticalSpeed(speed);
+                    ludek.SetHorizontalSpeed(temp_hero_hor_speed);
                 }
-            }
-
-            if(points>250){
-                difficulty=3;
-                this->current_long_platform_texture_rect = sf::IntRect(0,96,380,94);
-                this->current_small_platform_texture_rect = sf::IntRect(382,408,200,100);
-                this->current_long_timed_platform_texture_rect = sf::IntRect(0,192,380,94);
-                this->current_small_timed_platform_texture_rect = sf::IntRect(232,1288,200,100);
-                background->SetTextureRect(difficulty);
-                stationary_background->SetTextureRect(difficulty);
-            }
-            else if(points>150){
-                difficulty=2;
-                this->current_long_platform_texture_rect = sf::IntRect(0,768,380,94);
-                this->current_small_platform_texture_rect = sf::IntRect(214,1764,200,100);
-                this->current_long_timed_platform_texture_rect = sf::IntRect(0,480,380,94);
-                this->current_small_timed_platform_texture_rect = sf::IntRect(382,306,200,100);
-                background->SetTextureRect(difficulty);
-                stationary_background->SetTextureRect(difficulty);
-            }
-            else if(points>75){
-                difficulty=1;
-                this->current_long_platform_texture_rect = sf::IntRect(0,672,380,94);
-                this->current_small_platform_texture_rect = sf::IntRect(209,1879,200,100);
-                this->current_long_timed_platform_texture_rect = sf::IntRect(0,1056,380,94);
-                this->current_small_timed_platform_texture_rect = sf::IntRect(382,102,200,100);
-                background->SetTextureRect(difficulty);
-                stationary_background->SetTextureRect(difficulty);
-            }
-
-            background->step(elapsed,speed);
-            stationary_background->step(elapsed);
-
-            speed+=elapsed.asSeconds()*2;  //przyspieszanie całości z biegiem czasu
-            last_speed+=elapsed.asSeconds()*2;
-            //ludek.accelerate(elapsed.asSeconds()*2);
-            hero_jumping_speed=speed-670;
-
-            if(points>highscore.second){
-                highscore.second = points;
-                highscore_table.update("NEW Highscore! - " + std::to_string(highscore.second));
-                new_highscore = true;
             }
 
             for(int i=0;i<int(platformpointers.size());i++){
                 platformpointers[i]->step_y(elapsed,this->speed);
                 platformpointers[i]->step(elapsed);
 
-                if(platformpointers[i]->Is_working()){
+                if(platformpointers[i]->Is_working() && boost_bought==false){
                     if(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
                                      platformpointers[i]->getGlobalBounds().top+0.1,
                                      platformpointers[i]->getGlobalBounds().width, -0.2).
@@ -293,10 +266,10 @@ public:
                         }
                     }
 
-                    if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje i nie ma boosta
-                            ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())
-                            && !boost_bought){
+                    if(platformpointers[i]->GetCoin()!=nullptr && //czy zderza się z pieniążkiem jeżeli istnieje
+                            ludek.getGlobalBounds().intersects(platformpointers[i]->GetCoin()->getGlobalBounds())){
                         platformpointers[i]->GetCoin()->read_data(this->difficulty);
+                        platformpointers[i]->GetCoin()->play_my_sound();
                         std::pair<int,int> pom = platformpointers[i]->pick(chrono1);
                         if(pom.first!=0)
                         {
@@ -316,17 +289,64 @@ public:
                 else if(platformpointers[i]->getGlobalBounds().top > 0){//platformy działają tylko gdy są w oknie
                     platformpointers[i]->ChangeWorkingState(true);
                 }
-
-                if(ludek.getPosition().y + ludek.getGlobalBounds().height > okno->getSize().y){//śmierć gdy poniżej okna
-                    this->hero_alive=false;
-
-                    std::ofstream zapis_money("assets/money.txt", std::ios::trunc);
-                    zapis_money << std::to_string(money);
-                    zapis_money.close();
-                }
             }
+
+            if(points>450){
+                difficulty=3;
+                this->current_long_platform_texture_rect = sf::IntRect(0,96,380,94);
+                this->current_small_platform_texture_rect = sf::IntRect(382,408,200,100);
+                this->current_long_timed_platform_texture_rect = sf::IntRect(0,192,380,94);
+                this->current_small_timed_platform_texture_rect = sf::IntRect(232,1288,200,100);
+                background->SetTextureRect(difficulty);
+                stationary_background->SetTextureRect(difficulty);
+            }
+            else if(points>300){
+                difficulty=2;
+                this->current_long_platform_texture_rect = sf::IntRect(0,768,380,94);
+                this->current_small_platform_texture_rect = sf::IntRect(214,1764,200,100);
+                this->current_long_timed_platform_texture_rect = sf::IntRect(0,480,380,94);
+                this->current_small_timed_platform_texture_rect = sf::IntRect(382,306,200,100);
+                background->SetTextureRect(difficulty);
+                stationary_background->SetTextureRect(difficulty);
+            }
+            else if(points>150){
+                difficulty=1;
+                this->current_long_platform_texture_rect = sf::IntRect(0,672,380,94);
+                this->current_small_platform_texture_rect = sf::IntRect(209,1879,200,100);
+                this->current_long_timed_platform_texture_rect = sf::IntRect(0,1056,380,94);
+                this->current_small_timed_platform_texture_rect = sf::IntRect(382,102,200,100);
+                background->SetTextureRect(difficulty);
+                stationary_background->SetTextureRect(difficulty);
+            }
+
+            if(ludek.getPosition().y + ludek.getGlobalBounds().height > okno->getSize().y){//śmierć gdy poniżej okna
+                this->hero_alive=false;
+                death.play();
+
+                std::ofstream zapis_money("assets/money.txt", std::ios::trunc);
+                zapis_money << std::to_string(money);
+                zapis_money.close();
+            }
+
+            background->step(elapsed,speed);
+            stationary_background->step(elapsed);
+
+            speed+=elapsed.asSeconds()*1.1;  //przyspieszanie całości z biegiem czasu
+            last_speed+=elapsed.asSeconds()*1.1;
+            hero_jumping_speed=speed-670;
+
             ludek.step(elapsed,*okno);
             check_if_too_high(elapsed);
+
+            if(points>highscore.second){
+                if(!new_highscore){
+                    minigame_end_horns.play();
+                }
+                highscore.second = points;
+                highscore_table.update("NEW Highscore! - " + std::to_string(highscore.second));
+                highscore_table.settextonmiddle(-37);
+                new_highscore = true;
+            }
         }
         else{
             if(countdown->step_countdown_finished(elapsed)){
@@ -471,7 +491,7 @@ public:
         else if(difficulty==2){
             num=this->random_pick(20,40,25,15);
             speed = rand()%20+40;
-            time_ = 1-(rand()%2+3)/10.0;
+            time_ = (rand()%4+5)/10.0;
         }
         else if(difficulty==3){
             num=this->random_pick(10,35,30,25);

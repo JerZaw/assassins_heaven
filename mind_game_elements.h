@@ -74,7 +74,7 @@ public:
         pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4,15),
-                                   "Punkty: " + std::to_string(good_points),
+                                   "Points: " + std::to_string(good_points),
                                    text_size);
         pom_table->settextonmiddle(-text_size);
         platforms.emplace_back(pom_table);
@@ -178,9 +178,11 @@ public:
                                                  el->GetBackground()->getGlobalBounds().width, 0.1))){
                     if(el->picked()){
                         answer = RIGHT;
+                        answer_correct_sound.play();
                     }
                     else{
                         answer = WRONG;
+                        answer_wrong_sound.play();
                     }
                     ludek.SetVerticalSpeed(0);
                 }
@@ -193,8 +195,9 @@ public:
             }
         }
         else{
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && countdown_started==false){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
                 countdown_started=true;
+                countdown.play();
             }
             if(countdown_started){
                 current_task_time+=elapsed;

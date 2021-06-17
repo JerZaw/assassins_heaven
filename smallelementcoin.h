@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <Chronometer.hpp>
+#include <read_textures.h>
 
 class SmallElementCoin : public sf::Sprite
 {
@@ -95,6 +96,10 @@ public:
 
     void SetValue(int arg_value){
         this->value = arg_value;
+    }
+
+    virtual void play_my_sound(){
+        coin_sound.play();
     }
 
     virtual std::pair<bool,int> picked(sftools::Chronometer *chron,const int &game_type = 0){

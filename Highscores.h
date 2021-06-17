@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <read_textures.h>
 
 class Highscores
 {
@@ -64,6 +65,7 @@ public:
         if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
             sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
             if(QuitButton.getGlobalBounds().contains(mouse_position)){
+                click.play();
                 okno->close();
             }
         }

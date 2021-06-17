@@ -5,6 +5,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <read_textures.h>
 
 class AnimatedSprite : public sf::Sprite
 {
@@ -70,12 +71,14 @@ public:
     void setMainrecvec(const std::string &action_name){
         if(action_name == "walk"){
             rec_vec = walking_rec_vec;
-            current_rec_vec = rec_vec;
         }
         else if(action_name == "idle"){
             rec_vec = idle_rec_vec;
-            current_rec_vec = rec_vec;
         }
+        else if(action_name == "jump"){
+            rec_vec = jumping_rec_vec;
+        }
+        current_rec_vec = rec_vec;
     }
 
     void setrecvec(const std::string &action_name){
@@ -84,6 +87,9 @@ public:
         }
         else if(action_name == "idle"){
             current_rec_vec = idle_rec_vec;
+        }
+        else if(action_name == "jump"){
+            current_rec_vec = jumping_rec_vec;
         }
     }
 
@@ -100,18 +106,12 @@ public:
     }
 
     void start_jump_animation(){
+        jump_sound.play();
         current = 0;
         dlugi_czas = sf::Time::Zero;
         current_rec_vec = jumping_rec_vec;
         jumping = true;
     }
-
-//    void start_walk_animation(){
-//        current = 0;
-//        dlugi_czas = sf::Time::Zero;
-//        current_rec_vec = walking_rec_vec;
-//        jumping = true;
-//    }
 
     void add_idle_animation_frame(const sf::IntRect &rect){
         idle_rec_vec.emplace_back(rect);

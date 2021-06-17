@@ -7,6 +7,7 @@
 #include <iostream>
 #include <smallelementcoin.h>
 #include <Chronometer.hpp>
+#include <read_textures.h>
 
 class CountDown : public sf::Text
 {
@@ -40,8 +41,9 @@ public:
             if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
                 ready = true;
             }
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && ready){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && ready && countdown_started==false){//sprawdzam ruchy poza eventem z powodu opóźnień wejścia
                 countdown_started=true;
+                countdown.play();
             }
             if(countdown_started){
                 time_left-=elapsed;

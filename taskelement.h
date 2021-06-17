@@ -1,6 +1,7 @@
 #ifndef TASKELEMENT_H
 #define TASKELEMENT_H
 
+#include <read_textures.h>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
@@ -30,14 +31,25 @@ public:
     int fighting_game(const int &arg_difficulty);
     int mind_game(const int &arg_difficulty, const sf::IntRect &current_long_platform_rect);
 
+    void play_my_sound(){
+        task_coin_sound.play();
+    }
+
     std::pair<bool,int> picked(sftools::Chronometer *chron, const int &game_type = 0){
-            chron->pause();
-            if(task_type == FIGHT){
-                this->SetValue(fighting_game(current_difficulty));
-            }
-            else{
-                this->SetValue(mind_game(current_difficulty, my_long_platform_texture_rect));
-            }
+        chron->pause();
+        jumping_game_music.stop();
+        if(task_type == FIGHT){
+            fighting_music.play();
+            this->SetValue(fighting_game(current_difficulty));
+            fighting_music.stop();
+        }
+        else{
+            mind_music.play();
+            this->SetValue(mind_game(current_difficulty, my_long_platform_texture_rect));
+            mind_music.stop();
+        }
+        jumping_game_music.play();
+
         return SmallElementCoin::picked(chron,task_type);
     }
 

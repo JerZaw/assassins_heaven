@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <read_textures.h>
 
 class ScoreSavingElement
 {
@@ -89,6 +90,7 @@ public:
         if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
             sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
             if(SubmitButton.getGlobalBounds().contains(mouse_position) && name_field_activated){
+                click.play();
                 if(name_text.getString()!=""){
                     std::pair<std::string, int> parka(name_text.getString(),score);
                     this->AddScore(parka);
@@ -101,6 +103,7 @@ public:
                 }
             }
             else if(QuitButton.getGlobalBounds().contains(mouse_position)){
+                click.play();
                 okno->close();
             }
             else if(typing_rect.getGlobalBounds().contains(mouse_position)){
@@ -165,7 +168,6 @@ public:
                                [&parka](const std::pair<std::string,int> &el_pair){return parka.first == el_pair.first;});
         if(it==highscores.end()){
             highscores.emplace_back(parka);
-            std::cerr<<parka.first<<std::endl;
         }
         else{
             it->second=score;
