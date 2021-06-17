@@ -94,7 +94,7 @@ public:
 
         sf::Text pom_text(L"Press ENTER to start the game",*font,70);
         pom_text.setPosition(okno->getSize().x/2 - pom_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
-        pom_text.setFillColor(sf::Color(0,0,0,128));
+        pom_text.setFillColor(sf::Color(0,0,0,240));
         this->start_text = pom_text;
 
         new_task();

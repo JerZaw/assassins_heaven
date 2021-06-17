@@ -127,8 +127,8 @@ public:
             this->platformpointers[i]->random_coin(current_long_platform_texture_rect);
         }
 
-        //       TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
-        //       task.picked(chrono1);
+//               TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
+//               task.picked(chrono1);
     }
 
     std::pair<std::pair<int,bool>,int> summary_data(){
@@ -165,7 +165,7 @@ public:
         pom_ludek.setTextureRect(sf::IntRect(0,482,328,433));//first frame
 
         ludek = pom_ludek;
-        ludek.setPosition(600,500);
+        ludek.setPosition(600,505);
 
         ludek.setMainrecvec("walk");
     }
@@ -329,9 +329,10 @@ public:
             background->step(elapsed,speed);
             stationary_background->step(elapsed);
 
-            speed+=elapsed.asSeconds()*1.1;  //przyspieszanie całości z biegiem czasu
-            last_speed+=elapsed.asSeconds()*1.1;
+            speed+=elapsed.asSeconds()*1.06;  //przyspieszanie całości z biegiem czasu
+            last_speed+=elapsed.asSeconds()*1.06;
             hero_jumping_speed=speed-670;
+            ludek.SetAcceleration(speed + 770);
 
             ludek.step(elapsed,*okno);
             check_if_too_high(elapsed);
@@ -360,17 +361,15 @@ public:
             if(!this->was_too_high){
                 this->last_speed = this->speed;
                 this->was_too_high = true;
-                //this->speed = fabs(ludek.GetVerticalSpeed());
-                //this->ludek.SetVerticalSpeed(fabs(ludek.GetVerticalSpeed())*2);
             }
             else{
                 this->speed+=125*elapsed.asSeconds();
                 if(ludek.getPosition().y<0){
                     ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() + 1200*elapsed.asSeconds());
-                }//this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed() - 75*elapsed.asSeconds());
+                }
             }
         }
-        else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
+        else if(this->was_too_high){
             if(this->speed > this->last_speed){
                 this->speed -=400*elapsed.asSeconds();
             }
@@ -379,28 +378,6 @@ public:
                 this->speed = this->last_speed;
             }
         }
-
-        //        if(ludek.getPosition().y < 200){//przesuwanie planszy gdy gracz wyskoczy ponad okno
-        //            if(!this->was_too_high){
-        //                this->last_speed = this->speed;
-        //                this->was_too_high = true;
-        //                //this->speed = fabs(ludek.GetVerticalSpeed());
-        //                //this->ludek.SetVerticalSpeed(fabs(ludek.GetVerticalSpeed())*2);
-        //            }
-        //            else{
-        //                this->speed+=500*elapsed.asSeconds();
-        //                //this->ludek.SetVerticalSpeed(ludek.GetVerticalSpeed()+ 2000*elapsed.asSeconds());
-        //            }
-        //        }
-        //        else if(this->was_too_high /*&& ludek.getPosition().y>300*/){
-        //            if(this->speed > this->last_speed){
-        //                this->speed -=1500*elapsed.asSeconds();
-        //            }
-        //            else {
-        //                this->was_too_high = false;
-        //                this->speed = this->last_speed;
-        //            }
-        //        }
     }
 
     bool Game_alive(){
@@ -410,10 +387,10 @@ public:
     float random_position_y(int iterator){
         float vec_y;
         switch (this->difficulty) {
-        case 0 :  vec_y = rand()%15;break;
-        case 1 :  vec_y = rand()%25;break;
-        case 2 :  vec_y = rand()%35;break;
-        case 3 :  vec_y = rand()%45;break;
+        case 0 :  vec_y = rand()%15+10;break;
+        case 1 :  vec_y = rand()%25+20;break;
+        case 2 :  vec_y = rand()%35+30;break;
+        case 3 :  vec_y = rand()%45+40;break;
         default:  break;
         }
 
@@ -489,12 +466,12 @@ public:
         else if(difficulty==2){
             num=this->random_pick(20,40,25,15);
             speed = rand()%20+40;
-            time_ = (rand()%4+5)/10.0;
+            time_ = (rand()%4+2)/10.0;
         }
         else if(difficulty==3){
             num=this->random_pick(10,35,30,25);
             speed = rand()%20+50;
-            time_ = (rand()%4+1)/10.0;
+            time_ = (rand()%4+8)/10.0;
         }
         else num=0;
 

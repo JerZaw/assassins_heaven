@@ -12,7 +12,6 @@ int highscores()
 
     sf::Sprite background;
     background.setTexture(highscores_back);
-    background.setScale(1,1);
     background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
     Highscores highscores(&font_comica_bold,&window);

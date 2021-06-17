@@ -125,6 +125,10 @@ public:
         acceleration+=added_acceleration;
     }
 
+    void SetAcceleration(const float &arg_acceleration){
+        this->acceleration =arg_acceleration;
+    }
+
     virtual void vertical_step(const sf::Time &elapsed, const sf::Window &okno){
         this->move(0,this->verticalspeed*elapsed.asSeconds());
         if(this->verticalspeed<100000){

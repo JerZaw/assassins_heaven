@@ -15,7 +15,10 @@ private:
     SmallElementCoin *coin = nullptr;
     sf::Texture texture;
     //definiowanie szans dla danych monet
-    std::vector<std::vector<int>> coin_chances = {{16,24,28,30,100},{12,24,32,36,100},{10,24,34,40,100},{10,26,40,46,100}};
+    std::vector<std::vector<int>> coin_chances = {{160,240,280,285,1000},
+                                                  {120,240,320,330,1000},
+                                                  {100,240,340,355,1000},
+                                                  {100,260,400,425,1000}};
     std::vector<int> current_coin_chances;
     //int difficulty;
 public:
@@ -78,7 +81,7 @@ public:
     }
 
     void random_coin(const sf::IntRect &current_long_platform_rect){
-        int pom = rand()%100;
+        int pom = rand()%1000;
         SmallElementCoin *pom_coin;
         if(pom < current_coin_chances[0]){
             pom_coin = new SmallElementCoin(1,0,jumping_elements_textures);

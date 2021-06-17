@@ -20,7 +20,6 @@ int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long
     // create some shapes
     sf::Sprite background;
     background.setTexture(mind_game_back_texture);
-    background.setScale(1,1);
     background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
     sftools::Chronometer chron1;

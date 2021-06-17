@@ -12,7 +12,6 @@ int rules()
 
     sf::Sprite background;
     background.setTexture(rules_back);
-    background.setScale(1,1);
     background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
     Rules rules(&font_comica_bold,&window);
