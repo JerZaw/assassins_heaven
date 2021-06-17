@@ -53,7 +53,7 @@ private:
     MovingBackground *background;
     StationaryBackground *stationary_background;
     sf::Texture back_texture;
-    float temp_hero_hor_speed;
+    bool boost_started = false;
 public:
     JumpingGameElements(const int &count, const int &arg_difficulty, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
         this->okno = arg_okno;
@@ -198,7 +198,6 @@ public:
                                 shop = nullptr;
                                 shopworkingtime = sf::Time::Zero;
                                 money_table.update(money);
-                                temp_hero_hor_speed = ludek.GetHorizontalSpeed();
                             }
                         }
                     }
@@ -212,11 +211,11 @@ public:
             if(boost_bought){//na środek ekranu i potem boost
                 int boost_speed = 300;
                 ludek.SetVerticalSpeed(0);
-                ludek.SetHorizontalSpeed(0);
                 ludek.setrecvec("jump");
 
                 if((fabs(ludek.getGlobalBounds().left + ludek.getGlobalBounds().width/2 - okno->getSize().x/2)>1 ||
-                    fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>1)){
+                    fabs(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 - okno->getSize().y/2)>1)
+                        && boost_started==false){
                     if(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height/2 < okno->getSize().y/2){
                         ludek.move(0,boost_speed*elapsed.asSeconds());
                     }
@@ -231,20 +230,19 @@ public:
                         ludek.move(-boost_speed*elapsed.asSeconds(),0);
                     }
                 }
-                else if(points<boost_height){
+                else{
+                    boost_started = true;
+                }
+
+                if(points<boost_height){
                     speed+=elapsed.asSeconds()*1000;  //przyspieszanie całości z biegiem czasu
-                    ludek.setPosition(okno->getSize().x/2-ludek.getGlobalBounds().width/2,
-                                      okno->getSize().y/2-ludek.getGlobalBounds().height/2);
                 }
                 else if(speed>31){
                     speed-=elapsed.asSeconds()*3000;//zwolnienie całości z biegiem czasu
-                    ludek.setPosition(okno->getSize().x/2-ludek.getGlobalBounds().width/2,
-                                      okno->getSize().y/2-ludek.getGlobalBounds().height/2);
                 }
                 else{
                     boost_bought = false;
                     ludek.SetVerticalSpeed(speed);
-                    ludek.SetHorizontalSpeed(temp_hero_hor_speed);
                 }
             }
 

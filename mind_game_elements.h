@@ -123,7 +123,7 @@ public:
 
         platforms[0]->update(std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks));
         platforms[0]->settextonmiddle(-40);
-        platforms[1]->update("Punkty: " + std::to_string(good_points));
+        platforms[1]->update("Points: " + std::to_string(good_points));
         platforms[1]->settextonmiddle(-40);
 
 

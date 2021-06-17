@@ -12,21 +12,10 @@ int menu()
     sf::RenderWindow window(sf::VideoMode(800,800), "Menu");
 
     // create some shapes
-    sf::Texture tlo_texture;
-    if (!tlo_texture.loadFromFile("assets/menu/back.png")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return -1;
-    }
     sf::Sprite tlo;
     tlo.setTexture(menu_back_texture);
 
     std::vector<sf::Sprite> options;
-
-    sf::Texture option_texture;
-    if (!option_texture.loadFromFile("assets/menu/option.png")) {
-        std::cerr << "Could not load texture" << std::endl;
-        return -1;
-    }
 
     sf::Sprite option;
     option.setTexture(menu_button_textures);

@@ -132,7 +132,7 @@ public:
 
         scoretables[0]->update(std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks));
         scoretables[0]->settextonmiddle(-40);
-        scoretables[1]->update("Punkty: " + std::to_string(good_points));
+        scoretables[1]->update("Points: " + std::to_string(good_points));
         scoretables[1]->settextonmiddle(-40);
 
         single_finished = false;
@@ -201,7 +201,7 @@ public:
                                     targets[i]->hit();
                                     delete el;
                                     el = nullptr;
-                                    scoretables[1]->update("Punkty: " + std::to_string(good_points));
+                                    scoretables[1]->update("Points: " + std::to_string(good_points));
                                     break;
                                 }
                             }
