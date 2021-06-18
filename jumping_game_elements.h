@@ -251,13 +251,9 @@ public:
                 platformpointers[i]->step(elapsed);
 
                 if(platformpointers[i]->Is_working() && boost_bought==false){
-                    if(sf::FloatRect(platformpointers[i]->getGlobalBounds().left,
-                                     platformpointers[i]->getGlobalBounds().top+0.1,
-                                     platformpointers[i]->getGlobalBounds().width, -0.2).
-                            intersects(sf::FloatRect(ludek.getGlobalBounds().left,
-                                                     ludek.getGlobalBounds().top + ludek.getGlobalBounds().height-1,
-                                                     ludek.getGlobalBounds().width, 1))){ //zderzenie z górą platformy
-                        if(ludek.GetVerticalSpeed()>30){
+                    if(platformpointers[i]->getGlobalBounds().
+                            intersects(ludek.getGlobalBounds())){ //zderzenie z aktywowaną platformą
+                        if(ludek.GetVerticalSpeed() - speed >0){
                             ludek.SetVerticalSpeed(hero_jumping_speed);
                             ludek.start_jump_animation();
                             platformpointers[i]->activate();
@@ -278,13 +274,15 @@ public:
                         money_table.update(money);
                     }
                 }
+
                 if(platformpointers[i]->getPosition().y>okno->getSize().y){
                     this->generate_new(i);
                     points++;
                     points_table.update(points);
                     points_table.settextonmiddle(-30);
                 }
-                else if(platformpointers[i]->getGlobalBounds().top > 0){//platformy działają tylko gdy są w oknie
+                else if(ludek.getGlobalBounds().top + ludek.getGlobalBounds().height <
+                        platformpointers[i]->getGlobalBounds().top){//platformy działają tylko gdy były niżej od stóp ludka
                     platformpointers[i]->ChangeWorkingState(true);
                 }
             }
@@ -369,9 +367,9 @@ public:
                 }
             }
         }
-        else if(this->was_too_high){
+        else if(this->was_too_high){//spowalnianie zpowrotem to poprzedniej prędkości
             if(this->speed > this->last_speed){
-                this->speed -=400*elapsed.asSeconds();
+                this->speed -=600*elapsed.asSeconds();
             }
             else {
                 this->was_too_high = false;
