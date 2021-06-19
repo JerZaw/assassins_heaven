@@ -15,9 +15,7 @@ private:
 public:
 
     MovingPlatform(int arg_speed, int arg_moving_boundary,const sf::Texture &arg_texture):
-        Platform(arg_texture){
-        this->speed = arg_speed;
-        this->moving_boundary = arg_moving_boundary;
+        Platform(arg_texture),speed(arg_speed),moving_boundary(arg_moving_boundary){
     }
 
     void step(const sf::Time &elapsed){ //przesuwa platformę w jedną stronę aż dotknie granicy, potem w drugą stronę itd, wymaga resetu zegara

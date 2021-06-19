@@ -9,16 +9,14 @@
 class Target : public sf::Sprite
 {
 private:
-    //float speed;
     sf::Texture texture;
     bool was_hit = false;
 public:
     Target(){};
-    Target(const float &scale, const sf::Texture &arg_texture, const sf::IntRect &texture_rect){
-        this->texture = arg_texture;
-        this->setTexture(arg_texture);
+    Target(const float &scale, const sf::Texture &arg_texture, const sf::IntRect &texture_rect):
+    texture(arg_texture){
+        this->setTexture(texture);
         this->setTextureRect(texture_rect);
-        //this->setColor(sf::Color::Red);
         this->setScale(scale,scale);
     }
 

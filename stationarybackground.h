@@ -19,8 +19,7 @@ private:
     sf::Time my_elapsed = sf::Time::Zero;
 public:
     StationaryBackground(){};
-    StationaryBackground(sf::RenderWindow *arg_okno){
-        this->okno = arg_okno;
+    StationaryBackground(sf::RenderWindow *arg_okno):okno(arg_okno){
         current_background.setTexture(stationary_jumping_backgrounds);
         current_background.setTextureRect(sf::IntRect(0,0,3000,2500));
         current_background.setScale(0.4,0.4);

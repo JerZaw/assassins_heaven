@@ -22,26 +22,25 @@
 class JumpingGameElements
 {
 private:
+    sf::RenderWindow *okno;
     std::vector<Platform *> platformpointers;
-    int difficulty = 0;
     float speed = 30, last_speed;
-    sf::Texture elements_textures;
     sf::Texture current_hero_texture;
-    sf::IntRect current_long_platform_texture_rect;
-    sf::IntRect current_small_platform_texture_rect;
-    sf::IntRect current_long_timed_platform_texture_rect;
-    sf::IntRect current_small_timed_platform_texture_rect;
+    int difficulty = 0;
+    sf::Texture elements_textures;
     AnimatedSprite ludek;
     bool hero_alive = true;
     bool was_too_high = false;
     sf::Time high_time;
     int points = 0;
     int money = 0;
-    ScoreTable points_table, money_table, highscore_table;
-    sf::RenderWindow *okno;
     sftools::Chronometer *chrono1;
+    const sf::Font font;
+    sf::Texture back_texture;
+    MovingBackground background;
+    StationaryBackground stationary_background;
+    ScoreTable points_table, money_table, highscore_table;
     float hero_jumping_speed = -600;
-    const sf::Font *font;
     CountDown *countdown;
     std::pair<std::string,int> highscore;
     bool new_highscore = false;
@@ -50,33 +49,30 @@ private:
     sf::Time shopworkingtime = sf::Time::Zero;
     int boost_height = 0;
     bool boost_bought = false;
-    MovingBackground *background;
-    StationaryBackground *stationary_background;
-    sf::Texture back_texture;
     bool boost_started = false;
+    sf::IntRect current_long_platform_texture_rect;
+    sf::IntRect current_small_platform_texture_rect;
+    sf::IntRect current_long_timed_platform_texture_rect;
+    sf::IntRect current_small_timed_platform_texture_rect;
 public:
-    JumpingGameElements(const int &count, const int &arg_difficulty, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
-        this->okno = arg_okno;
-        this->current_hero_texture = hero_texture;
+    JumpingGameElements(const int &count, const int &arg_difficulty, sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono):
+        okno(arg_okno),current_hero_texture(hero_texture),difficulty(arg_difficulty),elements_textures(jumping_elements_textures),
+        chrono1(arg_chrono),font(font_comica_bold),back_texture(jumping_back_textures),background(back_texture,arg_okno),
+        stationary_background(arg_okno),points_table(scoreboards_textures,font, okno,sf::IntRect(0,68,238,60),
+                                                     sf::Vector2f(okno->getSize().x/2 - 119,5),sf::Vector2f(600,5)),
+        money_table(scoreboards_textures,font,okno,sf::IntRect(0,0,200,60),sf::Vector2f(5,5),sf::Vector2f(63,15)),
+        highscore_table(scoreboards_textures,font,okno,sf::IntRect(101,182,350,60),
+                        sf::Vector2f(800,5),sf::Vector2f(850,15),""),
+        current_long_platform_texture_rect(sf::IntRect(0,288,380,94)),
+        current_small_platform_texture_rect(sf::IntRect(214,1662,200,100)),
+        current_long_timed_platform_texture_rect(sf::IntRect(0,384,380,94)),
+        current_small_timed_platform_texture_rect(sf::IntRect(382,204,200,100)){
+
         this->create_ludek();
-        this->difficulty = arg_difficulty;
-        this->elements_textures = jumping_elements_textures;
-        this->chrono1 = arg_chrono;
-        this->font = &font_comica_bold;
-        this->back_texture = jumping_back_textures;
-
-        background = new MovingBackground(back_texture,arg_okno);
-
-        stationary_background = new StationaryBackground(arg_okno);
 
         countdown = new CountDown(font,this->okno);
 
-        ScoreTable pom_table(scoreboards_textures,font, okno,sf::IntRect(0,68,238,60),sf::Vector2f(okno->getSize().x/2 - 119,5),sf::Vector2f(600,5));
-        pom_table.settextonmiddle(-30);
-        points_table = pom_table;
-
-        ScoreTable pom2_table(scoreboards_textures,font,okno,sf::IntRect(0,0,200,60),sf::Vector2f(5,5),sf::Vector2f(63,15));
-        money_table = pom2_table;
+        points_table.settextonmiddle(-30);
 
         shop = new Shop(okno);
         shop->update_position(sf::Vector2f(10,okno->getSize().y - shop->GetShopBounds().height - 10));
@@ -95,17 +91,9 @@ public:
         highscore.second = std::stoi(str_pom.substr(str_pom.find('-')+1,str_pom.size()-1));
         odczyt.close();
 
-        ScoreTable pom3_table(scoreboards_textures,font,okno,sf::IntRect(101,182,350,60),
-                              sf::Vector2f(800,5),sf::Vector2f(850,15),
-                              "HS: "+ highscore.first + "   " + std::to_string(highscore.second));
-        pom3_table.settextonmiddle(-37);
-        highscore_table = pom3_table;
+        highscore_table.update("HS: "+ highscore.first + "   " + std::to_string(highscore.second));
+        highscore_table.settextonmiddle(-37);
 
-
-        this->current_long_platform_texture_rect = sf::IntRect(0,288,380,94);
-        this->current_small_platform_texture_rect = sf::IntRect(214,1662,200,100);
-        this->current_long_timed_platform_texture_rect = sf::IntRect(0,384,380,94);
-        this->current_small_timed_platform_texture_rect = sf::IntRect(382,204,200,100);
         for(int i=0;i<count;i++){
             this->platformpointers.emplace_back(this->random_platform(this->difficulty));
             this->platformpointers[i]->SetDifficulty(this->difficulty);
@@ -127,8 +115,8 @@ public:
             this->platformpointers[i]->random_coin(current_long_platform_texture_rect);
         }
 
-//               TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
-//               task.picked(chrono1);
+//        TaskElement task(0,0,assassin_logo_texture,current_long_platform_texture_rect); //DO TESTÓW
+//        task.picked(chrono1);
     }
 
     std::pair<std::pair<int,bool>,int> summary_data(){
@@ -138,11 +126,11 @@ public:
     }
 
     void draw(){
-        stationary_background->draw();
+        stationary_background.draw();
         for(auto &el : platformpointers){
             el->draw(okno);
         }
-        background->draw();
+        background.draw();
         points_table.draw();
         money_table.draw();
         highscore_table.draw();
@@ -293,8 +281,8 @@ public:
                 this->current_small_platform_texture_rect = sf::IntRect(382,408,200,100);
                 this->current_long_timed_platform_texture_rect = sf::IntRect(0,192,380,94);
                 this->current_small_timed_platform_texture_rect = sf::IntRect(232,1288,200,100);
-                background->SetTextureRect(difficulty);
-                stationary_background->SetTextureRect(difficulty);
+                background.SetTextureRect(difficulty);
+                stationary_background.SetTextureRect(difficulty);
             }
             else if(points>300){
                 difficulty=2;
@@ -302,8 +290,8 @@ public:
                 this->current_small_platform_texture_rect = sf::IntRect(214,1764,200,100);
                 this->current_long_timed_platform_texture_rect = sf::IntRect(0,480,380,94);
                 this->current_small_timed_platform_texture_rect = sf::IntRect(382,306,200,100);
-                background->SetTextureRect(difficulty);
-                stationary_background->SetTextureRect(difficulty);
+                background.SetTextureRect(difficulty);
+                stationary_background.SetTextureRect(difficulty);
             }
             else if(points>150){
                 difficulty=1;
@@ -311,8 +299,8 @@ public:
                 this->current_small_platform_texture_rect = sf::IntRect(209,1879,200,100);
                 this->current_long_timed_platform_texture_rect = sf::IntRect(0,1056,380,94);
                 this->current_small_timed_platform_texture_rect = sf::IntRect(382,102,200,100);
-                background->SetTextureRect(difficulty);
-                stationary_background->SetTextureRect(difficulty);
+                background.SetTextureRect(difficulty);
+                stationary_background.SetTextureRect(difficulty);
             }
 
             if(ludek.getPosition().y + ludek.getGlobalBounds().height > okno->getSize().y){//śmierć gdy poniżej okna
@@ -324,16 +312,20 @@ public:
                 zapis_money.close();
             }
 
-            background->step(elapsed,speed);
-            stationary_background->step(elapsed);
+            background.step(elapsed,speed);
+            stationary_background.step(elapsed);
 
             speed+=elapsed.asSeconds()*1.06;  //przyspieszanie całości z biegiem czasu
             last_speed+=elapsed.asSeconds()*1.06;
-            hero_jumping_speed=speed-670;
-            ludek.SetAcceleration(speed + 770);
+//            hero_jumping_speed=-20*speed; //skakanie i przyspieszenie hero zostają w takim samym stosunku do prędkości gry, nie działa
+//            ludek.SetAcceleration(-hero_jumping_speed*1.33);
 
-            ludek.step(elapsed,*okno);
+            hero_jumping_speed=(speed-630); //skakanie i przyspieszenie hero zostają w takim samym stosunku do prędkości gry, nie działa
+            ludek.SetAcceleration(speed+770);
+            //std::cerr<<speed<<'\t'<<hero_jumping_speed<<'\t'<<ludek.GetAcceleration()<<std::endl;
+
             check_if_too_high(elapsed);
+            ludek.step(elapsed,*okno);
 
             if(points>highscore.second){
                 if(!new_highscore){

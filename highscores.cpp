@@ -10,11 +10,7 @@ int highscores()
     sf::RenderWindow window(sf::VideoMode(800,800), "HIGHSCORES",sf::Style::None);
     window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-800)/2,window.getPosition().y));
 
-    sf::Sprite background;
-    background.setTexture(highscores_back);
-    background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
-
-    Highscores highscores(&font_comica_bold,&window);
+    Highscores highscores(font_comica_bold,&window);
     highscores.create_buttons(menu_button_textures);
 
     // run the program as long as the window is open
@@ -24,7 +20,6 @@ int highscores()
         window.clear(sf::Color::Black);
 
         // draw everything here...
-        window.draw(background);
         highscores.draw();
 
         highscores.step();

@@ -29,7 +29,7 @@ private:
     int platform_count=2;
     sf::Texture elements_textures;
     sf::IntRect platform_texture_rect;
-    const sf::Font *font;
+    const sf::Font font;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono;
     int character_size = 30;
@@ -45,16 +45,21 @@ private:
     sf::Text start_text;
     bool started = false;
     bool countdown_started = false;
+    sf::Sprite background;
 public:
     MindGameElements(){};
     MindGameElements(const int &arg_difficulty, const sf::IntRect &arg_platform_texture_rect,
-                     sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono){
-        this->difficulty = arg_difficulty;
-        this->elements_textures = jumping_elements_textures;
-        this->platform_texture_rect = arg_platform_texture_rect;
-        this->font = &font_comica_bold;
-        this->okno = arg_okno;
-        this->chrono = arg_chrono;
+                     sf::RenderWindow *arg_okno, sftools::Chronometer *arg_chrono):
+    difficulty(arg_difficulty),elements_textures(jumping_elements_textures),
+    platform_texture_rect(arg_platform_texture_rect),font(font_comica_bold),okno(arg_okno),
+    chrono(arg_chrono),start_text(L"Press ENTER to start the game",font,70){
+
+        background.setTexture(mind_game_back_texture);
+        background.setTextureRect(sf::IntRect(0,0,okno->getSize().x,okno->getSize().y));
+
+        start_text.setPosition(okno->getSize().x/2 - start_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
+        start_text.setFillColor(sf::Color(0,0,0,240));
+
         this->how_many_tasks = (rand()%2+1)*(this->difficulty+1);
 
         create_ludek();
@@ -91,11 +96,6 @@ public:
                                    text_size);
         pom_table->settextonmiddle(-text_size);
         platforms.emplace_back(pom_table);
-
-        sf::Text pom_text(L"Press ENTER to start the game",*font,70);
-        pom_text.setPosition(okno->getSize().x/2 - pom_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
-        pom_text.setFillColor(sf::Color(0,0,0,240));
-        this->start_text = pom_text;
 
         new_task();
     };
@@ -234,6 +234,7 @@ public:
     }
 
     void draw(){
+        okno->draw(background);
         if(!started){
             okno->draw(start_text);
         }

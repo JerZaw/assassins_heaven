@@ -16,10 +16,13 @@ private:
     sf::Texture button_texture;
     std::vector<sf::Text> rules;
     sf::Clock clock;
+    sf::Sprite background;
 public:
-    Rules(const sf::Font *font, sf::RenderWindow *arg_okno){
-        this->okno = arg_okno;
-        this->font1 = *font;
+    Rules(const sf::Font &font, sf::RenderWindow *arg_okno):
+    okno(arg_okno),font1(font){
+
+        background.setTexture(rules_back);
+        background.setTextureRect(sf::IntRect(0,0,okno->getSize().x,okno->getSize().y));
 
         sf::Text text_1("",font1,70);
         text_1.setPosition(okno->getSize().x/2 - text_1.getGlobalBounds().width/2,30);
@@ -47,6 +50,8 @@ public:
             rules[i].setPosition(okno->getSize().x/2 - rules[i].getGlobalBounds().width/2,rules[i-1].getPosition().y + 40);
         }
         clock.restart();
+
+        create_buttons(menu_button_textures);
     }
 
     void step(){
@@ -68,6 +73,7 @@ public:
     }
 
     void draw(){
+        okno->draw(background);
         for(auto &el : rules){
             okno->draw(el);
         }

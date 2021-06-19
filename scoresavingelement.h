@@ -24,10 +24,8 @@ private:
     bool name_field_activated = false;
     int score;
 public:
-    ScoreSavingElement(const sf::Font *font, sf::RenderWindow *arg_okno){
-
-        this->okno = arg_okno;
-        this->font1 = *font;
+    ScoreSavingElement(const sf::Font font, sf::RenderWindow *arg_okno):
+    okno(arg_okno),font1(font){
 
         background_rect.setSize(sf::Vector2f(1300,600));
         background_rect.setFillColor(sf::Color(200,200,200,128));

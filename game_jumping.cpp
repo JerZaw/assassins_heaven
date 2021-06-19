@@ -16,16 +16,14 @@ int game_jumping()
     // create the window
     sf::RenderWindow window(sf::VideoMode(1200,1000), "ASSASSIN'S HEAVEN",sf::Style::Close);
     window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-1200)/2,0));
-    //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
-
 
     // create some shapes
 
-    Summary summary(4,&font_comica_bold,&window);
+    Summary summary(4,font_comica_bold,&window);
     bool summary_generated = false;
     bool score_saving = false;
 
-    ScoreSavingElement scoresaving(&font_comica_bold,&window);
+    ScoreSavingElement scoresaving(font_comica_bold,&window);
     scoresaving.create_buttons(menu_button_textures);
 
     sftools::Chronometer chron1;

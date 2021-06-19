@@ -12,9 +12,8 @@ private:
     int price;
     int boost_height;
 public:
-    Boost(const int &arg_price, const int &arg_boost_height, const sf::IntRect &texture_rect){
-        this->price = arg_price;
-        this->boost_height = arg_boost_height;
+    Boost(const int &arg_price, const int &arg_boost_height, const sf::IntRect &texture_rect):
+    price(arg_price),boost_height(arg_boost_height){
         this->setTexture(scoreboards_textures);
         this->setTextureRect(texture_rect);
     }

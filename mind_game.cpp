@@ -15,19 +15,14 @@ int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long
     sf::RenderWindow window(sf::VideoMode(1500,800), "MIND_GAME",sf::Style::Close);
     window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-1500)/2,window.getPosition().y-100));
 
-    //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
-
     // create some shapes
-    sf::Sprite background;
-    background.setTexture(mind_game_back_texture);
-    background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
 
     sftools::Chronometer chron1;
     chron1.reset(true);
 
     MindGameElements mind_plansza(difficulty,current_long_platform_texture_rect,
                                   &window, &chron1);
-    Summary summary(4,&font_comica_bold,&window);
+    Summary summary(4,font_comica_bold,&window);
     bool summary_generated = false;
 
     // run the program as long as the window is open
@@ -35,9 +30,6 @@ int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long
 
         // clear the window with black color
         window.clear(sf::Color::Black);
-
-        // draw everything here...
-        window.draw(background);
 
         if(!mind_plansza.tasks_finished()){
             mind_plansza.step(chron1.reset(true));
@@ -53,7 +45,6 @@ int TaskElement::mind_game(const int &difficulty,const sf::IntRect &current_long
                            std::to_wstring(5*(current_difficulty+1)*mind_plansza.summary_data().first) + L" coins",
                            L"press ENTER, to leave the minigame");
             summary_generated=true;
-            //minigame_end_horns.play();
         }
         else{
             summary.draw();

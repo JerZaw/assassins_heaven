@@ -17,9 +17,9 @@ private:
     int my_fps;
     float shot_velocity = 250;
     float shot_angle = 45*M_PI/180; //kąt w radianach
+    float acceleration;
     float angle_changing_speed;
     float velocity_changing_speed = 80;
-    float acceleration;
     sf::Time dlugi_czas = sf::Time::Zero;
     std::vector<sf::CircleShape> aiming_dots;
     int how_many_aiming_dots;
@@ -31,11 +31,8 @@ private:
 public:
     FightingGameAnimatedSprite(){};
     FightingGameAnimatedSprite(const int &fps, const float &acceler,
-                               const float &arg_angle_changing_speed, sf::RenderWindow *arg_okno){
-        this->my_fps = fps;
-        this->acceleration = acceler;
-        this->angle_changing_speed = arg_angle_changing_speed;
-        this->okno = arg_okno;
+                               const float &arg_angle_changing_speed, sf::RenderWindow *arg_okno):
+        my_fps(fps),acceleration(acceler),angle_changing_speed(arg_angle_changing_speed),okno(arg_okno){
 
         //IDLE TEXTURE RECTANGLES
         this->add_idle_animation_frame(sf::IntRect(1,1415,232,439)); // 1 frame of animation
@@ -174,7 +171,8 @@ public:
         float pom_shot_velocity = shot_velocity;
         shot_velocity = 150;
         velocity_changing_speed=fabs(velocity_changing_speed); //strzał i ustawienie początkowej mocy strzału
-        return Arrow(pom_shot_velocity,acceleration,aiming_dots[0].getPosition(),shot_angle);
+        return Arrow(fighting_elements_textures,sf::IntRect(765,421,160,32),pom_shot_velocity,
+                     acceleration,aiming_dots[0].getPosition(),shot_angle);
     }
 
     void draw_all(){

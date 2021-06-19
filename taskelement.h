@@ -19,9 +19,9 @@ public:
     TaskElement(){};
     TaskElement(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture,
                 const sf::IntRect &current_long_platform_rect)
-        : SmallElementCoin(arg_value,arg_speed_x,texture){
+        : SmallElementCoin(arg_value,arg_speed_x,texture),my_long_platform_texture_rect(current_long_platform_rect){
+
         task_type = Tasks(rand()%2+1);
-        my_long_platform_texture_rect = current_long_platform_rect;
     }
 
     void read_data(const int &arg_difficulty){

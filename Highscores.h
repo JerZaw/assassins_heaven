@@ -15,15 +15,17 @@ private:
     sf::RenderWindow *okno;
     std::vector<sf::Drawable*> drawables;
     sf::Text text_1,text_2;
-    sf::Font font1;
+    const sf::Font font1;
     sf::Sprite QuitButton;
     sf::Texture button_texture;
-    std::vector<sf::Text> scores;
+    std::vector<sf::Text> scores;    
+    sf::Sprite background;
 public:
-    Highscores(const sf::Font *font, sf::RenderWindow *arg_okno){
+    Highscores(const sf::Font font, sf::RenderWindow *arg_okno):
+    okno(arg_okno),font1(font){
 
-        this->okno = arg_okno;
-        this->font1 = *font;
+        background.setTexture(highscores_back);
+        background.setTextureRect(sf::IntRect(0,0,okno->getSize().x,okno->getSize().y));
 
         text_1.setCharacterSize(74);
         text_1.setString("Top 10");
@@ -59,6 +61,8 @@ public:
             scores[i].setPosition(okno->getSize().x/3,scores[i-1].getPosition().y + 40);
         }
         odczyt.close();
+
+        this->create_buttons(menu_button_textures);
     }
 
     void step(){
@@ -79,6 +83,7 @@ public:
     }
 
     void draw(){
+        okno->draw(background);
         for(auto &el : drawables){
             okno->draw(*el);
         }

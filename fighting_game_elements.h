@@ -24,7 +24,7 @@ private:
     sf::Texture elements_textures;
     sf::IntRect platform_texture_rect;
     sf::Texture my_hero_texture;
-    const sf::Font *font;
+    const sf::Font font;
     sf::RenderWindow *okno;
     sftools::Chronometer *chrono;
     FightingGameAnimatedSprite ludek;
@@ -44,18 +44,18 @@ private:
     bool single_finished = false;
     int single_targets_hit = 0;
     int max_single_points = 0;
+    sf::Sprite background;
 public:
     fighting_game_elements(){};
     fighting_game_elements(const int &arg_difficulty,const sf::IntRect &arg_platform_texture_rect,
                            sf::RenderWindow *arg_okno,
-                           sftools::Chronometer *arg_chrono){
-        this->difficulty = arg_difficulty;
-        this->elements_textures = fighting_elements_textures;
-        this->platform_texture_rect = arg_platform_texture_rect;
-        this->my_hero_texture = hero_texture;
-        this->font = &font_comica_bold;
-        this->okno = arg_okno;
-        this->chrono = arg_chrono;
+                           sftools::Chronometer *arg_chrono):
+    difficulty(arg_difficulty),elements_textures(fighting_elements_textures),platform_texture_rect(arg_platform_texture_rect),
+    my_hero_texture(hero_texture),font(font_comica_bold),okno(arg_okno),chrono(arg_chrono){
+
+        background.setTexture(fighting_game_back_texture);
+        background.setTextureRect(sf::IntRect(0,0,okno->getSize().x,okno->getSize().y));
+
         this->how_many_tasks = (rand()%2+1)*(this->difficulty+1);
 
         for(int i=0;i<max_arrows_count;i++){
@@ -101,7 +101,7 @@ public:
         pom_table->settextonmiddle(-text_size);
         scoretables.emplace_back(pom_table);
 
-        sf::Text pom_text(L"Press ENTER to start the game",*font,70);
+        sf::Text pom_text(L"Press ENTER to start the game",font,70);
         pom_text.setPosition(okno->getSize().x/2 - pom_text.getGlobalBounds().width/2,okno->getSize().y/2-70);
         pom_text.setFillColor(sf::Color(240,240,240,240));
         this->start_text = pom_text;
@@ -179,7 +179,7 @@ public:
                             }
                         }
                         if(current_arrow_counter!=-1){ //jeśli znalazło miejsce dodaje nową strzałę i strzela
-                            arrows[current_arrow_counter]=new Arrow(ludek.shoot(),elements_textures,sf::IntRect(765,421,160,32));
+                            arrows[current_arrow_counter]=new Arrow(ludek.shoot());
                             arrows[current_arrow_counter]->setScale(0.5,0.5);
                         }
                     }
@@ -250,6 +250,7 @@ public:
     }
 
     void draw(){
+        okno->draw(background);
         if(!started){
             okno->draw(start_text);
         }

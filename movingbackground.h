@@ -20,9 +20,9 @@ private:
     sf::RenderWindow *okno;
 public:
     MovingBackground(){};
-    MovingBackground(const sf::Texture &arg_texture, sf::RenderWindow *arg_okno){
-        this->texture = arg_texture;
-        this->okno = arg_okno;
+    MovingBackground(const sf::Texture &arg_texture, sf::RenderWindow *arg_okno):
+    texture(arg_texture),okno(arg_okno){
+
         background1.setTexture(this->texture);
         background1.setTextureRect(texture_rects_vec[0]);
         background1.setScale(0.4,0.4);

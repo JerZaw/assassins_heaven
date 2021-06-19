@@ -12,12 +12,12 @@ private:
     sf::Color clicked_color;
 public:
     PlatformWithEquation(){};
-    PlatformWithEquation(const sf::Texture &arg_texture, const sf::Font *arg_font, sf::RenderWindow *arg_okno,
+    PlatformWithEquation(const sf::Texture &arg_texture, const sf::Font arg_font, sf::RenderWindow *arg_okno,
                          const sf::IntRect &arg_rect, const sf::Vector2f &arg_back_position,
                          const sf::Vector2f &arg_text_position, const std::string &start_string = "0",
                          const int &character_size=30, const bool &if_solution = false):
-        ScoreTable(arg_texture,arg_font,arg_okno,arg_rect,arg_back_position,arg_text_position,start_string,character_size){
-        this->good_solution = if_solution;
+        ScoreTable(arg_texture,arg_font,arg_okno,arg_rect,arg_back_position,arg_text_position,start_string,character_size),
+    good_solution(if_solution){
         if(good_solution){
             clicked_color = sf::Color::Green;
         }

@@ -15,8 +15,7 @@ private:
 public:
     MindGameAnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 400,
                            const float &arg_jumping_speed = -600)
-        :AnimatedSprite(fps,ver_speed,hor_speed,acceler){
-        this->jumping_speed = arg_jumping_speed;
+        :AnimatedSprite(fps,ver_speed,hor_speed,acceler),jumping_speed(arg_jumping_speed){
         setMainrecvec("idle");
     };
 

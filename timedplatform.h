@@ -15,13 +15,10 @@ private:
     float time_step;
 public:
     TimedPlatform(const float &arg_disappear_time,const sf::Texture &arg_texture):
-        Platform(arg_texture){
-        this->disappear_time = arg_disappear_time;
-        time_step = 255/disappear_time;
+        Platform(arg_texture),disappear_time(arg_disappear_time),time_step(255/disappear_time){
     }
-    TimedPlatform(float arg_disappear_time){
-        this->disappear_time = arg_disappear_time;
-        time_step = 255/disappear_time;
+    TimedPlatform(float arg_disappear_time):
+    disappear_time(arg_disappear_time),time_step(255/disappear_time){
     }
 
     void step(const sf::Time &elapsed){

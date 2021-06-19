@@ -17,16 +17,12 @@ int TaskElement::fighting_game(const int &difficulty)
     //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
 
     // create some shapes
-    sf::Sprite background;
-    background.setTexture(fighting_game_back_texture);
-    background.setTextureRect(sf::IntRect(0,0,window.getSize().x,window.getSize().y));
-
     sftools::Chronometer chron1;
     chron1.reset(true);
 
     fighting_game_elements fight_plansza(difficulty,sf::IntRect(38,22,104,80),
                                   &window,&chron1);
-    Summary summary(4, &font_comica_bold, &window);
+    Summary summary(4,font_comica_bold, &window);
     bool summary_generated = false;
 
     // run the program as long as the window is open
@@ -36,8 +32,6 @@ int TaskElement::fighting_game(const int &difficulty)
         window.clear(sf::Color::Black);
 
         // draw everything here...
-        window.draw(background);
-
         if(!fight_plansza.tasks_finished()){
             fight_plansza.step(chron1.reset(true));
 
@@ -52,7 +46,6 @@ int TaskElement::fighting_game(const int &difficulty)
                            std::to_wstring((current_difficulty+1)*fight_plansza.summary_data().first) + L" coins",
                             L"press ENTER, to leave the minigame");
             summary_generated=true;
-            //minigame_end_horns.play();
         }
         else{
             summary.draw();

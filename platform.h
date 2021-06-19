@@ -20,21 +20,12 @@ private:
                                                   {100,240,340,355,1000},
                                                   {100,260,400,425,1000}};
     std::vector<int> current_coin_chances;
-    //int difficulty;
 public:
     Platform(){};
-    Platform(const sf::Texture &arg_texture){
-        this->texture = arg_texture;
-
-        //current_coin_chances = coin_chances[arg_difficulty];
-        //this->difficulty = arg_difficulty;
-        //std::cerr<<difficulty<<std::endl;
-        //current_coin_chances.assign(coin_chances[arg_difficulty].begin(),coin_chances[arg_difficulty].end());
-
+    Platform(const sf::Texture &arg_texture):texture(arg_texture){
     };
 
     void SetDifficulty(const int &arg_difficulty){
-        //this->difficulty = arg_difficulty;
         current_coin_chances = coin_chances[arg_difficulty];
     }
 

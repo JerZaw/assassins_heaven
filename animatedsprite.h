@@ -22,11 +22,8 @@ private:
     bool jumping = false;
 public:
 
-    AnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 800){
-        this->my_fps = fps;
-        this->verticalspeed = ver_speed;
-        this->horizontalspeed = hor_speed;
-        this->acceleration = acceler;
+    AnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 800):
+    my_fps(fps),verticalspeed(ver_speed),horizontalspeed(hor_speed),acceleration(acceler){
 
         //JUMPING TEXTURE RECTANGLES
         this->add_jumping_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation

@@ -17,13 +17,11 @@ private:
     sf::Text text_1,text_2;
 public:
     Shop(){};
-    Shop(sf::RenderWindow *window){
-        this->okno = window;
+    Shop(sf::RenderWindow *window):okno(window){
 
         background.setTexture(scoreboards_textures);
         background.setTextureRect(sf::IntRect(285,0,561,174));
         background.setScale(0.6,0.75);
-        //background.setColor(sf::Color(255,255,255,230));
 
         boosts.emplace_back(Boost(300,100,sf::IntRect(0,145,70,70)));
         text_1.setString(std::to_string(boosts[0].GetPrice()));

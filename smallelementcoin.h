@@ -19,9 +19,9 @@ private:
     int my_fps = 4;
 public:
     SmallElementCoin(){};
-    SmallElementCoin(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture){
-        value = arg_value;
-        this->speed_x = arg_speed_x;
+    SmallElementCoin(const int &arg_value,const float &arg_speed_x, const sf::Texture &texture):
+    value(arg_value),speed_x(arg_speed_x){
+
         this->setTexture(texture);
         this->setTextureRect(pick_coin_rect());
         this->setScale(0.4,0.4);
