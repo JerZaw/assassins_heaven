@@ -320,7 +320,7 @@ public:
 //            hero_jumping_speed=-20*speed; //skakanie i przyspieszenie hero zostają w takim samym stosunku do prędkości gry, nie działa
 //            ludek.SetAcceleration(-hero_jumping_speed*1.33);
 
-            hero_jumping_speed=(speed-630); //skakanie i przyspieszenie hero zostają w takim samym stosunku do prędkości gry, nie działa
+            hero_jumping_speed=(speed-630); //skakanie i przyspieszenie hero zostają w stałej odległości do prędkości gry, działa
             ludek.SetAcceleration(speed+770);
             //std::cerr<<speed<<'\t'<<hero_jumping_speed<<'\t'<<ludek.GetAcceleration()<<std::endl;
 

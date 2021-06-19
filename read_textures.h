@@ -23,7 +23,4 @@ extern sf::Sound answer_correct_sound,answer_wrong_sound, minigame_end_horns;
 
 extern sf::Music jumping_game_music, menu_music, mind_music, fighting_music; //ogg file for long music
 
-void setSFXvolume(const float &volume);
-void setmusicvolume(const float &volume);
-
 #endif // READ_TEXTURES_H

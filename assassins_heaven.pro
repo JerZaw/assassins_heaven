@@ -26,9 +26,11 @@ HEADERS += \
     Shop.h \
     animatedsprite.h \
     arrow.h \
+    assetsmanager.h \
     countdown.h \
     fighting_game_elements.h \
     fightinggameanimatedsprite.h \
+    gameapps.h \
     jumping_game_elements.h \
     mind_game_elements.h \
     mindgameanimatedsprite.h \

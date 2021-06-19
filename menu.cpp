@@ -3,13 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <read_textures.h>
+#include <gameapps.h>
 
-int menu()
+int GameApps::menu()
 {
     bool mouse_released = false;
 
     // create the window
-    sf::RenderWindow window(sf::VideoMode(800,800), "Menu");
+    sf::RenderWindow window(sf::VideoMode(800,800), "MENU");
 
     // create some shapes
     sf::Sprite tlo;

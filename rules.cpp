@@ -3,8 +3,9 @@
 #include <iostream>
 #include <Rules.h>
 #include <read_textures.h>
+#include <gameapps.h>
 
-int rules()
+int GameApps::rules()
 {
     // create the window
     sf::RenderWindow window(sf::VideoMode(800,800), "RULES",sf::Style::None);

@@ -7,8 +7,9 @@
 #include <summary.h>
 #include <scoresavingelement.h>
 #include <read_textures.h>
+#include <gameapps.h>
 
-int game_jumping()
+int GameApps::game_jumping()
 {
     jumping_game_music.play();
     srand(time(0));
@@ -27,9 +28,9 @@ int game_jumping()
     scoresaving.create_buttons(menu_button_textures);
 
     sftools::Chronometer chron1;
+    chron1.reset(true);
 
     JumpingGameElements plansza(30,0, &window, &chron1);
-    chron1.reset(true);
     // run the program as long as the window is open
     while (window.isOpen()) {
 
