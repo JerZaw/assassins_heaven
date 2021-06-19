@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <read_textures.h>
 
 class ScoreTable
 {
@@ -12,13 +13,14 @@ private:
     const sf::Font font1;
     sf::Text points_text;
     sf::RenderWindow *okno;
+    const sf::Texture texture;
 public:
     ScoreTable(){};
-    ScoreTable(const sf::Texture &arg_texture, const sf::Font arg_font, sf::RenderWindow *arg_okno,
+    ScoreTable(sf::RenderWindow *arg_okno, const sf::Texture &arg_texture,
                const sf::IntRect &arg_rect, const sf::Vector2f &arg_back_position,
                const sf::Vector2f &arg_text_position, const std::string &start_string = "0", const int &character_size=30):
-    font1(arg_font),okno(arg_okno){
-            background_table.setTexture(arg_texture);
+    font1(font_comica_bold),okno(arg_okno),texture(arg_texture){
+            background_table.setTexture(texture);
             background_table.setTextureRect(arg_rect);
             background_table.setPosition(arg_back_position);
 

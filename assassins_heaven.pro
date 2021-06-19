@@ -32,6 +32,7 @@ HEADERS += \
     fightinggameanimatedsprite.h \
     gameapps.h \
     jumping_game_elements.h \
+    jumpingscene.h \
     mind_game_elements.h \
     mindgameanimatedsprite.h \
     movingbackground.h \

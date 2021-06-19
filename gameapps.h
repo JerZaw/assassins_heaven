@@ -11,9 +11,7 @@ private:
     int highscores();
     int rules();
 public:
-    GameApps(){
-
-    };
+    GameApps(){};
 
     void load_data(){
         AssetsManager assetsmanager;

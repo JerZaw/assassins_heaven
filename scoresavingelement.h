@@ -81,6 +81,8 @@ public:
                                     std::stoi(str_pom.substr(str_pom.find('-')+1,str_pom.size()-1)));
         }
         odczyt.close();
+
+        this->create_buttons(menu_button_textures);
     }
 
     void step(const sf::Event &event){

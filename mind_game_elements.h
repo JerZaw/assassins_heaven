@@ -66,7 +66,7 @@ public:
 
         int text_size = 40;
         sf::IntRect back_score_rect(275,246,200,80);
-        ScoreTable *pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
+        ScoreTable *pom_table = new ScoreTable(okno,scoreboards_textures,back_score_rect,
                                                sf::Vector2f(okno->getSize().x/8-back_score_rect.width/2,15),
                                                sf::Vector2f(okno->getSize().x/8,15),
                                                std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks),
@@ -76,7 +76,7 @@ public:
 
         text_size = 40;
         back_score_rect = sf::IntRect(2,328,250,80);
-        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
+        pom_table = new ScoreTable(okno,scoreboards_textures,back_score_rect,
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4,15),
                                    "Points: " + std::to_string(good_points),
@@ -89,7 +89,7 @@ public:
         std::stringstream stream;
         stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
 
-        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
+        pom_table = new ScoreTable(okno,scoreboards_textures,back_score_rect,
                                    sf::Vector2f(okno->getSize().x/8 + 200-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x/8 + 200,15),
                                    stream.str(),
@@ -262,7 +262,7 @@ public:
 
         int text_size = 65;
         sf::IntRect back_equation_rect(585,202,400,124);
-        ScoreTable *pom_table = new ScoreTable(scoreboards_textures,font, okno,back_equation_rect,
+        ScoreTable *pom_table = new ScoreTable(okno,scoreboards_textures,back_equation_rect,
                                                sf::Vector2f(okno->getSize().x/2-back_equation_rect.width/2,15),sf::Vector2f(okno->getSize().x/2,15),str_equation,text_size);
         pom_table->settextonmiddle(-pom_table->GetTextHeight()-10);
         platforms.emplace_back(pom_table);
@@ -356,7 +356,7 @@ public:
 
     ScoreTable* generate_platform(int current_count){//generuje platformę z równaniem losowo wygenerowanym; platformy w równej odległości
         sf::Vector2f plat_pos(float(okno->getSize().x)/this->platform_count*(current_count+1.0/2)-this->platform_texture_rect.width*0.35/2,400);
-        ScoreTable *pom_platform = new PlatformWithEquation(elements_textures,font,okno,platform_texture_rect,plat_pos,plat_pos,
+        ScoreTable *pom_platform = new PlatformWithEquation(jumping_elements_textures,okno,platform_texture_rect,plat_pos,plat_pos,
                                                             answers[current_count].first,character_size,answers[current_count].second);
         return pom_platform;
 

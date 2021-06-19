@@ -14,8 +14,6 @@ int TaskElement::fighting_game(const int &difficulty)
     sf::RenderWindow window(sf::VideoMode(1500,800), "FIGHTING_GAME",sf::Style::Close);
     window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-1500)/2,window.getPosition().y-100));
 
-    //::ShowWindow(window.getSystemHandle(),SW_MAXIMIZE);
-
     // create some shapes
     sftools::Chronometer chron1;
     chron1.reset(true);

@@ -18,6 +18,10 @@ public:
         Platform(arg_texture),speed(arg_speed),moving_boundary(arg_moving_boundary){
     }
 
+    MovingPlatform(int arg_speed, int arg_moving_boundary):
+        speed(arg_speed),moving_boundary(arg_moving_boundary){
+    }
+
     void step(const sf::Time &elapsed){ //przesuwa platformę w jedną stronę aż dotknie granicy, potem w drugą stronę itd, wymaga resetu zegara
         this->move(speed*elapsed.asSeconds(),0);
         if(this->GetCoin()!=nullptr)this->GetCoin()->move(speed*elapsed.asSeconds(),0);

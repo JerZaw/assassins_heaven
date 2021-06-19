@@ -29,6 +29,11 @@ public:
         current_coin_chances = coin_chances[arg_difficulty];
     }
 
+    void full_step(const sf::Time &elapsed, const float &speed_y){
+        step_y(elapsed,speed_y);
+        step(elapsed);
+    }
+
     virtual void step(const sf::Time &elapsed){};
 
     void step_y(const sf::Time &elapsed, const float &speed_y){

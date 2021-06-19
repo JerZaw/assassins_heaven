@@ -9,7 +9,7 @@ int GameApps::highscores()
 {
     // create the window
     sf::RenderWindow window(sf::VideoMode(800,800), "HIGHSCORES",sf::Style::None);
-    window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-800)/2,window.getPosition().y));
+    window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width-window.getSize().x)/2,window.getPosition().y));
 
     Highscores highscores(font_comica_bold,&window);
 

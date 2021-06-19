@@ -19,8 +19,8 @@ private:
     bool ready = false;
 public:
     CountDown(){};
-    CountDown(const sf::Font arg_font,sf::RenderWindow *arg_okno):
-    font(arg_font),okno(arg_okno){
+    CountDown(sf::RenderWindow *arg_okno):
+    font(font_comica_bold),okno(arg_okno){
 
         this->setString(L"Press ENTER to start the game");
         this->setCharacterSize(70);

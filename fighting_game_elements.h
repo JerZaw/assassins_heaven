@@ -70,7 +70,7 @@ public:
 
         int text_size = 40;
         sf::IntRect back_score_rect(275,246,200,80);
-        ScoreTable *pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
+        ScoreTable *pom_table = new ScoreTable(okno,scoreboards_textures,back_score_rect,
                                                sf::Vector2f(okno->getSize().x/8-back_score_rect.width/2,15),
                                                sf::Vector2f(okno->getSize().x/8,15),
                                                std::to_string(current_task_num)+'/'+std::to_string(how_many_tasks),
@@ -80,7 +80,7 @@ public:
 
         text_size = 40;
         back_score_rect = sf::IntRect(2,328,250,80);
-        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
+        pom_table = new ScoreTable(okno,scoreboards_textures,back_score_rect,
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x-okno->getSize().x/4,15),
                                    "Points: " + std::to_string(good_points),
@@ -93,7 +93,7 @@ public:
         std::stringstream stream;
         stream << std::fixed << std::setprecision(2) << (max_task_time-current_task_time).asSeconds();
 
-        pom_table = new ScoreTable(scoreboards_textures,font, okno,back_score_rect,
+        pom_table = new ScoreTable(okno,scoreboards_textures,back_score_rect,
                                    sf::Vector2f(okno->getSize().x/8 + 200-back_score_rect.width/2,15),
                                    sf::Vector2f(okno->getSize().x/8 + 200,15),
                                    stream.str(),
