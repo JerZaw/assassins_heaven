@@ -12,12 +12,13 @@
 #include <Shop.h>
 #include <read_textures.h>
 #include <smallelementcoin.h>
+#include <memory>
 
 class JumpingGameElements
 {
 private:
     const int count;
-    std::vector<Platform *> platformpointers;
+    std::vector<std::unique_ptr<Platform>> platformpointers;
     sf::IntRect current_long_platform_texture_rect;
     sf::IntRect current_small_platform_texture_rect;
     sf::IntRect current_long_timed_platform_texture_rect;
@@ -28,20 +29,13 @@ public:
         current_long_platform_texture_rect(sf::IntRect(0,288,380,94)),
         current_small_platform_texture_rect(sf::IntRect(214,1662,200,100)),
         current_long_timed_platform_texture_rect(sf::IntRect(0,384,380,94)),
-        current_small_timed_platform_texture_rect(sf::IntRect(382,204,200,100)),
-    ludek(10){
+        current_small_timed_platform_texture_rect(sf::IntRect(382,204,200,100)), ludek(10){
 
         for(int i=0;i<count;i++){
             platformpointers.emplace_back(nullptr);
         }
 
         create_ludek();
-    }
-
-    ~JumpingGameElements(){
-        for(auto &el :platformpointers){
-            delete el;
-        }
     }
 
     void HeroSetVerticalSpeed(const float &ver_speed){
@@ -134,9 +128,8 @@ public:
         this->current_small_timed_platform_texture_rect = short_timed_plat;
     }
 
-    void Platform_generate_new(Platform* platform, const int &long_or_short, const int &i, const int &difficulty){ //podmienia starą platformę na nową random generation
-        delete this->platformpointers[i];
-        this->platformpointers[i] = platform;
+    void Platform_generate_new(const int &long_or_short, const int &i, const int &difficulty){ //podmienia starą platformę na nową random generation
+        this->platformpointers[i] = std::make_unique<Platform>();//std::move(platform);
         this->platformpointers[i]->SetDifficulty(difficulty);
         this->platformpointers[i]->setTexture(jumping_elements_textures);
         if(long_or_short==0){

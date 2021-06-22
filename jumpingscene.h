@@ -25,6 +25,7 @@
 #include <movingbackground.h>
 #include <stationarybackground.h>
 #include <read_textures.h>
+#include <memory>
 
 class JumpingScene
 {
@@ -58,6 +59,7 @@ private:
     int boost_height = 0;
     bool boost_bought = false;
     bool boost_started = false;
+    std::unique_ptr<Platform> rand_plat;
 public:
     JumpingScene(int w, int h):window(sf::VideoMode(w,h),"ASSASSIN'S HEAVEN",sf::Style::Close),
         summary(4,font_comica_bold,&window),scoresaving(font_comica_bold,&window),
@@ -95,30 +97,30 @@ public:
         highscore_table.update("HS: "+ highscore.first + "   " + std::to_string(highscore.second));
         highscore_table.settextonmiddle(-37);
 
-//        TaskElement task(0,10,jumping_elements_textures,sf::IntRect(0,288,380,94)); //DO TESTOWANIA MINIGIER
-//        task.picked(&chrono);
+        //        TaskElement task(0,10,jumping_elements_textures,sf::IntRect(0,288,380,94)); //DO TESTOWANIA MINIGIER
+        //        task.picked(&chrono);
     };
+
+    ~JumpingScene(){
+        jumping_game_music.stop();
+    }
 
     void set_jumping_game(JumpingGameElements* ptr){
         jumping_game = ptr;
-
-        jumping_game->Platform_generate_new(random_platform(),rand()%2,0,difficulty);
+        random_platform();
+        jumping_game->Platform_generate_new(rand()%2,0,difficulty);
         jumping_game->PlatformSetNewPosition(0,sf::Vector2f(window.getSize().x/2,window.getSize().y-30));
-
+        random_platform();
         for(int i=1;i<jumping_game->GetPlatformCount();i++){
-            jumping_game->Platform_generate_new(random_platform(),rand()%2,i,difficulty);
+            jumping_game->Platform_generate_new(rand()%2,i,difficulty);
             jumping_game->PlatformSetNewPosition(i,sf::Vector2f(random_position_x(i),random_position_y(i)));
         }
     }
 
     void draw(){
-        window.clear(sf::Color::Black);
-
         back_draw();
         jumping_game->draw(&window);
         hud_draw();
-
-        window.display();
     }
 
     void back_draw(){
@@ -143,8 +145,10 @@ public:
     void window_loop(){
         while (window.isOpen()) {
 
+            window.clear(sf::Color::Black);
+
             sf::Event event;
-            // draw everything here...
+
             if(Game_alive()){
 
                 step(chrono.reset_if());
@@ -180,6 +184,7 @@ public:
                     if(pom_chosenbutton=="no"){
                         click.play();
                         window.close();
+                        break;
                     }
                     else if(pom_chosenbutton=="yes"){
                         click.play();
@@ -201,6 +206,8 @@ public:
                 if (event.type == sf::Event::Closed)
                     window.close();
             }
+
+            window.display();
         }
     }
 
@@ -304,7 +311,8 @@ public:
                 }
 
                 if(jumping_game->PlatformGetGlobalBounds(i).top>window.getSize().y){
-                    jumping_game->Platform_generate_new(random_platform(),rand()%2,i,difficulty);
+                    random_platform();
+                    jumping_game->Platform_generate_new(rand()%2,i,difficulty);
                     jumping_game->PlatformSetNewPosition(i,sf::Vector2f(random_position_x(i),random_position_y(i)));
                     points++;
                     points_table.update(points);
@@ -480,7 +488,7 @@ public:
         return prob[los];
     }
 
-    Platform *random_platform(){
+    void random_platform(){
 
         int num,speed,boundary=rand()%40+65;
         float time_=1;
@@ -500,18 +508,12 @@ public:
         }
         else num=0;
 
-        Platform* rand_plat;
         switch(num){
-        case 1: rand_plat = new MovingPlatform(speed,boundary);break;
-        case 2: rand_plat = new TimedPlatform(time_);break;
-        case 3: rand_plat = new TimedMovingPlatform(speed,boundary,time_);break;
-        default: rand_plat = new Platform();break;
+        case 1: rand_plat = std::make_unique<MovingPlatform>(speed,boundary);break;
+        case 2: rand_plat = std::make_unique<TimedPlatform>(time_);break;
+        case 3: rand_plat = std::make_unique<TimedMovingPlatform>(speed,boundary,time_);break;
+        default: rand_plat = std::make_unique<Platform>();break;
         }
-        return rand_plat;
-    }
-
-    ~JumpingScene(){
-        jumping_game_music.stop();
     }
 };
 

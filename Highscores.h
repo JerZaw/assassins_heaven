@@ -13,7 +13,6 @@ class Highscores
 private:
     std::string pom_highscore;
     sf::RenderWindow *okno;
-    std::vector<sf::Drawable*> drawables;
     sf::Text text_1,text_2;
     const sf::Font font1;
     sf::Sprite QuitButton;
@@ -32,14 +31,12 @@ public:
         text_1.setFont(font1);
         text_1.setPosition(okno->getSize().x/2 - text_1.getGlobalBounds().width/2,144);
         text_1.setFillColor(sf::Color::White);
-        drawables.emplace_back(&text_1);
 
         text_2.setCharacterSize(70);
         text_2.setString("Top 10");
         text_2.setFont(font1);
         text_2.setPosition(okno->getSize().x/2 - text_2.getGlobalBounds().width/2,145);
         text_2.setFillColor(sf::Color(70,36,0));
-        drawables.emplace_back(&text_2);
 
         for(int i=0;i<10;i++){
             scores.emplace_back(sf::Text(std::to_string(i+1)+". ",font1,30));
@@ -84,9 +81,9 @@ public:
 
     void draw(){
         okno->draw(background);
-        for(auto &el : drawables){
-            okno->draw(*el);
-        }
+        okno->draw(text_1);
+        okno->draw(text_2);
+        okno->draw(QuitButton);
         for(auto &el : scores){
             okno->draw(el);
         }
@@ -98,7 +95,6 @@ public:
         QuitButton.setTextureRect(sf::IntRect(0,549,402,174));
         QuitButton.setScale(0.9,0.9);
         QuitButton.setPosition(okno->getSize().x/2 - QuitButton.getGlobalBounds().width/2, okno->getSize().y/2 + 230);
-        drawables.emplace_back(&QuitButton);
     }
 };
 

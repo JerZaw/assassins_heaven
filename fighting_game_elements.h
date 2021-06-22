@@ -109,6 +109,20 @@ public:
         new_task();
     };
 
+    ~fighting_game_elements(){
+        for(auto &el : scoretables){
+            delete el;
+        }
+
+        for(auto &el : arrows){
+            delete el;
+        }
+
+        for(auto &el : targets){
+            delete el;
+        }
+    }
+
     bool tasks_finished(){
         return current_task_num-1==how_many_tasks;
     }

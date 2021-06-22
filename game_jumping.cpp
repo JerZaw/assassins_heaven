@@ -1,6 +1,7 @@
 #include <jumping_game_elements.h>
 #include <jumpingscene.h>
 #include <iostream>
+#include <memory>
 
 int GameApps::game_jumping()
 {
