@@ -11,9 +11,9 @@ class AssetsManager
 {
 public:
     AssetsManager(){
-            load_textures();
-            load_fonts();
-            load_sounds();
+        load_textures();
+        load_fonts();
+        load_sounds();
     };
 
     void setSFXvolume(const float &volume){

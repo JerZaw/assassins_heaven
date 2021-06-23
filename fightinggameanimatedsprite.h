@@ -19,7 +19,7 @@ private:
     float shot_angle = 45*M_PI/180; //kąt w radianach
     float acceleration;
     float angle_changing_speed;
-    float velocity_changing_speed = 80;
+    float velocity_changing_speed = 120;
     sf::Time dlugi_czas = sf::Time::Zero;
     std::vector<sf::CircleShape> aiming_dots;
     int how_many_aiming_dots;

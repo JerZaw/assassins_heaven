@@ -115,7 +115,7 @@ public:
             if(event.text.unicode == 8){
                 name_text.setString(name_text.getString().substring(0,name_text.getString().getSize()-1));
             }
-            else {
+            else if(name_text.getString().getSize()<10 && event.text.unicode != 32){
                 name_text.setString(name_text.getString() + event.text.unicode);
             }
         }
@@ -175,6 +175,10 @@ public:
     }
 
     ~ScoreSavingElement(){
+
+//        for(auto &el: drawables){
+//            delete el;
+//        }
 
         std::sort(highscores.begin(),highscores.end(),
                   [](const std::pair<std::string,int> &el_pair1,const std::pair<std::string,int> &el_pair2)

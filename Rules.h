@@ -17,6 +17,7 @@ private:
     std::vector<sf::Text> rules;
     sf::Clock clock;
     sf::Sprite background;
+    bool mouse_released = false;
 public:
     Rules(const sf::Font &font, sf::RenderWindow *arg_okno):
     okno(arg_okno),font1(font){
@@ -55,7 +56,10 @@ public:
     }
 
     void step(){
-        if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && clock.getElapsedTime()>sf::seconds(1)){
+        if(!sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            mouse_released = true;
+        }
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && mouse_released){
             sf::Vector2f mouse_position = okno->mapPixelToCoords(sf::Mouse::getPosition(*okno));
             if(QuitButton.getGlobalBounds().contains(mouse_position)){
                 click.play();
