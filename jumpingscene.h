@@ -60,6 +60,8 @@ private:
     bool boost_bought = false;
     bool boost_started = false;
     std::unique_ptr<Platform> rand_plat;
+    int added_jumping_speed = 630;
+    int added_acceleration = 770;
 public:
     JumpingScene(int w, int h):window(sf::VideoMode(w,h),"ASSASSIN'S HEAVEN",sf::Style::Close),
         summary(4,font_comica_bold,&window),scoresaving(font_comica_bold,&window),
@@ -361,20 +363,17 @@ public:
                 zapis_money.close();
             }
 
+            jumping_game->HeroStep(elapsed,window);
             background.step(elapsed,speed);
             stationary_background.step(elapsed);
 
-            speed+=elapsed.asSeconds()*1.06;  //przyspieszanie całości z biegiem czasu
-            last_speed+=elapsed.asSeconds()*1.06;
-            //            hero_jumping_speed=-20*speed; //skakanie i przyspieszenie hero zostają w takim samym stosunku do prędkości gry, nie działa
-            //            jumping_game->HeroSetAcceleration(-hero_jumping_speed*1.33);
+            speed+=elapsed.asSeconds()*1.2;  //przyspieszanie całości z biegiem czasu
+            last_speed+=elapsed.asSeconds()*1.2;
 
-            hero_jumping_speed=(speed-630); //skakanie i przyspieszenie hero zostają w stałej odległości do prędkości gry, działa
-            jumping_game->HeroSetAcceleration(speed+770);
-            //std::cerr<<speed<<'\t'<<hero_jumping_speed<<'\t'<<ludek.GetAcceleration()<<std::endl;
+            hero_jumping_speed=(-speed - 970); //prędkość skoku
+            jumping_game->HeroSetAcceleration(hero_jumping_speed*hero_jumping_speed /500); //przyspieszenie
 
             check_if_too_high(elapsed);
-            jumping_game->HeroStep(elapsed,window);
 
             if(points>highscore.second){
                 if(!new_highscore){
@@ -396,21 +395,22 @@ public:
 
     void check_if_too_high(const sf::Time &elapsed){ //może by zrobić move zamiast zmieniać prędkość?
 
-        if(jumping_game->HeroGetGlobalBounds().top < 200){//przesuwanie planszy gdy gracz wyskoczy ponad window
+        if(jumping_game->HeroGetGlobalBounds().top < 300){//przesuwanie planszy gdy gracz wyskoczy ponad window
             if(!this->was_too_high){
                 this->last_speed = this->speed;
                 this->was_too_high = true;
             }
             else{
-                this->speed+=125*elapsed.asSeconds();
+                this->speed+=150*elapsed.asSeconds();
+                jumping_game->HeroSetAcceleration(hero_jumping_speed*hero_jumping_speed /500 + speed*2); //przyspieszenie
                 if(jumping_game->HeroGetGlobalBounds().top<0){
-                    jumping_game->HeroSetVerticalSpeed(jumping_game->HeroGetVerticalSpeed() + 1200*elapsed.asSeconds());
+                    jumping_game->HeroSetVerticalSpeed(jumping_game->HeroGetVerticalSpeed() + 1500*elapsed.asSeconds());
                 }
             }
         }
-        else if(this->was_too_high){//spowalnianie zpowrotem to poprzedniej prędkości
+        else if(this->was_too_high && jumping_game->HeroGetGlobalBounds().top > 300){//spowalnianie zpowrotem to poprzedniej prędkości
             if(this->speed > this->last_speed){
-                this->speed -=600*elapsed.asSeconds();
+                this->speed -=1000*elapsed.asSeconds();
             }
             else {
                 this->was_too_high = false;
@@ -426,10 +426,10 @@ public:
     float random_position_y(int iterator){
         float vec_y;
         switch (this->difficulty) {
-        case 0 :  vec_y = rand()%15+10;break;
-        case 1 :  vec_y = rand()%25+20;break;
-        case 2 :  vec_y = rand()%35+30;break;
-        case 3 :  vec_y = rand()%45+40;break;
+        case 0 :  vec_y = rand()%15+15;break;
+        case 1 :  vec_y = rand()%25+30;break;
+        case 2 :  vec_y = rand()%35+40;break;
+        case 3 :  vec_y = rand()%45+50;break;
         default:  break;
         }
 

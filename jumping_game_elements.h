@@ -42,6 +42,14 @@ public:
         ludek.SetVerticalSpeed(ver_speed);
     }
 
+    float HeroGetVerticalSpeed(){
+        return ludek.GetVerticalSpeed();
+    }
+
+    float HeroGetAcceleration(){
+        return ludek.GetAcceleration();
+    }
+
     void HeroSetRecVec(const std::string &vec_name){
         ludek.setrecvec(vec_name);
     }
@@ -52,10 +60,6 @@ public:
 
     void HeroMove(const float &move_x, const float &move_y){
         ludek.move(move_x,move_y);
-    }
-
-    float HeroGetVerticalSpeed(){
-        return ludek.GetVerticalSpeed();
     }
 
     void HeroStartJumpAnimation(){

@@ -23,7 +23,7 @@ private:
 public:
 
     AnimatedSprite(const int &fps=1, const float &ver_speed=100,const float &hor_speed = 250, const float &acceler = 800):
-    my_fps(fps),verticalspeed(ver_speed),horizontalspeed(hor_speed),acceleration(acceler){
+        my_fps(fps),verticalspeed(ver_speed),horizontalspeed(hor_speed),acceleration(acceler){
 
         //JUMPING TEXTURE RECTANGLES
         this->add_jumping_animation_frame(sf::IntRect(0,14,282,437)); // 1 frame of animation
@@ -128,9 +128,7 @@ public:
 
     virtual void vertical_step(const sf::Time &elapsed, const sf::Window &okno){
         this->move(0,this->verticalspeed*elapsed.asSeconds());
-        if(this->verticalspeed<100000){
-            this->verticalspeed+=this->acceleration*elapsed.asSeconds();
-        }
+        this->verticalspeed+=this->acceleration*elapsed.asSeconds();
     }
 
     void step(const sf::Time &elapsed, const sf::Window &okno){ //wymaga restartu zegara, odpowiada za poruszanie we wszystkie strony oraz zmianę animacji
@@ -197,7 +195,7 @@ public:
             }
         }
         else {
-                this->pressed = 0;
+            this->pressed = 0;
         }
     }
 };
